@@ -1,7 +1,9 @@
 package com.pigmice.frc.lib.utils;
 
-import org.junit.Test;
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class RingTest {
     private static final double epsilon = 1e-6;
@@ -16,11 +18,11 @@ public class RingTest {
         ring.put(3.0);
         ring.put(4.0);
 
-        Assert.assertEquals(0.0, ring.pop(), epsilon);
-        Assert.assertEquals(1.0, ring.pop(), epsilon);
-        Assert.assertEquals(2.0, ring.pop(), epsilon);
-        Assert.assertEquals(3.0, ring.pop(), epsilon);
-        Assert.assertEquals(4.0, ring.pop(), epsilon);
+        Assertions.assertEquals(0.0, ring.pop(), epsilon);
+        Assertions.assertEquals(1.0, ring.pop(), epsilon);
+        Assertions.assertEquals(2.0, ring.pop(), epsilon);
+        Assertions.assertEquals(3.0, ring.pop(), epsilon);
+        Assertions.assertEquals(4.0, ring.pop(), epsilon);
     }
 
     @Test
@@ -33,19 +35,19 @@ public class RingTest {
         ring.put(3.0);
         ring.put(4.0);
 
-        Assert.assertEquals(1.0, ring.pop(), epsilon);
-        Assert.assertEquals(2.0, ring.pop(), epsilon);
-        Assert.assertEquals(3.0, ring.pop(), epsilon);
-        Assert.assertEquals(4.0, ring.pop(), epsilon);
-        Assert.assertEquals(0.0, ring.pop(), epsilon);
-        Assert.assertEquals(0.0, ring.pop(), epsilon);
+        Assertions.assertEquals(1.0, ring.pop(), epsilon);
+        Assertions.assertEquals(2.0, ring.pop(), epsilon);
+        Assertions.assertEquals(3.0, ring.pop(), epsilon);
+        Assertions.assertEquals(4.0, ring.pop(), epsilon);
+        Assertions.assertEquals(0.0, ring.pop(), epsilon);
+        Assertions.assertEquals(0.0, ring.pop(), epsilon);
 
         ring.put(5.0);
         ring.put(6.0);
 
-        Assert.assertEquals(5.0, ring.pop(), epsilon);
-        Assert.assertEquals(6.0, ring.pop(), epsilon);
-        Assert.assertEquals(0.0, ring.pop(), epsilon);
+        Assertions.assertEquals(5.0, ring.pop(), epsilon);
+        Assertions.assertEquals(6.0, ring.pop(), epsilon);
+        Assertions.assertEquals(0.0, ring.pop(), epsilon);
 
         ring.put(7.0);
         ring.put(8.0);
@@ -53,63 +55,65 @@ public class RingTest {
         ring.put(10.0);
         ring.put(11.0);
 
-        Assert.assertEquals(8.0, ring.pop(), epsilon);
-        Assert.assertEquals(9.0, ring.pop(), epsilon);
-        Assert.assertEquals(10.0, ring.pop(), epsilon);
-        Assert.assertEquals(11.0, ring.pop(), epsilon);
-        Assert.assertEquals(0.0, ring.pop(), epsilon);
-        Assert.assertEquals(0.0, ring.pop(), epsilon);
+        Assertions.assertEquals(8.0, ring.pop(), epsilon);
+        Assertions.assertEquals(9.0, ring.pop(), epsilon);
+        Assertions.assertEquals(10.0, ring.pop(), epsilon);
+        Assertions.assertEquals(11.0, ring.pop(), epsilon);
+        Assertions.assertEquals(0.0, ring.pop(), epsilon);
+        Assertions.assertEquals(0.0, ring.pop(), epsilon);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test()
     public void invalidSize() {
-        @SuppressWarnings("unused")
-        Ring ring = new Ring(0);
+        assertThrows(IllegalArgumentException.class, () -> {
+            @SuppressWarnings("unused")
+            Ring ring = new Ring(0);
+        });
     }
 
     @Test
     public void average() {
         Ring ring = new Ring(3);
 
-        Assert.assertEquals(0.0, ring.average(), epsilon);
+        Assertions.assertEquals(0.0, ring.average(), epsilon);
 
         ring.put(2.0);
-        Assert.assertEquals(2.0 / 3.0, ring.average(), epsilon);
+        Assertions.assertEquals(2.0 / 3.0, ring.average(), epsilon);
 
         ring.put(1.0);
-        Assert.assertEquals(3.0 / 3.0, ring.average(), epsilon);
+        Assertions.assertEquals(3.0 / 3.0, ring.average(), epsilon);
 
         ring.put(2.0);
-        Assert.assertEquals(5.0 / 3.0, ring.average(), epsilon);
+        Assertions.assertEquals(5.0 / 3.0, ring.average(), epsilon);
 
         ring.put(1.0);
-        Assert.assertEquals(4.0 / 3.0, ring.average(), epsilon);
+        Assertions.assertEquals(4.0 / 3.0, ring.average(), epsilon);
 
         ring.pop();
-        Assert.assertEquals(3.0 / 3.0, ring.average(), epsilon);
+        Assertions.assertEquals(3.0 / 3.0, ring.average(), epsilon);
     }
 
     @Test
     public void isEmpty() {
         Ring ring = new Ring(2);
 
-        Assert.assertTrue(ring.isEmpty());
+        Assertions.assertTrue(ring.isEmpty());
 
         ring.pop();
 
-        Assert.assertTrue(ring.isEmpty());
+        Assertions.assertTrue(ring.isEmpty());
 
         ring.put(0.0);
 
-        Assert.assertFalse(ring.isEmpty());
+        Assertions.assertFalse(ring.isEmpty());
 
         ring.pop();
 
-        Assert.assertTrue(ring.isEmpty());
+        Assertions.assertTrue(ring.isEmpty());
 
         ring.put(1.0);
         ring.put(2.0);
 
-        Assert.assertFalse(ring.isEmpty());
+        Assertions.assertFalse(ring.isEmpty());
     }
 }

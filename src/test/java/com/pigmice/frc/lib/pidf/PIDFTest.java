@@ -6,8 +6,8 @@ import java.util.List;
 import com.pigmice.frc.lib.utils.Range;
 import com.pigmice.frc.lib.utils.Utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PIDFTest {
     private static final double epsilon = 1e-6;
@@ -37,7 +37,7 @@ public class PIDFTest {
             if (!Utils.almostEquals(datum.output, output, epsilon)) {
                 System.out.format("PIDF error, datum #%d", i + 1);
             }
-            Assert.assertEquals(datum.output, output, epsilon);
+            Assertions.assertEquals(datum.output, output, epsilon);
         }
     }
 
