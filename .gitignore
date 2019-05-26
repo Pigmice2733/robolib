@@ -1,0 +1,27 @@
+# Package files and archives
+*.jar
+*.zip
+*.tar.gz
+
+# Ignore Gradle project-specific cache directory
+.gradle/
+build/
+!gradle-wrapper.jar
+
+# Generated graphs
+graphs/
+
+# VisualStudioCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# VSCode Specific Java Settings
+.classpath
+.project
+.settings/
+
+# VSCode Java build output
+bin/
