@@ -17,7 +17,10 @@ public class Selector<E> {
     private E defaultValue;
 
     public Selector(String tableName, String defaultOption, E defaultValue) {
-        NetworkTable table = NetworkTableInstance.getDefault().getTable(tableName);
+        this(NetworkTableInstance.getDefault().getTable(tableName), defaultOption, defaultValue);
+    }
+
+    public Selector(NetworkTable table, String defaultOption, E defaultValue) {
         options = table.getEntry("options");
         selected = table.getEntry("selected");
 
