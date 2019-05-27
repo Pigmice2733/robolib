@@ -22,8 +22,8 @@ public class Odometry {
          * Creates a new odometry data streamer for a specific table. All data default
          * to 0.0
          *
-         * @param table The table to add the data to. Can be a subtable if done as
-         *              follows :'/table/subtable'.
+         * @param table The table to add the data to. Can be a subtable if given as
+         *              follows: '/table/subtable'.
          */
         public Streamer(String table) {
             NetworkTableInstance root = NetworkTableInstance.getDefault();
