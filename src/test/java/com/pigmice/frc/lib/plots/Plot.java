@@ -77,6 +77,9 @@ class Plot {
         int seriesIndex = dataset.getSeriesCount() - 1;
         renderer.setSeriesPaint(seriesIndex, color);
         renderer.setSeriesStroke(seriesIndex, new BasicStroke(3.0f));
+
+        renderer.setSeriesLinesVisible(seriesIndex, true);
+        renderer.setSeriesShapesVisible(seriesIndex, false);
     }
 
     /**
