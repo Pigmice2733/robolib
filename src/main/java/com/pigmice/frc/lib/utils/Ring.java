@@ -36,7 +36,7 @@ public class Ring {
     }
 
     /**
-     * Add an element to the next empty space in this Ring, or overwrite the oldest
+     * Adds an element to the next empty space in this Ring, or overwrites the oldest
      * data if this Ring is full.
      *
      * @param value The number to add to this Ring
@@ -65,10 +65,6 @@ public class Ring {
      */
     public double pop() {
         if (empty) {
-            if (readPos == writePos) {
-                writePos = (writePos + 1) % size;
-            }
-            readPos = (readPos + 1) % size;
             return 0.0;
         }
 

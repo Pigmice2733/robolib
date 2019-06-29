@@ -116,4 +116,13 @@ public class RingTest {
 
         Assertions.assertFalse(ring.isEmpty());
     }
+
+    @Test
+    public void initialPop() {
+        Ring ring = new Ring(2);
+
+        Assertions.assertEquals(0.0, ring.pop());
+        ring.put(1.5);
+        Assertions.assertEquals(1.5, ring.pop());
+    }
 }

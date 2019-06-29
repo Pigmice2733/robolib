@@ -41,23 +41,35 @@ public class Setpoint {
     }
 
     /***
-     * Convert setpoint from being in terms of angle in radians to the arc length
+     * Converts angular setpoint from being in terms of angle (<b>in radians</b>) to the arc length
      * distance of the robot's wheels.
+     * 
+     * The arc length is the distance covered while turning
+     * from 0 to the angle specified by this setpoint, using the specified turning radius.
+     * 
+     * The position, velocity, and acceleration are converted from radians per time to position per
+     * time. Curvature is calculated as the inverse of the turning radius, and heading is the angle.
      *
-     * @param trackwidth The width of the robot from wheel to wheel
-     * @return This setpoint expressed in arc length rather than angle
+     * @param radius The turning radius
+     * @return This setpoint expressed as an arc length rather than angle
      */
-    public Setpoint toArcLength(double trackwidth) {
-        return toArcLength(trackwidth, true);
+    public Setpoint toArcLength(double radius) {
+        return toArcLength(radius, true);
     }
 
-    /***
-     * Convert setpoint from being in terms of angle to the arc length distance of
-     * the robot's wheels.
+   /***
+     * Converts angular setpoint from being in terms of angle to the arc length
+     * distance of the robot's wheels.
+     * 
+     * The arc length is the distance covered while turning
+     * from 0 to the angle specified by this setpoint, using the specified turning radius.
+     * 
+     * The position, velocity, and acceleration are converted from radians/degree per time to position per
+     * time. Curvature is calculated as the inverse of the turning radius, and heading is the angle.
      *
      * @param radius  The turning radius
-     * @param radians Whether the original position is in radians (or in degrees).
-     * @return This setpoint expressed in arc length rather than angle
+     * @param radians Whether the original position is in radians (or in degrees)
+     * @return This setpoint expressed as an arc length rather than angle
      */
     public Setpoint toArcLength(double radius, boolean radians) {
         double ratio;
@@ -74,15 +86,13 @@ public class Setpoint {
         return new Setpoint(position * ratio, velocity * ratio, acceleration * ratio, 1.0 / radius, position);
     }
 
+    /**
+     * Negates this setpoint. Position, velocity, and acceleration are negated, curvature and heading
+     * are unchanged.
+     * 
+     * @return The negated setpoint
+     */
     public Setpoint negate() {
-        return negate(true);
-    }
-
-    public Setpoint negate(boolean radians) {
-        if (radians) {
-            return new Setpoint(-position, -velocity, -acceleration, curvature, heading - Math.PI);
-        } else {
-            return new Setpoint(-position, -velocity, -acceleration, curvature, heading - 180.0);
-        }
+        return new Setpoint(-position, -velocity, -acceleration, curvature, heading);
     }
 }

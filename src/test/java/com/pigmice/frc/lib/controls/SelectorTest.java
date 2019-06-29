@@ -91,4 +91,21 @@ public class SelectorTest {
 
         verify(selected).getString("");
     }
+
+    @Test
+    public void testDefault() {
+        when(selected.getString("")).thenReturn("Gravitas Free Zone");
+
+        NetworkTable table = mock(NetworkTable.class);
+
+        when(table.getEntry("options")).thenReturn(options);
+        when(table.getEntry("selected")).thenReturn(selected);
+
+        Selector<Integer> selector = new Selector<>(table, "back", 0);
+
+        selector.setDefault("forward", 1);
+        selector.addOption("farScale", 2);
+
+        Assertions.assertEquals(1, selector.getSelected());
+    }
 }

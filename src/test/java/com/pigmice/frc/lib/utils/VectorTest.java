@@ -83,6 +83,19 @@ public class VectorTest {
     }
 
     @Test
+    public void getAngleTest() {
+        Vector xAxis = new Vector(1.0, 0.0);
+        Vector yAxis = new Vector(0.0, 1.0);
+        Vector negativeY = new Vector(0.0, -1.0);
+        Vector negativeHalf = new Vector(-1.0, -1.0);
+
+        Assertions.assertEquals(0.0, xAxis.getAngle(), epsilon);
+        Assertions.assertEquals(0.5 * Math.PI, yAxis.getAngle(), epsilon);
+        Assertions.assertEquals(-0.5 * Math.PI, negativeY.getAngle(), epsilon);
+        Assertions.assertEquals(-0.75 * Math.PI, negativeHalf.getAngle(), epsilon);
+    }
+
+    @Test
     public void rotateTest() {
         Vector original = new Vector(-1.0, 1.0);
         Vector rotated = original.rotate(-1.5 * Math.PI);
