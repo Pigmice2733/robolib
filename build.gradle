@@ -11,6 +11,7 @@ buildscript {
 
 plugins {
     id "java-library"
+    id "jacoco"
 }
 
 if(!project.getPlugins().hasPlugin("edu.wpi.first.GradleRIO")) {
@@ -42,4 +43,5 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
     }
+    finalizedBy jacocoTestReport
 }

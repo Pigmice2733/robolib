@@ -50,7 +50,7 @@ public class SelectorTest {
         assertThat("Options keys equality unordered", Arrays.asList(keys.get(0)),
                 containsInAnyOrder("back", "forward"));
         assertThat("Options keys equality unordered", Arrays.asList(keys.get(1)),
-            containsInAnyOrder("back", "forward", "farScale"));
+                containsInAnyOrder("back", "forward", "farScale"));
 
         verify(selected).setString("forward");
 
@@ -77,12 +77,11 @@ public class SelectorTest {
 
         List<String[]> keys = keysCaptor.getAllValues();
 
-        assertThat("Options keys equality unordered", Arrays.asList(keys.get(0)),
-                containsInAnyOrder("back"));
+        assertThat("Options keys equality unordered", Arrays.asList(keys.get(0)), containsInAnyOrder("back"));
         assertThat("Options keys equality unordered", Arrays.asList(keys.get(1)),
                 containsInAnyOrder("back", "forward"));
         assertThat("Options keys equality unordered", Arrays.asList(keys.get(2)),
-            containsInAnyOrder("back", "forward", "farScale"));
+                containsInAnyOrder("back", "forward", "farScale"));
 
         verify(selected).setString("back");
         verify(selected).setString("forward");
@@ -90,5 +89,22 @@ public class SelectorTest {
         Assertions.assertEquals(2, selector.getSelected());
 
         verify(selected).getString("");
+    }
+
+    @Test
+    public void testDefault() {
+        when(selected.getString("")).thenReturn("Gravitas Free Zone");
+
+        NetworkTable table = mock(NetworkTable.class);
+
+        when(table.getEntry("options")).thenReturn(options);
+        when(table.getEntry("selected")).thenReturn(selected);
+
+        Selector<Integer> selector = new Selector<>(table, "back", 0);
+
+        selector.setDefault("forward", 1);
+        selector.addOption("farScale", 2);
+
+        Assertions.assertEquals(1, selector.getSelected());
     }
 }

@@ -47,14 +47,17 @@ public class Odometry {
          */
         public void send(double x, double y, double angle) {
             if (Math.abs(this.x - x) > 1e-6) {
+                this.x = x;
                 xEntry.setDouble(x);
             }
 
             if (Math.abs(this.y - y) > 1e-6) {
+                this.y = y;
                 yEntry.setDouble(y);
             }
 
             if (Math.abs(this.angle - angle) > 1e-6) {
+                this.angle = angle;
                 angleEntry.setDouble(angle);
             }
         }
@@ -109,7 +112,7 @@ public class Odometry {
     public void update(double leftPosition, double rightPosition, double angle) {
         double deltaLeft = leftPosition - lastLeft;
         double deltaRight = rightPosition - lastRight;
-        double deltaAngle = (angle - lastAngle) * (Math.PI / 180.0);
+        double deltaAngle = angle - lastAngle;
 
         double distance = (deltaLeft + deltaRight) / 2.0;
         if (Math.abs(deltaAngle) > Math.PI) {
@@ -121,8 +124,6 @@ public class Odometry {
             double deltaY = distance * Math.sin(angle);
             x += deltaX;
             y += deltaY;
-
-            lastAngle = angle;
 
             return;
         }

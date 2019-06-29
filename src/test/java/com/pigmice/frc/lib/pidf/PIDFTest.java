@@ -58,6 +58,17 @@ public class PIDFTest {
     }
 
     @Test
+    public void simplePIDTest() {
+        Gains gains = new Gains(1.0, 0.0, 0.0);
+        Range outputBounds = new Range(-1.0, 1.0);
+        PIDF p = new PIDF(gains, outputBounds);
+
+        p.initialize(0.0, 0.0, 0.0);
+        double output = p.calculateOutput(-5.0, 0.0, 1.0);
+        Assertions.assertEquals(1.0, output, epsilon);
+    }
+
+    @Test
     public void ratePIFTest() {
         Gains gains = new Gains(1.0, 0.25, 0.0, 1.0, 0.0, 0.0);
         Range outputBounds = new Range(-10.0, 10.0);

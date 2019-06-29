@@ -11,7 +11,13 @@ public class PointTest {
         Point p = new Point(5.3, 6.0);
         Assertions.assertEquals(5.3, p.getX(), epsilon);
         Assertions.assertEquals(6.0, p.getY(), epsilon);
+    }
 
+    @Test
+    public void originTest() {
+        Point o = Point.origin();
+        Assertions.assertEquals(0.0, o.getX(), epsilon);
+        Assertions.assertEquals(0.0, o.getY(), epsilon);
     }
 
     @Test
