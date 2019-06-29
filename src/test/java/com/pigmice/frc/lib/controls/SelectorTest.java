@@ -50,7 +50,7 @@ public class SelectorTest {
         assertThat("Options keys equality unordered", Arrays.asList(keys.get(0)),
                 containsInAnyOrder("back", "forward"));
         assertThat("Options keys equality unordered", Arrays.asList(keys.get(1)),
-            containsInAnyOrder("back", "forward", "farScale"));
+                containsInAnyOrder("back", "forward", "farScale"));
 
         verify(selected).setString("forward");
 
@@ -77,12 +77,11 @@ public class SelectorTest {
 
         List<String[]> keys = keysCaptor.getAllValues();
 
-        assertThat("Options keys equality unordered", Arrays.asList(keys.get(0)),
-                containsInAnyOrder("back"));
+        assertThat("Options keys equality unordered", Arrays.asList(keys.get(0)), containsInAnyOrder("back"));
         assertThat("Options keys equality unordered", Arrays.asList(keys.get(1)),
                 containsInAnyOrder("back", "forward"));
         assertThat("Options keys equality unordered", Arrays.asList(keys.get(2)),
-            containsInAnyOrder("back", "forward", "farScale"));
+                containsInAnyOrder("back", "forward", "farScale"));
 
         verify(selected).setString("back");
         verify(selected).setString("forward");
