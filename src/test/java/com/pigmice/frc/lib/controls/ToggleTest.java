@@ -6,15 +6,11 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import edu.wpi.first.wpilibj.GenericHID;
-
 public class ToggleTest {
     @Test
-    public void getTest() {
-        GenericHID joystick = mock(GenericHID.class);
+    public void setTest() {
         final int button = 5;
-        when(joystick.getRawButton(button)).thenReturn(false).thenReturn(true).thenReturn(true).thenReturn(false)
-                .thenReturn(false).thenReturn(true);
+        JoyMock joystick = new JoyMock(button);
 
         Toggle toggle = new Toggle(joystick, button);
         toggle.update();
@@ -53,11 +49,9 @@ public class ToggleTest {
     }
 
     @Test
-    public void setTest() {
-        GenericHID joystick = mock(GenericHID.class);
+    public void getTest() {
         final int button = 5;
-        when(joystick.getRawButton(button)).thenReturn(false).thenReturn(true).thenReturn(true).thenReturn(false)
-                .thenReturn(false).thenReturn(true);
+        JoyMock joystick = new JoyMock(button);
 
         Toggle toggle = new Toggle(joystick, button, true);
         toggle.update();
@@ -78,7 +72,8 @@ public class ToggleTest {
     @Test
     public void fromDebouncerSetTest() {
         ButtonDebouncer debouncer = mock(ButtonDebouncer.class);
-        when(debouncer.get()).thenReturn(false).thenReturn(true).thenReturn(false).thenReturn(false).thenReturn(true).thenReturn(true);
+        when(debouncer.get()).thenReturn(false).thenReturn(true).thenReturn(false).thenReturn(false).thenReturn(true)
+                .thenReturn(true);
 
         Toggle toggle = new Toggle(debouncer, true);
         toggle.update();

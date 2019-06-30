@@ -5,13 +5,16 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class SubstateToggleTest {
+    ButtonDebouncer debouncer = mock(ButtonDebouncer.class);
+
     @Test
     public void toggleTest() {
-        ButtonDebouncer debouncer = mock(ButtonDebouncer.class);
-        when(debouncer.get()).thenReturn(false).thenReturn(true).thenReturn(true).thenReturn(true)
-                .thenReturn(false);
+        when(debouncer.get()).thenReturn(false).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
         SubstateToggle toggle = new SubstateToggle(debouncer);
 
         toggle.update();
@@ -33,7 +36,6 @@ public class SubstateToggleTest {
 
     @Test
     public void exitTest() {
-        ButtonDebouncer debouncer = mock(ButtonDebouncer.class);
         when(debouncer.get()).thenReturn(true).thenReturn(true).thenReturn(false).thenReturn(true);
         SubstateToggle toggle = new SubstateToggle(debouncer);
 
@@ -54,7 +56,6 @@ public class SubstateToggleTest {
 
     @Test
     public void setTest() {
-        ButtonDebouncer debouncer = mock(ButtonDebouncer.class);
         when(debouncer.get()).thenReturn(true);
         SubstateToggle toggle = new SubstateToggle(debouncer);
 

@@ -1,5 +1,6 @@
 package com.pigmice.frc.lib.utils;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.pigmice.frc.lib.utils.Odometry.Streamer;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -17,8 +17,9 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 public class OdometryTest {
     private static final double epsilon = 1e-6;
 
-    @Mock
-    NetworkTableEntry xEntry, yEntry, angleEntry;
+    NetworkTableEntry xEntry = mock(NetworkTableEntry.class);
+    NetworkTableEntry yEntry = mock(NetworkTableEntry.class);
+    NetworkTableEntry angleEntry = mock(NetworkTableEntry.class);
 
     @InjectMocks
     Odometry.Streamer streamer = new Streamer("/");
