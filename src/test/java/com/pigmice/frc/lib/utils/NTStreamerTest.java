@@ -9,15 +9,14 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 @ExtendWith(MockitoExtension.class)
 public class NTStreamerTest {
-    @Mock
-    NetworkTableEntry entry;
+    NetworkTableEntry entry = Mockito.mock(NetworkTableEntry.class);
 
     @InjectMocks
     NTStreamer<Double> nts = new NTStreamer<>("/root", "name");

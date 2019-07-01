@@ -38,12 +38,12 @@ public class StaticSteeringController {
         initialize();
     }
 
-    // Returning a wheel distance correction to steer to target heading
+    // Returns a wheel distance correction to steer to target heading
     public double correct() {
         return correct(target);
     }
 
-    // Returning a wheel distance correction to steer to target heading
+    // Returns a wheel distance correction to steer to target heading
     public double correct(double target) {
         this.target = target;
         double correction = pid.calculateOutput(input.get(), target, Timer.getFPGATimestamp() - startTime);

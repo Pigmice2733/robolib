@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class SubstateToggleTest {
+    private final ButtonDebouncer debouncer = mock(ButtonDebouncer.class);
+    private final SubstateToggle toggle = new SubstateToggle(debouncer);
+
     @Test
     public void toggleTest() {
-        ButtonDebouncer debouncer = mock(ButtonDebouncer.class);
-        when(debouncer.get()).thenReturn(false).thenReturn(true).thenReturn(true).thenReturn(true)
-                .thenReturn(false);
-        SubstateToggle toggle = new SubstateToggle(debouncer);
+        when(debouncer.get()).thenReturn(false).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
 
         toggle.update();
         Assertions.assertFalse(toggle.isEnabled());
@@ -33,9 +33,7 @@ public class SubstateToggleTest {
 
     @Test
     public void exitTest() {
-        ButtonDebouncer debouncer = mock(ButtonDebouncer.class);
         when(debouncer.get()).thenReturn(true).thenReturn(true).thenReturn(false).thenReturn(true);
-        SubstateToggle toggle = new SubstateToggle(debouncer);
 
         toggle.update();
         Assertions.assertTrue(toggle.isEnabled());
@@ -54,9 +52,7 @@ public class SubstateToggleTest {
 
     @Test
     public void setTest() {
-        ButtonDebouncer debouncer = mock(ButtonDebouncer.class);
         when(debouncer.get()).thenReturn(true);
-        SubstateToggle toggle = new SubstateToggle(debouncer);
 
         toggle.exit();
         toggle.setToggled(true);

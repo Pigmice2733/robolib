@@ -38,14 +38,19 @@ public class StaticProfileExecutor {
         profileTime = 0.0;
     }
 
-    // Returns true if error is within the allowable error, false otherwise
+    // Returns true if error is within the allowable error, otherwise outputs
+    // setpoint and returns false
     public boolean update() {
+        double error = Math.abs(finalTarget - input.get());
+        if (error <= allowableError) {
+            return true;
+        }
+
         double time = Timer.getFPGATimestamp() - startTime;
         Setpoint sp = profile.getSetpoint(time);
         output.set(sp);
 
-        double error = Math.abs(finalTarget - input.get());
-        return error <= allowableError;
+        return false;
     }
 
     public void updateNoEnd() {

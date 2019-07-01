@@ -14,9 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -24,14 +22,11 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 
 @ExtendWith(MockitoExtension.class)
 public class SelectorTest {
-    @Mock
-    NetworkTableEntry selected;
+    private final NetworkTableEntry selected = mock(NetworkTableEntry.class);
 
-    @Mock
-    NetworkTableEntry options;
+    private final NetworkTableEntry options = mock(NetworkTableEntry.class);
 
-    @Captor
-    ArgumentCaptor<String[]> keysCaptor;
+    private final ArgumentCaptor<String[]> keysCaptor = ArgumentCaptor.forClass(String[].class);
 
     @InjectMocks
     Selector<Integer> injectedSelector = new Selector<Integer>("/main/auto", "back", 0);
