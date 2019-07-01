@@ -26,13 +26,13 @@ public class SelectorTest {
 
     private final NetworkTableEntry options = mock(NetworkTableEntry.class);
 
+    private final ArgumentCaptor<String[]> keysCaptor = ArgumentCaptor.forClass(String[].class);
+
     @InjectMocks
     Selector<Integer> injectedSelector = new Selector<Integer>("/main/auto", "back", 0);
 
     @Test
     public void testInjectedSelector() {
-        ArgumentCaptor<String[]> keysCaptor = ArgumentCaptor.forClass(String[].class);
-
         when(selected.getString("")).thenReturn("farScale");
 
         injectedSelector.setDefault("forward", 1);
@@ -56,8 +56,6 @@ public class SelectorTest {
 
     @Test
     public void testSelector() {
-        ArgumentCaptor<String[]> keysCaptor = ArgumentCaptor.forClass(String[].class);
-
         when(selected.getString("")).thenReturn("farScale");
 
         NetworkTable table = mock(NetworkTable.class);
