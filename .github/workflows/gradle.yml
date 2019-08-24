@@ -14,7 +14,6 @@ jobs:
         java-version: 11
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Store build reports
     - uses: actions/download-artifact@master
       with:
         name: Build reports
