@@ -76,6 +76,10 @@ public class Logger {
         }
     }
 
+    public static <T> ComponentLogger createComponent(Class<T> componentClass) {
+        return createComponent(componentClass.getSimpleName());
+    }
+
     public static ComponentLogger createComponent(String componentName) {
         if (!started) {
             registeredComponents.add(componentName);
