@@ -16,7 +16,7 @@ public class Logger {
         INFO, DEBUG, WARNING, ERROR
     }
 
-    public class ComponentLogger {
+    public static class ComponentLogger {
         private final String componentName;
 
         private ComponentLogger(String componentName) {
@@ -47,21 +47,26 @@ public class Logger {
                 try {
                     client.sendMessage(log);
                 } catch (LoggingClient.LoggingUnavailableException ex) {
+                    // If remote logging is unavailable, fallback to stdout
+                    System.out.println(String.format("%s: %s", componentName, message));
                 }
             } else {
-                throw new RuntimeException("Cannot log until Logger.Start has been called");
+                throw new RuntimeException("Cannot log until Logger.start() has been called");
             }
         }
     }
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy hh:mm:ss");
 
-    private List<String> registeredComponents = new ArrayList<>();
-    private LoggingClient client;
+    private static final List<String> registeredComponents = new ArrayList<>();
+    private static LoggingClient client = null;
+    private static boolean started = false;
 
-    private boolean started = false;
+    public static void configureLogger(URI loggingServer) {
+        if(client != null) {
+            throw new RuntimeException("Cannot reconfigure active logger, close() logger first");
+        }
 
-    public Logger(URI loggingServer) {
         try {
             client = new LoggingClient(loggingServer);
         } catch (LoggingUnavailableException e) {
@@ -71,17 +76,21 @@ public class Logger {
         }
     }
 
-    public ComponentLogger registerComponent(String componentName) {
+    public static ComponentLogger getLogger(String componentName) {
         if (!started) {
             registeredComponents.add(componentName);
         } else {
-            throw new RuntimeException("Cannot register new logging components after logging has begun");
+            throw new RuntimeException("Cannot create new component loggers after start() has been called");
         }
 
         return new ComponentLogger(componentName);
     }
 
-    public void start() {
+    public static void start() {
+        if (client == null) {
+            throw new RuntimeException("configureLogger() must be called before start()");
+        }
+
         if (!started) {
             var componentsHeader = String.join(",", registeredComponents);
 
@@ -92,11 +101,18 @@ public class Logger {
 
             started = true;
         } else {
-            throw new RuntimeException("Logger.Start has already been called, cannot be started more than one");
+            throw new RuntimeException("start() has already been called, cannot be started more than one");
         }
     }
 
-    public void close() {
+    public static void close() {
+        if (client == null) {
+            throw new RuntimeException("Cannot close() active logger");
+        }
+
         client.close(new CloseReason(CloseCodes.NORMAL_CLOSURE, "Robot shutting down..."));
+        client = null;
+        started = false;
+        registeredComponents.clear();
     }
 }
