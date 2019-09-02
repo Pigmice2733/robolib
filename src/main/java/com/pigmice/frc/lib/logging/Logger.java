@@ -13,7 +13,7 @@ import com.pigmice.frc.lib.logging.LoggingClient.LoggingUnavailableException;
 
 public class Logger {
     private enum Level {
-        INFO, DEBUG, WARNING, ERROR
+        DEBUG, INFO, WARNING, ERROR
     }
 
     public static class ComponentLogger {
@@ -23,12 +23,12 @@ public class Logger {
             this.componentName = componentName;
         }
 
-        public void info(String message) {
-            log(Level.INFO, message);
-        }
-
         public void debug(String message) {
             log(Level.DEBUG, message);
+        }
+
+        public void info(String message) {
+            log(Level.INFO, message);
         }
 
         public void warning(String message) {
@@ -62,7 +62,7 @@ public class Logger {
     private static LoggingClient client = null;
     private static boolean started = false;
 
-    public static void configureLogger(URI loggingServer) {
+    public static void configure(URI loggingServer) {
         if(client != null) {
             throw new RuntimeException("Cannot reconfigure active logger, close() logger first");
         }
@@ -76,7 +76,7 @@ public class Logger {
         }
     }
 
-    public static ComponentLogger getLogger(String componentName) {
+    public static ComponentLogger createComponent(String componentName) {
         if (!started) {
             registeredComponents.add(componentName);
         } else {
@@ -88,7 +88,7 @@ public class Logger {
 
     public static void start() {
         if (client == null) {
-            throw new RuntimeException("configureLogger() must be called before start()");
+            throw new RuntimeException("configure() must be called before start()");
         }
 
         if (!started) {
