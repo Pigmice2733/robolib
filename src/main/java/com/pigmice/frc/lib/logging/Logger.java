@@ -41,14 +41,16 @@ public class Logger {
 
         public void log(Level level, String message) {
             if (started) {
-                var timestamp = LocalDateTime.now().format(formatter);
-                var log = String.format("%s|%s|%s|%s", timestamp, level.toString(), componentName, message);
+                if (client != null) {
+                    var timestamp = LocalDateTime.now().format(formatter);
+                    var log = String.format("%s|%s|%s|%s", timestamp, level.toString(), componentName, message);
 
-                try {
-                    client.sendMessage(log);
-                } catch (LoggingClient.LoggingUnavailableException ex) {
-                    // If remote logging is unavailable, fallback to stdout
-                    System.out.println(String.format("%s: %s", componentName, message));
+                    try {
+                        client.sendMessage(log);
+                    } catch (LoggingClient.LoggingUnavailableException ex) {
+                        // If remote logging is unavailable, fallback to stdout
+                        System.out.println(String.format("%s: %s", componentName, message));
+                    }
                 }
             } else {
                 throw new RuntimeException("Cannot log until Logger.start() has been called");
@@ -59,13 +61,16 @@ public class Logger {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy hh:mm:ss");
 
     private static final List<String> registeredComponents = new ArrayList<>();
-    private static LoggingClient client = null;
+    private static LoggingClient client;
+    private static boolean configured = false;
     private static boolean started = false;
 
     public static void configure(URI loggingServer) {
-        if(client != null) {
+        if (configured) {
             throw new RuntimeException("Cannot reconfigure active logger, close() logger first");
         }
+
+        configured = true;
 
         try {
             client = new LoggingClient(loggingServer);
@@ -91,32 +96,35 @@ public class Logger {
     }
 
     public static void start() {
-        if (client == null) {
+        if (!configured) {
             throw new RuntimeException("configure() must be called before start()");
         }
 
         if (!started) {
-            var componentsHeader = String.join(",", registeredComponents);
+            if (client != null) {
+                var componentsHeader = String.join(",", registeredComponents);
 
-            try {
-                client.sendMessage(componentsHeader);
-            } catch (LoggingClient.LoggingUnavailableException ex) {
+                try {
+                    client.sendMessage(componentsHeader);
+                } catch (LoggingClient.LoggingUnavailableException ex) {
+                }
+
+                started = true;
             }
-
-            started = true;
         } else {
             throw new RuntimeException("start() has already been called, cannot be started more than one");
         }
     }
 
     public static void close() {
-        if (client == null) {
-            throw new RuntimeException("Cannot close() active logger");
+        if (!configured) {
+            throw new RuntimeException("Cannot close() inactive logger");
         }
 
         client.close(new CloseReason(CloseCodes.NORMAL_CLOSURE, "Robot shutting down..."));
         client = null;
         started = false;
+        configured = false;
         registeredComponents.clear();
     }
 }
