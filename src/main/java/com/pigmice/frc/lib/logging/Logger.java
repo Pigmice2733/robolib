@@ -108,9 +108,9 @@ public class Logger {
                     client.sendMessage(componentsHeader);
                 } catch (LoggingClient.LoggingUnavailableException ex) {
                 }
-
-                started = true;
             }
+
+            started = true;
         } else {
             throw new RuntimeException("start() has already been called, cannot be started more than one");
         }
