@@ -27,8 +27,11 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
-    api wpi.deps.wpilib()
-    api wpi.deps.vendor.java()
+    implementation wpi.deps.wpilib()
+    implementation wpi.deps.vendor.java()
+
+    implementation 'javax.websocket:javax.websocket-api:1.1'
+    implementation group: 'org.glassfish.tyrus.bundles', name: 'tyrus-standalone-client', version: '1.9'
 
     testImplementation 'org.hamcrest:hamcrest:2.1'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
