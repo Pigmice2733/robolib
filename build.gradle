@@ -23,7 +23,7 @@ repositories {
     jcenter()
 
     flatDir {
-        dirs '/local-libraries'
+        dirs './local-libraries/'
     }
 }
 
