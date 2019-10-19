@@ -53,8 +53,6 @@ jacocoTestReport {
         xml.enabled = true
         html.enabled = true
     }
-
-    finalizedBy coveralls
 }
 
 test {
