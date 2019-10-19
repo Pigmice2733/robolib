@@ -1,6 +1,5 @@
 package com.pigmice.frc.lib.logging;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -8,8 +7,6 @@ import java.util.List;
 
 import javax.websocket.CloseReason;
 import javax.websocket.CloseReason.CloseCodes;
-
-import com.pigmice.frc.lib.logging.LoggingClient.LoggingUnavailableException;
 
 public class Logger {
     private enum Level {
@@ -61,24 +58,22 @@ public class Logger {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy hh:mm:ss");
 
     private static final List<String> registeredComponents = new ArrayList<>();
-    private static LoggingClient client;
+    private static ILoggingClient client;
     private static boolean configured = false;
     private static boolean started = false;
 
-    public static void configure(URI loggingServer) {
-        if (configured) {
+    public static void configure(ILoggingClient client) {
+        if (started) {
             throw new RuntimeException("Cannot reconfigure active logger, close() logger first");
         }
 
-        configured = true;
-
-        try {
-            client = new LoggingClient(loggingServer);
-        } catch (LoggingUnavailableException e) {
-            System.out.println(e);
-            System.out.println("Connection failed");
-            return;
+        if (configured) {
+            configured = false;
+            registeredComponents.clear();
         }
+
+        configured = true;
+        Logger.client = client;
     }
 
     public static <T> ComponentLogger createComponent(Class<T> componentClass) {
@@ -117,12 +112,15 @@ public class Logger {
     }
 
     public static void close() {
-        if (!configured) {
+        if (!configured || !started) {
             throw new RuntimeException("Cannot close() inactive logger");
         }
 
-        client.close(new CloseReason(CloseCodes.NORMAL_CLOSURE, "Robot shutting down..."));
-        client = null;
+        if (client != null) {
+            client.close(new CloseReason(CloseCodes.NORMAL_CLOSURE, "Robot shutting down..."));
+            client = null;
+        }
+
         started = false;
         configured = false;
         registeredComponents.clear();
