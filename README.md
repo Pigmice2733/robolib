@@ -1,6 +1,6 @@
 # RoboLib
 
-[![Coverage Status](https://coveralls.io/repos/github/Pigmice2733/robolib/badge.svg?branch=master)](https://coveralls.io/github/Pigmice2733/robolib?branch=master)
+[![codecov](https://codecov.io/gh/Pigmice2733/robolib/branch/master/graph/badge.svg)](https://codecov.io/gh/Pigmice2733/robolib)
 
 RoboLib is reusuable robotics software developed by the Pigmice. It is a Java software library for use with the FRC WPILib platform.
 
