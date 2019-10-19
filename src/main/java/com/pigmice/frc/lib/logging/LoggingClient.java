@@ -13,24 +13,8 @@ import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
 
 @ClientEndpoint
-public class LoggingClient {
-    Session userSession = null;
-
-    public class LoggingUnavailableException extends Exception {
-        private static final long serialVersionUID = 6155050122817925346L;
-
-        public LoggingUnavailableException(String errorMessage) {
-            super(errorMessage);
-        }
-
-        public LoggingUnavailableException(String errorMessage, Throwable err) {
-            super(errorMessage, err);
-        }
-
-        public LoggingUnavailableException(Throwable err) {
-            super(err);
-        }
-    }
+public class LoggingClient implements ILoggingClient {
+    private Session userSession = null;
 
     public LoggingClient(URI endpointURI) throws LoggingUnavailableException {
         try {
