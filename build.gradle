@@ -21,18 +21,12 @@ if(!project.getPlugins().hasPlugin("edu.wpi.first.GradleRIO")) {
 repositories {
     mavenCentral()
     jcenter()
-
-    flatDir {
-        dirs './local-libraries/'
-    }
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
-    implementation name: 'DistanceSensor-java-0.0.6'
-
     implementation wpi.deps.wpilib()
     implementation wpi.deps.vendor.java()
 
