@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/code
     docker:
-      - image: gradle:5.4.1-jdk11-slim
+      - image: gradle:5.6-jdk12
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -20,6 +20,10 @@ jobs:
       - run:
           name: Run Tests
           command: ./gradlew test
+      - run:
+          name: Report Coverage
+          when: on_success
+          command: bash <(curl -s https://codecov.io/bash)
       - store_artifacts:
           path: build/reports
           destination: reports

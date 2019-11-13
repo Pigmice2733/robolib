@@ -41,6 +41,13 @@ dependencies {
     testImplementation group: 'org.jfree', name: 'jfreechart', version: '1.5.0'
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
 test {
     maxParallelForks = 2
     systemProperty "graph", System.getProperty("graph")
