@@ -20,6 +20,7 @@ public class StaticSteeringControllerTest {
         StaticSteeringController controller = new StaticSteeringController(() -> {
             return 0.24;
         }, pid);
+
         controller.initialize();
 
         when(pid.calculateOutput(eq(0.24), eq(0.0), anyDouble())).thenReturn(0.0).thenReturn(0.5).thenReturn(-1.0);
