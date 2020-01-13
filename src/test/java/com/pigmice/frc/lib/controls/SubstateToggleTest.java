@@ -14,26 +14,31 @@ public class SubstateToggleTest {
         toggle.update();
         Assertions.assertFalse(toggle.isEnabled());
         Assertions.assertFalse(toggle.isToggled());
+        Assertions.assertFalse(toggle.get());
 
         input.update();
         toggle.update();
         Assertions.assertTrue(toggle.isEnabled());
         Assertions.assertFalse(toggle.isToggled());
+        Assertions.assertFalse(toggle.get());
 
         input.update();
         toggle.update();
         Assertions.assertTrue(toggle.isEnabled());
         Assertions.assertTrue(toggle.isToggled());
+        Assertions.assertTrue(toggle.get());
 
         input.update();
         toggle.update();
         Assertions.assertTrue(toggle.isEnabled());
         Assertions.assertFalse(toggle.isToggled());
+        Assertions.assertFalse(toggle.get());
 
         input.update();
         toggle.update();
         Assertions.assertTrue(toggle.isEnabled());
         Assertions.assertFalse(toggle.isToggled());
+        Assertions.assertFalse(toggle.get());
     }
 
     @Test
@@ -46,22 +51,26 @@ public class SubstateToggleTest {
         toggle.update();
         Assertions.assertTrue(toggle.isEnabled());
         Assertions.assertFalse(toggle.isToggled());
+        Assertions.assertFalse(toggle.get());
 
         input.update();
         toggle.update();
         Assertions.assertTrue(toggle.isEnabled());
         Assertions.assertTrue(toggle.isToggled());
+        Assertions.assertTrue(toggle.get());
 
         input.update();
         toggle.exit();
         toggle.update();
         Assertions.assertFalse(toggle.isEnabled());
         Assertions.assertFalse(toggle.isToggled());
+        Assertions.assertFalse(toggle.get());
 
         input.update();
         toggle.update();
         Assertions.assertTrue(toggle.isEnabled());
         Assertions.assertFalse(toggle.isToggled());
+        Assertions.assertFalse(toggle.get());
     }
 
     @Test
@@ -74,29 +83,35 @@ public class SubstateToggleTest {
         toggle.exit();
         toggle.setToggled(true);
         Assertions.assertFalse(toggle.isEnabled());
+        Assertions.assertFalse(toggle.get());
 
         input.update();
         toggle.setEnabled(true);
         Assertions.assertTrue(toggle.isEnabled());
         Assertions.assertFalse(toggle.isToggled());
+        Assertions.assertFalse(toggle.get());
 
         input.update();
         toggle.update();
         Assertions.assertTrue(toggle.isEnabled());
         Assertions.assertTrue(toggle.isToggled());
+        Assertions.assertTrue(toggle.get());
 
         input.update();
         toggle.setToggled(false);
         Assertions.assertTrue(toggle.isEnabled());
         Assertions.assertFalse(toggle.isToggled());
+        Assertions.assertFalse(toggle.get());
 
         input.update();
         toggle.setEnabled(false);
         Assertions.assertFalse(toggle.isEnabled());
+        Assertions.assertFalse(toggle.get());
 
         input.update();
         toggle.exit();
         Assertions.assertFalse(toggle.isEnabled());
         Assertions.assertFalse(toggle.isToggled());
+        Assertions.assertFalse(toggle.get());
     }
 }
