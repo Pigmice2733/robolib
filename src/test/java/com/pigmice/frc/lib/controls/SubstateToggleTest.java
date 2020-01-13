@@ -108,6 +108,13 @@ public class SubstateToggleTest {
         Assertions.assertFalse(toggle.isEnabled());
         Assertions.assertFalse(toggle.get());
 
+        toggle.setEnabled(false);
+        toggle.setToggled(false);
+        toggle.setEnabled(true);
+        Assertions.assertTrue(toggle.isEnabled());
+        Assertions.assertFalse(toggle.isToggled());
+        Assertions.assertFalse(toggle.get());
+
         input.update();
         toggle.exit();
         Assertions.assertFalse(toggle.isEnabled());
