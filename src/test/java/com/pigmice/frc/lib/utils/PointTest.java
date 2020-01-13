@@ -26,6 +26,7 @@ public class PointTest {
         Vector vector = new Vector(5.3, 6.0);
         Point two = new Point(5.2, 6.0);
         Point three = new Point(5.3, -6.0);
+        Point four  = new Point(5.2, 6.0);
 
         Assertions.assertFalse(one.equals(null));
         Assertions.assertFalse(one.equals(vector));
@@ -34,6 +35,8 @@ public class PointTest {
         Assertions.assertFalse(one.equals(two));
         Assertions.assertFalse(one.equals(three));
         Assertions.assertFalse(two.equals(three));
+
+        Assertions.assertTrue(two.equals(four));
     }
 
     @Test
