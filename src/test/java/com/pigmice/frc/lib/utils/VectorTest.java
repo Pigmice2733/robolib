@@ -16,10 +16,12 @@ public class VectorTest {
     @Test
     public void equalsTest() {
         Vector one = new Vector(5.3, 6.0);
+        Point point = new Point(5.3, 6.0);
         Vector two = new Vector(5.2, 6.0);
         Vector three = new Vector(5.3, -6.0);
 
         Assertions.assertFalse(one.equals(null));
+        Assertions.assertFalse(one.equals(point));
         Assertions.assertTrue(one.equals(one));
 
         Assertions.assertFalse(one.equals(two));
