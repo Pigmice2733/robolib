@@ -1,69 +1,36 @@
 package com.pigmice.frc.lib.controls;
 
-import edu.wpi.first.wpilibj.GenericHID;
-
 /**
  * Toggle is a control utility for toggling something, such as a specific
- * operation mode. The toggle is connected to a controlling button. The toggle
- * has two states: <code>true</code> and <code>false</code>. These states can
- * mean whatever you want them to mean, in whatever context.
+ * operation mode. The toggle is connected to a controlling input, such as a
+ * button. The toggle has two states: <code>true</code> and <code>false</code>.
+ * These states can mean whatever you want them to mean, in whatever context. If
+ * the input is a raw controller input such as a button, you will likely want to
+ * wrap it in a {@link com.pigmice.frc.lib.controls.Debouncer Debouncer} to
+ * ensure that pressing the button once doesn't switch this Toggle multiple
+ * times.
  *
- * @see {@link #controls.SubstateToggle SubstateToggle}
+ * @see {@link com.pigmice.frc.lib.controls.SubstateToggle
+ *      SubstateToggle}
  */
-public class Toggle {
-    private ButtonDebouncer button;
+public class Toggle implements IBooleanSource {
+    private IBooleanSource source;
     private boolean state = false;
 
     /**
-     * Constructs a toggle given a specific button. The button is internally
-     * debounced to prevent the toggle toggling every frame while the button is
-     * pressed. Default toggle state is <code>false</code>.
-     *
-     * @param joystick The controller the toggle button is on
-     * @param button   The number of the toggle button
-     */
-    public Toggle(GenericHID joystick, int button) {
-        this(new ButtonDebouncer(joystick, button));
-    }
-
-    /**
-     * Constructs a toggle given a specific button. The button is internally
-     * debounced to prevent the toggle toggling every frame while the button is
-     * pressed.
-     *
-     * @param joystick     The controller the toggle button is on
-     * @param button       The number of the toggle button
-     * @param defaultState The default state of the toggle
-     */
-    public Toggle(GenericHID joystick, int button, boolean defaultState) {
-        this(new ButtonDebouncer(joystick, button), defaultState);
-    }
-
-    /**
-     * Constructs a toggle given a specific button. Default toggle state is
-     * <code>false</code>.
+     * Constructs a Toggle given boolean source, such as a lambda to retrieve a
+     * controller input, or a Debouncer wrapping a button.
      *
      * @param button The button that will control the toggle
      */
-    public Toggle(ButtonDebouncer button) {
-        this(button, false);
-    }
-
-    /**
-     * Constructs a toggle given a specific button.
-     *
-     * @param button       The button that will control the toggle
-     * @param defaultState The default state of the toggle
-     */
-    public Toggle(ButtonDebouncer button, boolean defaultState) {
-        this.button = button;
-        this.state = defaultState;
+    public Toggle(IBooleanSource source) {
+        this.source = source;
     }
 
     /**
      * Gets the current state of this toggle
      *
-     * @return Toggle state, either <code>true</code> or <code>false</code>
+     * @return Toggle activation state
      */
     public boolean get() {
         return state;
@@ -79,11 +46,11 @@ public class Toggle {
     }
 
     /**
-     * Update the toggle so the 'toggling' is tracked. This should be called every
-     * frame while this Toggle is being actively used.
+     * Update the toggle so the 'toggling' is tracked. This should be called
+     * regularly while this Toggle is being actively used.
      */
     public void update() {
-        if (button.get()) {
+        if (source.get()) {
             state = !state;
         }
     }
