@@ -94,7 +94,7 @@ public class Ring {
     /**
      * Gets whether this Ring has no elements inside
      *
-     * @return <code>True</code> if this Ring has no elements, <code>False</code>
+     * @return <code>true</code> if this Ring has no elements, <code>false</code>
      *         otherwise
      */
     public boolean isEmpty() {

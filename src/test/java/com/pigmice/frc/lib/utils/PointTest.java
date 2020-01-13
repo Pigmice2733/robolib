@@ -23,12 +23,10 @@ public class PointTest {
     @Test
     public void equalsTest() {
         Point one = new Point(5.3, 6.0);
-        Vector vector = new Vector(5.3, 6.0);
         Point two = new Point(5.2, 6.0);
         Point three = new Point(5.3, -6.0);
 
         Assertions.assertFalse(one.equals(null));
-        Assertions.assertFalse(one.equals(vector));
         Assertions.assertTrue(one.equals(one));
 
         Assertions.assertFalse(one.equals(two));
