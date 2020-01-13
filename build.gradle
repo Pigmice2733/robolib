@@ -5,7 +5,7 @@ buildscript {
       }
     }
     dependencies {
-        classpath "edu.wpi.first:GradleRIO:2019.4.1"
+        classpath "edu.wpi.first:GradleRIO:2020.1.2"
     }
 }
 
@@ -28,15 +28,17 @@ targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
     implementation wpi.deps.wpilib()
+    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
+
     implementation wpi.deps.vendor.java()
+    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 
     implementation 'javax.websocket:javax.websocket-api:1.1'
     implementation group: 'org.glassfish.tyrus.bundles', name: 'tyrus-standalone-client', version: '1.9'
 
-    testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
-    testImplementation 'org.mockito:mockito-core:3.1.0'
-    testImplementation 'org.mockito:mockito-junit-jupiter:3.1.0'
     testImplementation group: 'org.jfree', name: 'jfreechart', version: '1.5.0'
 }
 

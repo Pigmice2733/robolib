@@ -39,9 +39,6 @@ You will also need to add the following to the top of the dependencies section o
     wpi.deps.vendor.loadFrom(project(':robolib'))
 
     compile project("robolib")
-
-    compile wpi.deps.wpilib()
-    compile wpi.deps.vendor.java()
 ```
 
 You will need to run `./gradlew build` from within the robolib folder before building your project the first time, or after a `./gradlew clean` or similar. If the build ever seems broken in a way related to RoboLib, try running `./gradlew clean` for your project, then building RoboLib from within the robolib folder, then finally building your project.
