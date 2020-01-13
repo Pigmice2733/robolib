@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 import com.pigmice.frc.lib.utils.Utils;
 
-public class StaticProfile {
-
+public class StaticProfile implements IProfile {
     private final ArrayList<Chunk> chunks;
     private double maxAccel, maxDecel, maxVelocity, startingPosition;
     private double profileDuration, profileDistance;
@@ -134,18 +133,6 @@ public class StaticProfile {
         chunk = chunks.get(0);
         chunkEndTime = chunk.getDuration();
         chunkStartTime = 0.0;
-    }
-
-    public double getVelocity(double time) {
-        return getSetpoint(time).getVelocity();
-    }
-
-    public double getPosition(double time) {
-        return getSetpoint(time).getPosition();
-    }
-
-    public double getAcceleration(double time) {
-        return getSetpoint(time).getAcceleration();
     }
 
     public double getDuration() {
