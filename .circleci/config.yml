@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/code
     docker:
-      - image: gradle:6.0-jdk12
+      - image: gradle:6.0-jdk11
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
