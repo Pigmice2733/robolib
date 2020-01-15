@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.pidf;
+package com.pigmice.frc.lib.controllers;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +9,7 @@ import com.pigmice.frc.lib.utils.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class PIDFTest {
+public class PIDTest {
     private static final double epsilon = 1e-6;
 
     private static class TestPoint {
@@ -27,12 +27,12 @@ public class PIDFTest {
         }
     }
 
-    private static void checkData(PIDF controller, List<TestPoint> testData) {
+    private static void checkData(PID controller, List<TestPoint> testData) {
         for (int i = 0; i < testData.size(); i++) {
             TestPoint datum = testData.get(i);
             double output = controller.calculateOutput(datum.input, datum.setpoint, datum.velocity, datum.acceleration);
             if (!Utils.almostEquals(datum.output, output, epsilon)) {
-                System.out.format("PIDF error, datum #%d", i + 1);
+                System.out.format("PID error, datum #%d", i + 1);
             }
             Assertions.assertEquals(datum.output, output, epsilon);
         }
@@ -40,9 +40,9 @@ public class PIDFTest {
 
     @Test
     public void positionPIDVATest() {
-        Gains gains = new Gains(2.0, 4.0, 0.5, 0.0, 1.0, 0.25);
+        PIDGains gains = new PIDGains(2.0, 4.0, 0.5, 0.0, 1.0, 0.25);
         Range outputBounds = new Range(-6.0, 6.0);
-        PIDF pidva = new PIDF(gains, outputBounds, 1.0);
+        PID pidva = new PID(gains, outputBounds, 1.0);
 
         List<TestPoint> testData = Arrays.asList(
                 // Fake profile: 6s, 18m - accel @ 3m/s for 2s, 6m/s for 1s, decel @ 3m/s for 2s
@@ -56,9 +56,9 @@ public class PIDFTest {
 
     @Test
     public void simplePIDTest() {
-        Gains gains = new Gains(1.0, 0.0, 0.0);
+        PIDGains gains = new PIDGains(1.0, 0.0, 0.0);
         Range outputBounds = new Range(-1.0, 1.0);
-        PIDF p = new PIDF(gains, outputBounds, 1.0);
+        PID p = new PID(gains, outputBounds, 1.0);
 
         p.initialize(0.0, 0.0);
         double output = p.calculateOutput(-5.0, 0.0);
@@ -67,9 +67,9 @@ public class PIDFTest {
 
     @Test
     public void ratePIFTest() {
-        Gains gains = new Gains(1.0, 0.25, 0.0, 1.0, 0.0, 0.0);
+        PIDGains gains = new PIDGains(1.0, 0.25, 0.0, 1.0, 0.0, 0.0);
         Range outputBounds = new Range(-10.0, 10.0);
-        PIDF pf = new PIDF(gains, outputBounds, 1.0);
+        PID pf = new PID(gains, outputBounds, 1.0);
 
         List<TestPoint> testData = Arrays.asList(
                 // Rate controller, shooter wheel etc. Feedforward drives output, PI adjusts it
@@ -84,9 +84,9 @@ public class PIDFTest {
 
     @Test
     public void continuousPDTest() {
-        Gains gains = new Gains(0.02, 0.0, 0.01, 0.0, 0.0, 0.0);
+        PIDGains gains = new PIDGains(0.02, 0.0, 0.01, 0.0, 0.0, 0.0);
         Range outputBounds = new Range(-2.0, 2.0);
-        PIDF pd = new PIDF(gains, outputBounds, 1.0);
+        PID pd = new PID(gains, outputBounds, 1.0);
 
         pd.setDerivativeOnInput(true);
         pd.setContinuous(new Range(10, 370), true);

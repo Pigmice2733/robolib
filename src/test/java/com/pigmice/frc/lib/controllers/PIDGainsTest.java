@@ -1,14 +1,14 @@
-package com.pigmice.frc.lib.pidf;
+package com.pigmice.frc.lib.controllers;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class GainsTest {
+public class PIDGainsTest {
     private static final double epsilon = 1e-6;
 
     @Test
     public void PIDTest() {
-        Gains gains = new Gains(1.0, 0.5, 2.0);
+        PIDGains gains = new PIDGains(1.0, 0.5, 2.0);
         Assertions.assertEquals(1.0, gains.kP(), epsilon);
         Assertions.assertEquals(0.5, gains.kI(), epsilon);
         Assertions.assertEquals(2.0, gains.kD(), epsilon);
@@ -16,7 +16,7 @@ public class GainsTest {
 
     @Test
     public void PIDFVATest() {
-        Gains gains = new Gains(-1.0, -0.5, -2.0, -0.33, 4.0, -0.1);
+        PIDGains gains = new PIDGains(-1.0, -0.5, -2.0, -0.33, 4.0, -0.1);
         Assertions.assertEquals(-1.0, gains.kP(), epsilon);
         Assertions.assertEquals(-0.5, gains.kI(), epsilon);
         Assertions.assertEquals(-2.0, gains.kD(), epsilon);

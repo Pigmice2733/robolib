@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.controls;
+package com.pigmice.frc.lib.inputs;
 
 public class InputMock implements IBooleanSource {
     private boolean[] outputs;

@@ -1,10 +1,9 @@
-package com.pigmice.frc.lib.pidf;
+package com.pigmice.frc.lib.controllers;
 
-import com.pigmice.frc.lib.controllers.IController;
 import com.pigmice.frc.lib.utils.Range;
 
-public class PIDF implements IController {
-    private Gains gains;
+public class PID implements IController {
+    private PIDGains gains;
     private final double period;
 
     private Range outputBounds;
@@ -17,7 +16,7 @@ public class PIDF implements IController {
     private double previousInput;
     private double previousError;
 
-    public PIDF(Gains gains, Range outputBounds, double period) {
+    public PID(PIDGains gains, Range outputBounds, double period) {
         this.gains = gains;
         this.period = period;
         this.outputBounds = outputBounds;
