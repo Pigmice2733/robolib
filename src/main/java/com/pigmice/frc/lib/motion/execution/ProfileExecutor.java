@@ -14,13 +14,13 @@ public class ProfileExecutor {
         double get();
     }
 
-    private IProfile profile;
-    private Output output;
-    private Input input;
-    private double startTime;
-    private double allowableError;
+    private final IProfile profile;
+    private final Output output;
+    private final Input input;
+    private final double allowableError;
+    private final double finalTarget;
 
-    private double finalTarget;
+    private double startTime;
 
     public ProfileExecutor(IProfile profile, Output output, Input input, double allowableError) {
         this.profile = profile;

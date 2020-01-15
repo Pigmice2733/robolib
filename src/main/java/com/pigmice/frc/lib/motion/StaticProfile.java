@@ -6,8 +6,8 @@ import com.pigmice.frc.lib.utils.Utils;
 
 public class StaticProfile implements IProfile {
     private final ArrayList<Chunk> chunks;
-    private double maxAccel, maxDecel, maxVelocity, startingPosition;
-    private double profileDuration, profileDistance;
+    private final double maxAccel, maxDecel, maxVelocity, startingPosition;
+    private final double duration, distance;
 
     private int currentChunk = 0;
     private double chunkEndTime, chunkStartTime, previousDistance;
@@ -24,12 +24,15 @@ public class StaticProfile implements IProfile {
 
         chunks = computeChunks(new ArrayList<Chunk>(), currentVelocity, targetDisplacement);
 
-        profileDuration = 0.0;
-        profileDistance = currentPosition;
+        double totalDuration = 0.0;
+        double totalDistance = currentPosition;
         for (Chunk chunk : chunks) {
-            profileDuration += chunk.getDuration();
-            profileDistance += chunk.getTotalDistance();
+            totalDuration += chunk.getDuration();
+            totalDistance += chunk.getTotalDistance();
         }
+
+        this.distance = totalDistance;
+        this.duration = totalDuration;
 
         previousDistance = currentPosition;
         chunk = chunks.get(0);
@@ -136,7 +139,7 @@ public class StaticProfile implements IProfile {
     }
 
     public double getDuration() {
-        return profileDuration;
+        return duration;
     }
 
     private Setpoint getEndSetpoint(double distance) {
@@ -154,8 +157,8 @@ public class StaticProfile implements IProfile {
     }
 
     public Setpoint getSetpoint(double time) {
-        if (time >= profileDuration) {
-            return getEndSetpoint(profileDistance);
+        if (time >= duration) {
+            return getEndSetpoint(distance);
         }
 
         while (time >= chunkEndTime) {

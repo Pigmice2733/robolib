@@ -3,7 +3,7 @@ package com.pigmice.frc.lib.controllers;
 import com.pigmice.frc.lib.utils.Range;
 
 public class PID implements IController {
-    private PIDGains gains;
+    private final PIDGains gains;
     private final double period;
 
     private Range outputBounds;
