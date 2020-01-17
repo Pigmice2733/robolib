@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.controls;
+package com.pigmice.frc.lib.inputs;
 
 /**
  * SubstateToggle is a control utility for toggling within another mode. For
@@ -6,39 +6,39 @@ package com.pigmice.frc.lib.controls;
  * positions, but where hitting other buttons should move the arm to other
  * positions.
  *
- * When the button is pressed, the 'substate' is enabled, and hitting
- * the button additional times triggers the toggle. Once enabled, the
+ * When the control input is activated, the 'substate' is enabled, and
+ * activating it additional times switches the toggle. Once enabled, the
  * 'substate' must be explicitly exited. The substate can be queried to
- * determine whether it is enabled. The toggle has two states:
+ * determine whether it is enabled. The toggle has only two states:
  * <code>true</code> and <code>false</code>. These states can mean whatever you
  * want them to mean, in whatever context.
  *
  * Whenever the substate is first enabled, the state of the toggle is set to
  * <code>false</code>. If this is not desired, use the
- * {@link #setToggled(boolean)} method to set the toggle to specific state.
+ * {@link #setToggled(toggled)} method to set the toggle to specific state.
  *
- * @see {@link #controls.Toggle Toggle}
+ * @see {@link com.pigmice.frc.lib.controls.Toggle Toggle}
  */
-public class SubstateToggle {
+public class SubstateToggle implements IBooleanSource {
     private boolean enabled = false;
     private boolean toggled = false;
-    private ButtonDebouncer button;
+    private IBooleanSource source;
 
     /**
-     * Constructs a SubstateToggle given the control button
+     * Constructs a SubstateToggle given a control input
      *
-     * @param button The button that will control the toggle
+     * @param source The input that will control the toggle
      */
-    public SubstateToggle(ButtonDebouncer button) {
-        this.button = button;
+    public SubstateToggle(IBooleanSource source) {
+        this.source = source;
     }
 
     /**
      * Update the substate and the toggle so the 'toggling' is tracked. This should
-     * be called every frame while this SubstateToggle is being actively used.
+     * be called regularly while this SubstateToggle is being actively used.
      */
     public void update() {
-        if (button.get()) {
+        if (source.get()) {
             if (enabled) {
                 toggled = !toggled;
             } else {
@@ -49,10 +49,17 @@ public class SubstateToggle {
     }
 
     /**
+     * Gets whether the substate is both enabled and toggled
+     */
+    public boolean get() {
+        return enabled && toggled;
+    }
+
+    /**
      * Gets whether the substate of this SubstateToggle is enabled - that is,
      * whether this toggle is activated at all.
      *
-     * @return <code>true></code> if enabled, <code>false</code> otherwise
+     * @return whether the substate is enabled
      */
     public boolean isEnabled() {
         return enabled;
@@ -75,8 +82,7 @@ public class SubstateToggle {
      * Gets whether this toggle is 'toggled' or not. This value is only meaningful
      * while the substate is enabled, which can be checked via {@link #isEnabled()}
      *
-     * @return The current state of this toggle, either <code>true</code> or
-     *         <code>false</code>
+     * @return The current state of this toggle
      */
     public boolean isToggled() {
         return toggled;

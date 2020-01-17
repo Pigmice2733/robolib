@@ -1,68 +1,9 @@
 package com.pigmice.frc.lib.utils;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-
 /**
- * Odometry tracking and odometry data streaming
+ * Odometry tracking
  */
 public class Odometry {
-    /**
-     * Odometry data streaming over network tables. Stores x, y position and angle.
-     */
-    public static class Streamer {
-        private NetworkTableEntry xEntry;
-        private NetworkTableEntry yEntry;
-        private NetworkTableEntry angleEntry;
-
-        private double x, y, angle;
-
-        /**
-         * Creates a new odometry data streamer for a specific table. All data default
-         * to 0.0
-         *
-         * @param table The table to add the data to. Can be a subtable if given as
-         *              follows: '/table/subtable'.
-         */
-        public Streamer(String table) {
-            NetworkTableInstance root = NetworkTableInstance.getDefault();
-            NetworkTable baseTable = root.getTable(table);
-            xEntry = baseTable.getEntry("x");
-            yEntry = baseTable.getEntry("y");
-            angleEntry = baseTable.getEntry("angle");
-
-            xEntry.setDouble(0.0);
-            yEntry.setDouble(0.0);
-            angleEntry.setDouble(0.0);
-        }
-
-        /**
-         * Stream new data. If the data are the same as the last-sent data,
-         * NetworkTables will not be updated
-         *
-         * @param x     The robot's x position
-         * @param y     The robot's y position
-         * @param angle The robot's angle
-         */
-        public void send(double x, double y, double angle) {
-            if (Math.abs(this.x - x) > 1e-6) {
-                this.x = x;
-                xEntry.setDouble(x);
-            }
-
-            if (Math.abs(this.y - y) > 1e-6) {
-                this.y = y;
-                yEntry.setDouble(y);
-            }
-
-            if (Math.abs(this.angle - angle) > 1e-6) {
-                this.angle = angle;
-                angleEntry.setDouble(angle);
-            }
-        }
-    }
-
     private double x, y;
 
     private double lastLeft, lastRight;

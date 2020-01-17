@@ -5,7 +5,7 @@ buildscript {
       }
     }
     dependencies {
-        classpath "edu.wpi.first:GradleRIO:2019.4.1"
+        classpath "edu.wpi.first:GradleRIO:2020.1.2"
     }
 }
 
@@ -27,15 +27,23 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
-    api wpi.deps.wpilib()
-    api wpi.deps.vendor.java()
+    implementation wpi.deps.wpilib()
+    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
 
-    testImplementation 'org.hamcrest:hamcrest:2.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
-    testImplementation 'org.mockito:mockito-core:3.0.0'
-    testImplementation 'org.mockito:mockito-junit-jupiter:3.0.0'
-    testImplementation 'org.mockito:mockito-inline:3.0.0'
+    implementation wpi.deps.vendor.java()
+    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
     testImplementation group: 'org.jfree', name: 'jfreechart', version: '1.5.0'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
 }
 
 test {
