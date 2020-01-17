@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.controls;
+package com.pigmice.frc.lib.inputs;
 
 /**
  * Toggle is a control utility for toggling something, such as a specific

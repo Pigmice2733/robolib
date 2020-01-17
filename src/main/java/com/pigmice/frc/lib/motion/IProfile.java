@@ -5,7 +5,6 @@ public interface IProfile {
     public double getDuration();
     public void reset();
 
-
     default double getVelocity(double time) {
         return getSetpoint(time).getVelocity();
     }

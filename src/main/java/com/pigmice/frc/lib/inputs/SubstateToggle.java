@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.controls;
+package com.pigmice.frc.lib.inputs;
 
 /**
  * SubstateToggle is a control utility for toggling within another mode. For

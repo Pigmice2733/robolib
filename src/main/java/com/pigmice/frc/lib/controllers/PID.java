@@ -1,9 +1,10 @@
-package com.pigmice.frc.lib.pidf;
+package com.pigmice.frc.lib.controllers;
 
 import com.pigmice.frc.lib.utils.Range;
 
-public class PIDF {
-    private Gains gains;
+public class PID implements IController {
+    private final PIDGains gains;
+    private final double period;
 
     private Range outputBounds;
     private Range inputBounds;
@@ -12,22 +13,17 @@ public class PIDF {
     private boolean useDerivativeOnInput;
 
     private double integralTerm;
-    private double previousTime;
     private double previousInput;
     private double previousError;
 
-    private double previousDerivative;
-
-    public PIDF(Gains gains, Range outputBounds) {
+    public PID(PIDGains gains, Range outputBounds, double period) {
         this.gains = gains;
+        this.period = period;
         this.outputBounds = outputBounds;
 
         this.integralTerm = 0.0;
-        this.previousTime = 0.0;
         this.previousInput = 0.0;
         this.previousError = 0.0;
-
-        this.previousDerivative = 0.0;
     }
 
     /**
@@ -46,45 +42,34 @@ public class PIDF {
         this.inputBounds = inputBounds;
     }
 
-    public void initialize(double input, double time, double currentOutput) {
+    public void initialize(double input, double currentOutput) {
         integralTerm = currentOutput;
-        previousTime = time;
         previousInput = input;
         previousError = 0;
-
-        previousDerivative = 0;
     }
 
-    public double calculateOutput(double input, double setpoint, double time) {
-        return calculateOutput(input, setpoint, 0.0, 0.0, time);
+    public double calculateOutput(double input, double setpoint) {
+        return calculateOutput(input, setpoint, 0.0, 0.0);
     }
 
-    public double calculateOutput(double input, double setpoint, double velocity, double acceleration, double time) {
+    public double calculateOutput(double input, double setpoint, double velocity, double acceleration) {
         double error = setpoint - input;
         if (continuous) {
             error = calculateContinuousError(error);
         }
 
-        double deltaTime = time - previousTime;
-
-        integralTerm += gains.kI() * error * deltaTime;
+        integralTerm += gains.kI() * error * period;
 
         double derivative;
-        if (deltaTime > 0.0) {
-            if (useDerivativeOnInput) {
-                double deltaInput = calculateContinuousError(input - previousInput);
-                derivative = -deltaInput / deltaTime;
-            } else {
-                derivative = (error - previousError) / deltaTime;
-            }
+        if (useDerivativeOnInput) {
+            double deltaInput = calculateContinuousError(input - previousInput);
+            derivative = -deltaInput / period;
         } else {
-            derivative = previousDerivative;
+            derivative = (error - previousError) / period;
         }
 
         previousInput = input;
         previousError = error;
-        previousTime = time;
-        previousDerivative = derivative;
 
         double feedback = gains.kP() * error + integralTerm + gains.kD() * derivative;
         double feedforward = gains.kF() * setpoint + gains.kV() * velocity + gains.kA() * acceleration;

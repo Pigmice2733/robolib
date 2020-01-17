@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.controls;
+package com.pigmice.frc.lib.inputs;
 
 /**
  * Debouncer wraps a raw boolean controller input and provides simple

@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.controls;
+package com.pigmice.frc.lib.inputs;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
