@@ -86,4 +86,23 @@ public class Point implements XY {
         Vector rotated = offset.rotate(angle);
         return center.translate(rotated);
     }
+
+    /**
+     * Projects this Point onto a line segment, clamping the projected point
+     * within the segment
+     *
+     * @param start The start of the line segment
+     * @param end The end of the line segment
+     * @return The projected point
+     */
+    public Point project(Point start, Point end) {
+        Vector delta = end.subtract(start);
+        Vector toStart = this.subtract(start);
+
+        double t = toStart.dot(delta) / delta.dot(delta);
+
+        t = Range.natural().clamp(t);
+
+        return start.translate(delta.scale(t));
+    }
 }

@@ -14,6 +14,8 @@ public class RangeTest {
         Assertions.assertEquals(4.0, bounds.size(), epsilon);
         bounds = Range.noBounds();
         Assertions.assertEquals(Double.POSITIVE_INFINITY, bounds.size(), epsilon);
+        bounds = Range.natural();
+        Assertions.assertEquals(1.0, bounds.size(), epsilon);
     }
 
     @Test
@@ -28,6 +30,12 @@ public class RangeTest {
         Assertions.assertEquals(-120.6, bounds.clamp(-120.6), epsilon);
         Assertions.assertEquals(Double.MAX_VALUE, bounds.clamp(Double.MAX_VALUE), epsilon);
         Assertions.assertEquals(Double.MIN_VALUE, bounds.clamp(Double.MIN_VALUE), epsilon);
+        bounds = Range.natural();
+        Assertions.assertEquals(0, bounds.clamp(-1), epsilon);
+        Assertions.assertEquals(0, bounds.clamp(0), epsilon);
+        Assertions.assertEquals(1, bounds.clamp(2), epsilon);
+        Assertions.assertEquals(1, bounds.clamp(1), epsilon);
+        Assertions.assertEquals(0.5, bounds.clamp(0.5), epsilon);
     }
 
     @Test

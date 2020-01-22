@@ -1,6 +1,7 @@
 package com.pigmice.frc.lib.utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -80,6 +81,44 @@ public class UtilsTest {
             Assertions.assertEquals(0, Utils.binarySearch(data, -1.0));
             Assertions.assertEquals(3, Utils.binarySearch(data, 9.0));
             Assertions.assertEquals(6, Utils.binarySearch(data, 50.0));
+        }
+    }
+
+    public static class CircleLineIntersectionTest {
+        private static final double epsilon = 1e-6;
+
+        @Test
+        public void intersections() {
+            List<Point> intersections = Utils.circleLineIntersections(Point.origin(), new Point(1.0, 0.0), Point.origin(), 5.0);
+
+            Assertions.assertEquals(2, intersections.size());
+
+            Assertions.assertEquals(-5.0, intersections.get(0).getX(), epsilon);
+            Assertions.assertEquals(0.0, intersections.get(0).getY(), epsilon);
+            Assertions.assertEquals(5.0, intersections.get(1).getX(), epsilon);
+            Assertions.assertEquals(0.0, intersections.get(1).getY(), epsilon);
+
+            intersections = Utils.circleLineIntersections(new Point(3.0, -2.0), new Point(1.0, -4.0),
+                    new Point(2.0, -3.0), 4.0);
+
+            Assertions.assertEquals(2, intersections.size());
+
+            Assertions.assertEquals(Math.sqrt(8.0) + 2, intersections.get(0).getX(), epsilon);
+            Assertions.assertEquals(Math.sqrt(8.0) - 3, intersections.get(0).getY(), epsilon);
+            Assertions.assertEquals(-Math.sqrt(8.0) + 2, intersections.get(1).getX(), epsilon);
+            Assertions.assertEquals(-Math.sqrt(8.0) - 3, intersections.get(1).getY(), epsilon);
+        }
+
+        @Test
+        public void noIntersections() {
+            List<Point> intersections = Utils.circleLineIntersections(Point.origin(), new Point(1.0, 0.0),
+                    new Point(0.0, 6.0), 5.0);
+
+            Assertions.assertEquals(0, intersections.size());
+
+            intersections = Utils.circleLineIntersections(new Point(5.0, 5.0), new Point(5.0, -5.0), Point.origin(), 4.0);
+
+            Assertions.assertEquals(0, intersections.size());
         }
     }
 }

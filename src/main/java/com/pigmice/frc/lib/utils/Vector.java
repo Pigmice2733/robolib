@@ -73,6 +73,16 @@ public class Vector implements XY {
     }
 
     /**
+     * Compute the dot product of this Vector and another Vector
+     *
+     * @param v The other vector
+     * @return The dot product of the Vectors
+     */
+    public double dot(Vector v) {
+        return x*v.x + y*v.y;
+    }
+
+    /**
      * Computes the magnitude of this Vector.
      *
      * @return The magnitude of this Vector

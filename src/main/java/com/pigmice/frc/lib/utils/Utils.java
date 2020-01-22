@@ -1,6 +1,7 @@
 package com.pigmice.frc.lib.utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utils hold utility functions that don't belong as their own classes
@@ -86,5 +87,31 @@ public class Utils {
         } else {
             return _binarySearch(data, target, lowIndex, mid);
         }
+    }
+
+    public static List<Point> circleLineIntersections(Point lineStart, Point lineEnd, Point circleCenter, double radius) {
+        Vector lineDelta = lineEnd.subtract(lineStart);
+        double A = lineDelta.dot(lineDelta);
+
+        Vector dist = lineStart.subtract(circleCenter);
+        double B = 2 * lineDelta.dot(dist);
+
+        double C = dist.dot(dist) - (radius * radius);
+
+        double discriminant = B*B - 4*A*C;
+
+        if (discriminant < 0.0) {
+            return new ArrayList<Point>();
+        }
+
+        double sqrtdiscr = Math.sqrt(discriminant);
+
+        double t0 = (-B - sqrtdiscr) / (2 * A);
+        double t1 = (-B + sqrtdiscr) / (2 * A);
+
+        Point p0 = lineStart.translate(lineDelta.scale(t0));
+        Point p1 = lineStart.translate(lineDelta.scale(t1));
+
+        return List.of(p0, p1);
     }
 }

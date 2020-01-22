@@ -92,4 +92,24 @@ public class PointTest {
         Assertions.assertEquals(-6.0, rotated.getX(), epsilon);
         Assertions.assertEquals(4.0, rotated.getY(), epsilon);
     }
+
+    @Test
+    public void projectTest() {
+        Point projected = Point.origin().project(new Point(5.0, 5.0), new Point(-5.0, -5.0));
+        Assertions.assertEquals(0.0, projected.getX(), epsilon);
+        Assertions.assertEquals(0.0, projected.getY(), epsilon);
+
+        projected = Point.origin().project(new Point(2.0, 5.0), new Point(2.0, -5.0));
+        Assertions.assertEquals(2.0, projected.getX(), epsilon);
+        Assertions.assertEquals(0.0, projected.getY(), epsilon);
+
+        projected = Point.origin().project(new Point(12.0, -1.0), new Point(-12.0, -1.0));
+        Assertions.assertEquals(0.0, projected.getX(), epsilon);
+        Assertions.assertEquals(-1.0, projected.getY(), epsilon);
+
+        Point point = new Point(-25, 5.0);
+        projected = point.project(new Point(-25.0, -5.0), new Point(-15.0, 5.0));
+        Assertions.assertEquals(-20.0, projected.getX(), epsilon);
+        Assertions.assertEquals(0.0, projected.getY(), epsilon);
+    }
 }

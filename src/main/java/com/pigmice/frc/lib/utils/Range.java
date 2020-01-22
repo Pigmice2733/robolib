@@ -4,7 +4,7 @@ package com.pigmice.frc.lib.utils;
  * Range is a representation of a range of numbers, with upper and lower bounds.
  */
 public class Range {
-    private double max, min;
+    private final double max, min;
 
     /**
      * Create a Range with given upper and a lower bounds
@@ -24,6 +24,15 @@ public class Range {
      */
     public static Range noBounds() {
         return new Range(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+
+    /**
+     * Create a Range from 0.0 to 1.0
+     *
+     * @return A Range containing zero to one
+     */
+    public static Range natural() {
+        return new Range(0.0, 1.0);
     }
 
     public double max() {
