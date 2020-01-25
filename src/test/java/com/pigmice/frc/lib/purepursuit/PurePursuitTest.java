@@ -60,4 +60,16 @@ public class PurePursuitTest {
         Assertions.assertEquals(-1.03506188134, output.curvature, epsilon);
         Assertions.assertEquals(5, output.velocity, epsilon);
     }
+
+    @Test
+    public void fullyOffPathTest() {
+        Path path = new Path(List.of(new Point(-5.0, 10.0), new Point(5.0, 10.0)),
+                             List.of(5.0, 0.0));
+
+        PurePursuit controller = new PurePursuit(path);
+
+        Output output = controller.process(new Pose(0.0, 0.0, 0.5*Math.PI), 9.0);
+        Assertions.assertEquals(2.5, output.velocity, epsilon);
+        Assertions.assertEquals(0.0, output.curvature, epsilon);
+    }
 }
