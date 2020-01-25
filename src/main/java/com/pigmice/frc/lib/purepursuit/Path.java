@@ -5,6 +5,7 @@ import java.util.List;
 import com.pigmice.frc.lib.utils.Point;
 import com.pigmice.frc.lib.utils.Utils;
 import com.pigmice.frc.lib.utils.Vector;
+
 public class Path {
     public class Target {
         public final int segment;
@@ -18,8 +19,8 @@ public class Path {
         }
     }
 
-    private List<Point> positions;
-    private List<Double> velocities;
+    private final List<Point> positions;
+    private final List<Double> velocities;
 
     public Path(List<Point> positions, List<Double> velocities) {
         this.positions = positions;
@@ -29,38 +30,42 @@ public class Path {
     public Target closestPoint(Point position) {
         int closestSegment = 0;
         Point closestPoint = null;
+        double closestPointCompletionFactor = 0.0;
         double closestDistance = Double.MAX_VALUE;
 
         for (int i = 0; i < positions.size() - 1; i++) {
-            Point projected = position.project(positions.get(i), positions.get(i + 1));
-            double distance = position.subtract(projected).getMagnitude();
+            final Vector delta = positions.get(i + 1).subtract(positions.get(i));
+            final double projection = Utils.project(position, positions.get(i), delta);
+            final Point point = positions.get(i).translate(delta.scale(projection));
+            final double distance = position.subtract(point).getMagnitude();
 
             if (distance < closestDistance) {
                 closestDistance = distance;
-                closestPoint = projected;
+                closestPoint = point;
                 closestSegment = i;
+                closestPointCompletionFactor = projection;
             }
         }
 
-        double segmentCompletion = (closestPoint.subtract(positions.get(closestSegment)).getMagnitude())
-                / (positions.get(closestSegment + 1).subtract(positions.get(closestSegment)).getMagnitude());
-        double velocity = Utils.lerp(segmentCompletion, 0.0, 1.0, velocities.get(closestSegment), velocities.get(closestSegment + 1));
+        final double startVelocity = velocities.get(closestSegment);
+        final double endVelocity = velocities.get(closestSegment + 1);
+        final double velocity = Utils.lerp(closestPointCompletionFactor, 0.0, 1.0, startVelocity, endVelocity);
         return new Target(closestPoint, velocity, closestSegment);
     }
 
     public Target findTarget(Point position, double lookAhead, Target searchStart) {
         for (int i = searchStart.segment; i < positions.size() - 1; i++) {
-            Point start = (i == searchStart.segment) ? searchStart.position : positions.get(i);
-            double startVelocity = (i == searchStart.segment) ? searchStart.velocity : velocities.get(i);
-            Point end = positions.get(i + 1);
-            double endVelocity = velocities.get(i + 1);
+            final Point start = (i == searchStart.segment) ? searchStart.position : positions.get(i);
+            final double startVelocity = (i == searchStart.segment) ? searchStart.velocity : velocities.get(i);
+            final Point end = positions.get(i + 1);
+            final double endVelocity = velocities.get(i + 1);
 
-            Vector delta = end.subtract(start);
+            final Vector delta = end.subtract(start);
             if(delta.getMagnitude() < 1e-6) {
                 continue;
             }
 
-            List<Double> intersections = Utils.circleLineIntersections(start, delta, position, lookAhead);
+            final List<Double> intersections = Utils.circleLineIntersections(start, delta, position, lookAhead);
 
             intersections.removeIf((Double x) -> (x < 0.0 || x > 1.0));
 
@@ -68,9 +73,9 @@ public class Path {
                 continue;
             }
 
-            double targetIntersection = intersections.get(intersections.size() - 1);
-            Point targetPosition = start.translate(delta.scale(targetIntersection));
-            double velocity = Utils.lerp(targetIntersection, 0.0, 1.0, startVelocity, endVelocity);
+            final double targetIntersection = intersections.get(intersections.size() - 1);
+            final Point targetPosition = start.translate(delta.scale(targetIntersection));
+            final double velocity = Utils.lerp(targetIntersection, 0.0, 1.0, startVelocity, endVelocity);
             return new Target(targetPosition, velocity, i);
         }
 

@@ -70,10 +70,7 @@ public class Utils {
      * @return The index of the largest number smaller than the target
      */
     public static int binarySearch(ArrayList<Double> data, double target) {
-        int lowIndex = 0;
-        int highIndex = data.size() - 1;
-
-        return _binarySearch(data, target, lowIndex, highIndex);
+        return _binarySearch(data, target, 0, data.size() - 1);
     }
 
     private static int _binarySearch(ArrayList<Double> data, double target, int lowIndex, int highIndex) {
@@ -81,7 +78,7 @@ public class Utils {
             return lowIndex;
         }
 
-        int mid = (lowIndex + highIndex) / 2;
+        final int mid = (lowIndex + highIndex) / 2;
 
         if (data.get(mid) < target) {
             return _binarySearch(data, target, mid, highIndex);
@@ -105,24 +102,42 @@ public class Utils {
      * @return A list of all the intersection locations, given as described above
      */
     public static List<Double> circleLineIntersections(Point lineStart, Vector lineDirection, Point circleCenter, double radius) {
-        double A = lineDirection.dot(lineDirection);
+        final double A = lineDirection.dot(lineDirection);
 
-        Vector dist = lineStart.subtract(circleCenter);
-        double B = 2 * lineDirection.dot(dist);
+        final Vector dist = lineStart.subtract(circleCenter);
+        final double B = 2 * lineDirection.dot(dist);
 
-        double C = dist.dot(dist) - (radius * radius);
+        final double C = dist.dot(dist) - (radius * radius);
 
-        double discriminant = B*B - 4*A*C;
+        final double discriminant = B*B - 4*A*C;
 
         if (discriminant < 0.0) {
             return new ArrayList<>();
         }
 
-        double sqrtdiscr = Math.sqrt(discriminant);
+        final double sqrtdiscr = Math.sqrt(discriminant);
 
-        double t0 = (-B - sqrtdiscr) / (2 * A);
-        double t1 = (-B + sqrtdiscr) / (2 * A);
+        final double t0 = (-B - sqrtdiscr) / (2 * A);
+        final double t1 = (-B + sqrtdiscr) / (2 * A);
 
         return new ArrayList<>(Arrays.asList(t0, t1));
+    }
+
+    /**
+     * Projects a Point onto a line segment (defined by a Point and a Vector),
+     * clamping the projected Point within the segment. The location of the
+     * projected Point is given as a fraction of the line Vector starting at
+     * <code>start</code>.
+     *
+     * @param point The Point to project
+     * @param start The start of the line segment
+     * @param direction   Direction and length of the line
+     * @return The projected point, specified as described above
+     */
+    public static double project(Point point, Point start, Vector direction) {
+        Vector toStart = point.subtract(start);
+        double t = toStart.dot(direction) / direction.dot(direction);
+
+        return Range.natural().clamp(t);
     }
 }

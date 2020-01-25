@@ -135,4 +135,39 @@ public class UtilsTest {
             Assertions.assertEquals(0, intersections.size());
         }
     }
+
+    public static class ProjectionTest {
+        private static final double epsilon = 1e-6;
+
+        @Test
+        public void projectTest() {
+            Point start = new Point(5.0, 5.0);
+            Vector delta = new Vector(-10.0, -10.0);
+            double projection = Utils.project(Point.origin(), start, delta);
+            Point point = start.translate(delta.scale(projection));
+            Assertions.assertEquals(0.0, point.getX(), epsilon);
+            Assertions.assertEquals(0.0, point.getY(), epsilon);
+
+            start = new Point(2.0, 5.0);
+            delta = new Vector(0.0, -10.0);
+            projection = Utils.project(Point.origin(), start, delta);
+            point = start.translate(delta.scale(projection));
+            Assertions.assertEquals(2.0, point.getX(), epsilon);
+            Assertions.assertEquals(0.0, point.getY(), epsilon);
+
+            start = new Point(12.0, -1.0);
+            delta = new Vector(-24.0, 0.0);
+            projection = Utils.project(Point.origin(), start, delta);
+            point = start.translate(delta.scale(projection));
+            Assertions.assertEquals(0.0, point.getX(), epsilon);
+            Assertions.assertEquals(-1.0, point.getY(), epsilon);
+
+            start = new Point(-25.0, -5.0);
+            delta = new Vector(10.0, 10.0);
+            projection = Utils.project(new Point(-25, 5.0), start, delta);
+            point = start.translate(delta.scale(projection));
+            Assertions.assertEquals(-20.0, point.getX(), epsilon);
+            Assertions.assertEquals(0.0, point.getY(), epsilon);
+        }
+    }
 }
