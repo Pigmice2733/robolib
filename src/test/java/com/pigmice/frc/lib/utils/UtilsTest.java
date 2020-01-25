@@ -89,34 +89,48 @@ public class UtilsTest {
 
         @Test
         public void intersections() {
-            List<Point> intersections = Utils.circleLineIntersections(Point.origin(), new Point(1.0, 0.0), Point.origin(), 5.0);
+            Point start = Point.origin();
+            Vector direction = new Vector(6.0, 0.0);
+
+            List<Double> intersections = Utils.circleLineIntersections(
+                start, direction, Point.origin(), 5.0);
 
             Assertions.assertEquals(2, intersections.size());
 
-            Assertions.assertEquals(-5.0, intersections.get(0).getX(), epsilon);
-            Assertions.assertEquals(0.0, intersections.get(0).getY(), epsilon);
-            Assertions.assertEquals(5.0, intersections.get(1).getX(), epsilon);
-            Assertions.assertEquals(0.0, intersections.get(1).getY(), epsilon);
+            Point firstIntersection = start.translate(direction.scale(intersections.get(0)));
+            Point secondIntersection = start.translate(direction.scale(intersections.get(1)));
 
-            intersections = Utils.circleLineIntersections(new Point(3.0, -2.0), new Point(1.0, -4.0),
-                    new Point(2.0, -3.0), 4.0);
+            Assertions.assertEquals(-5.0, firstIntersection.getX(), epsilon);
+            Assertions.assertEquals(0.0, firstIntersection.getY(), epsilon);
+            Assertions.assertEquals(5.0, secondIntersection.getX(), epsilon);
+            Assertions.assertEquals(0.0, secondIntersection.getY(), epsilon);
+
+            start = new Point(5.0, 0.0);
+            direction = new Vector(-6.0, -6.0);
+
+            intersections = Utils.circleLineIntersections(
+                start, direction, new Point(2.0, -3.0), 4.0);
 
             Assertions.assertEquals(2, intersections.size());
 
-            Assertions.assertEquals(Math.sqrt(8.0) + 2, intersections.get(0).getX(), epsilon);
-            Assertions.assertEquals(Math.sqrt(8.0) - 3, intersections.get(0).getY(), epsilon);
-            Assertions.assertEquals(-Math.sqrt(8.0) + 2, intersections.get(1).getX(), epsilon);
-            Assertions.assertEquals(-Math.sqrt(8.0) - 3, intersections.get(1).getY(), epsilon);
+            firstIntersection = start.translate(direction.scale(intersections.get(0)));
+            secondIntersection = start.translate(direction.scale(intersections.get(1)));
+
+            Assertions.assertEquals(Math.sqrt(8.0) + 2, firstIntersection.getX(), epsilon);
+            Assertions.assertEquals(Math.sqrt(8.0) - 3, firstIntersection.getY(), epsilon);
+            Assertions.assertEquals(-Math.sqrt(8.0) + 2, secondIntersection.getX(), epsilon);
+            Assertions.assertEquals(-Math.sqrt(8.0) - 3, secondIntersection.getY(), epsilon);
         }
 
         @Test
         public void noIntersections() {
-            List<Point> intersections = Utils.circleLineIntersections(Point.origin(), new Point(1.0, 0.0),
-                    new Point(0.0, 6.0), 5.0);
+            List<Double> intersections = Utils.circleLineIntersections(
+                Point.origin(), new Vector(1.0, 0.0), new Point(0.0, 6.0), 5.0);
 
             Assertions.assertEquals(0, intersections.size());
 
-            intersections = Utils.circleLineIntersections(new Point(5.0, 5.0), new Point(5.0, -5.0), Point.origin(), 4.0);
+            intersections = Utils.circleLineIntersections(
+                new Point(5.0, 5.0), new Vector(0.0, -10.0), Point.origin(), 4.0);
 
             Assertions.assertEquals(0, intersections.size());
         }

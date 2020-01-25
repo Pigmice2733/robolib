@@ -1,6 +1,7 @@
 package com.pigmice.frc.lib.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -89,19 +90,32 @@ public class Utils {
         }
     }
 
-    public static List<Point> circleLineIntersections(Point lineStart, Point lineEnd, Point circleCenter, double radius) {
-        Vector lineDelta = lineEnd.subtract(lineStart);
-        double A = lineDelta.dot(lineDelta);
+    /**
+     * Finds the locations of intersections between a circle and an infinite line
+     * defined by a Point and a Vector. The locations are given as a fraction
+     * of the Vector, starting at <code>lineStart</code>.
+     *
+     * For an intersection specified by the Double <code>x</code>, the
+     * intersection Point is equal to <code>lineStart + x*lineDirection</code>.
+     *
+     * @param lineStart A Point on the line
+     * @param lineDirection Vector direction of the line
+     * @param circleCenter The center of the circle
+     * @param radius The radius of the circle
+     * @return A list of all the intersection locations, given as described above
+     */
+    public static List<Double> circleLineIntersections(Point lineStart, Vector lineDirection, Point circleCenter, double radius) {
+        double A = lineDirection.dot(lineDirection);
 
         Vector dist = lineStart.subtract(circleCenter);
-        double B = 2 * lineDelta.dot(dist);
+        double B = 2 * lineDirection.dot(dist);
 
         double C = dist.dot(dist) - (radius * radius);
 
         double discriminant = B*B - 4*A*C;
 
         if (discriminant < 0.0) {
-            return new ArrayList<Point>();
+            return new ArrayList<>();
         }
 
         double sqrtdiscr = Math.sqrt(discriminant);
@@ -109,9 +123,6 @@ public class Utils {
         double t0 = (-B - sqrtdiscr) / (2 * A);
         double t1 = (-B + sqrtdiscr) / (2 * A);
 
-        Point p0 = lineStart.translate(lineDelta.scale(t0));
-        Point p1 = lineStart.translate(lineDelta.scale(t1));
-
-        return List.of(p0, p1);
+        return new ArrayList<>(Arrays.asList(t0, t1));
     }
 }
