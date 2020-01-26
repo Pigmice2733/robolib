@@ -4,42 +4,50 @@ package com.pigmice.frc.lib.utils;
  * Odometry tracking
  */
 public class Odometry {
-    private double x, y;
+    public static class Pose implements XY {
+        protected double x, y;
+        protected double heading;
 
-    private double lastLeft, lastRight;
-    private double lastAngle;
+        public Pose(double x, double y, double heading) {
+            this.x = x;
+            this.y = y;
+            this.heading = heading;
+        }
 
-    /**
-     * Get the x,y position of the robot
-     *
-     * @return The position of the robot as a Cartesian point
-     */
-    public Point getPosition() {
-        return new Point(x, y);
+        public double getHeading() {
+            return heading;
+        }
+
+        public double getX() {
+            return x;
+        }
+
+        public double getY() {
+            return y;
+        }
     }
 
+    private Pose pose;
+    private double lastLeft, lastRight;
+
     /**
-     * Get the robot's angle, counter-clockwise from x axis in radians
+     * Get the pose of the robot
      *
-     * @return The most recently recorded angle
+     * @return The position and heading of the robot as a Pose
      */
-    public double getAngle() {
-        return lastAngle;
+    public Pose getPose() {
+        return pose;
     }
 
     /**
      * Create an odometry tracker with a specific starting position and angle
      *
-     * @param x     Starting x position
-     * @param y     Starting y position
-     * @param angle Starting angle, counter-clockwise from x axis in radians
+     * @param initialPose Starting pose of the robot
      */
-    public Odometry(double x, double y, double angle) {
+    public Odometry(Pose initialPose) {
         lastLeft = 0;
         lastRight = 0;
-        lastAngle = angle;
-        this.x = x;
-        this.y = y;
+        pose = initialPose;
     }
 
     /**
@@ -53,7 +61,7 @@ public class Odometry {
     public void update(double leftPosition, double rightPosition, double angle) {
         double deltaLeft = leftPosition - lastLeft;
         double deltaRight = rightPosition - lastRight;
-        double deltaAngle = angle - lastAngle;
+        double deltaAngle = angle - pose.heading;
 
         double distance = (deltaLeft + deltaRight) / 2.0;
         if (Math.abs(deltaAngle) > Math.PI) {
@@ -63,23 +71,23 @@ public class Odometry {
         if (Math.abs(deltaAngle) < 1e-6) {
             double deltaX = distance * Math.cos(angle);
             double deltaY = distance * Math.sin(angle);
-            x += deltaX;
-            y += deltaY;
+            pose.x += deltaX;
+            pose.y += deltaY;
 
             return;
         }
 
         double radius = distance / Math.abs(deltaAngle);
-        double chordAngle = lastAngle + deltaAngle / 2.0;
+        double chordAngle = pose.heading + deltaAngle / 2.0;
         double chordLength = 2.0 * radius * Math.sin(Math.abs(deltaAngle) / 2.0);
 
         double deltaX = chordLength * Math.cos(chordAngle);
         double deltaY = chordLength * Math.sin(chordAngle);
 
-        x += deltaX;
-        y += deltaY;
+        pose.x += deltaX;
+        pose.y += deltaY;
 
-        lastAngle = angle;
+        pose.heading = angle;
 
         return;
     }
@@ -90,19 +98,15 @@ public class Odometry {
      * encoders are zeroed (or otherwise set to new values) to update drivetrain
      * distances.
      *
-     * @param x             The new x coordinate of the position
-     * @param y             The new y coordinate of the position
-     * @param angle         The new angle, counter-clockwise from x axis in radians
+     * @param newPose       The new position and heading of the robot
      * @param leftPosition  The new total distance the left side of the drivetrain
      *                      has driven
      * @param rightPosition The new total distance the right side of the drivetrain
      *                      has driven
      */
-    public void set(double x, double y, double angle, double leftPosition, double rightPosition) {
-        this.x = x;
-        this.y = y;
-        this.lastAngle = angle;
-        this.lastLeft = leftPosition;
-        this.lastRight = rightPosition;
+    public void set(Pose newPose, double leftPosition, double rightPosition) {
+        pose = newPose;
+        lastLeft = leftPosition;
+        lastRight = rightPosition;
     }
 }

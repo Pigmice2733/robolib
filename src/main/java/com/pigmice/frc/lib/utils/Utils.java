@@ -1,6 +1,8 @@
 package com.pigmice.frc.lib.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Utils hold utility functions that don't belong as their own classes
@@ -68,10 +70,7 @@ public class Utils {
      * @return The index of the largest number smaller than the target
      */
     public static int binarySearch(ArrayList<Double> data, double target) {
-        int lowIndex = 0;
-        int highIndex = data.size() - 1;
-
-        return _binarySearch(data, target, lowIndex, highIndex);
+        return _binarySearch(data, target, 0, data.size() - 1);
     }
 
     private static int _binarySearch(ArrayList<Double> data, double target, int lowIndex, int highIndex) {
@@ -79,12 +78,66 @@ public class Utils {
             return lowIndex;
         }
 
-        int mid = (lowIndex + highIndex) / 2;
+        final int mid = (lowIndex + highIndex) / 2;
 
         if (data.get(mid) < target) {
             return _binarySearch(data, target, mid, highIndex);
         } else {
             return _binarySearch(data, target, lowIndex, mid);
         }
+    }
+
+    /**
+     * Finds the locations of intersections between a circle and an infinite line
+     * defined by a Point and a Vector. The locations are given as a fraction
+     * of the Vector, starting at <code>lineStart</code>.
+     *
+     * For an intersection specified by the Double <code>x</code>, the
+     * intersection Point is equal to <code>lineStart + x*lineDirection</code>.
+     *
+     * @param lineStart A Point on the line
+     * @param lineDirection Vector direction of the line
+     * @param circleCenter The center of the circle
+     * @param radius The radius of the circle
+     * @return A list of all the intersection locations, given as described above
+     */
+    public static List<Double> circleLineIntersections(Point lineStart, Vector lineDirection, Point circleCenter, double radius) {
+        final double A = lineDirection.dot(lineDirection);
+
+        final Vector dist = lineStart.subtract(circleCenter);
+        final double B = 2 * lineDirection.dot(dist);
+
+        final double C = dist.dot(dist) - (radius * radius);
+
+        final double discriminant = B*B - 4*A*C;
+
+        if (discriminant < 0.0) {
+            return new ArrayList<>();
+        }
+
+        final double sqrtdiscr = Math.sqrt(discriminant);
+
+        final double t0 = (-B - sqrtdiscr) / (2 * A);
+        final double t1 = (-B + sqrtdiscr) / (2 * A);
+
+        return new ArrayList<>(Arrays.asList(t0, t1));
+    }
+
+    /**
+     * Projects a Point onto a line segment (defined by a Point and a Vector),
+     * clamping the projected Point within the segment. The location of the
+     * projected Point is given as a fraction of the line Vector starting at
+     * <code>start</code>.
+     *
+     * @param point The Point to project
+     * @param start The start of the line segment
+     * @param direction   Direction and length of the line
+     * @return The projected point, specified as described above
+     */
+    public static double project(Point point, Point start, Vector direction) {
+        Vector toStart = point.subtract(start);
+        double t = toStart.dot(direction) / direction.dot(direction);
+
+        return Range.natural().clamp(t);
     }
 }

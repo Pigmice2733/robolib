@@ -75,6 +75,21 @@ public class VectorTest {
     }
 
     @Test
+    public void dotTest() {
+        Vector a = new Vector(0.0, 2.0);
+        Assertions.assertEquals(4.0, a.dot(a), epsilon);
+
+        Vector b = new Vector(-1.0, 0.0);
+        Assertions.assertEquals(0.0, a.dot(b), epsilon);
+
+        b = new Vector(-2.0, -2.0);
+        Assertions.assertEquals(-4.0, a.dot(b), epsilon);
+
+        a = new Vector(2.0, -2.0);
+        Assertions.assertEquals(0.0, a.dot(b), epsilon);
+    }
+
+    @Test
     public void getMagnitudeTest() {
         Vector mixedSign = new Vector(-2.0, 5.0);
         Vector negative = new Vector(-3.0, -4.0);

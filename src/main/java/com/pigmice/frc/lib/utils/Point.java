@@ -1,5 +1,7 @@
 package com.pigmice.frc.lib.utils;
 
+import com.pigmice.frc.lib.utils.Odometry.Pose;
+
 /**
  * A Point represents a point in some 2D space
  */
@@ -15,6 +17,16 @@ public class Point implements XY {
     public Point(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * Constructs a Point from an XY object
+     *
+     * @param xy The XY object to copy from
+     */
+    public Point(XY xy) {
+        this.x = xy.getX();
+        this.y = xy.getY();
     }
 
     /**
@@ -55,16 +67,6 @@ public class Point implements XY {
     }
 
     /**
-     * Translates this Point by a {@link Vector Vector}
-     *
-     * @param translation The Vector to add to this Point
-     * @return The translated Vector
-     */
-    public Point translate(Vector translation) {
-        return new Point(x + translation.getX(), y + translation.getY());
-    }
-
-    /**
      * Finds the {@link Vector Vector} offset between this Point and another
      *
      * @param p The Point to subtract from this one
@@ -72,6 +74,16 @@ public class Point implements XY {
      */
     public Vector subtract(Point p) {
         return new Vector(x - p.x, y - p.y);
+    }
+
+    /**
+     * Translates this Point by a {@link Vector Vector}
+     *
+     * @param translation The Vector to add to this Point
+     * @return The translated Vector
+     */
+    public Point translate(Vector translation) {
+        return new Point(x + translation.getX(), y + translation.getY());
     }
 
     /**
@@ -85,5 +97,18 @@ public class Point implements XY {
         Vector offset = subtract(center);
         Vector rotated = offset.rotate(angle);
         return center.translate(rotated);
+    }
+
+    /**
+     * Transform this Point to be relative to a specific Pose
+     *
+     * @param pose The Pose that will effectively become the origin
+     * @return The transformed Point
+     */
+    public Point relativeTo(Pose pose) {
+        Vector translation = this.subtract(new Point(pose));
+        Vector transformed = translation.rotate(0.5*Math.PI - pose.heading);
+
+        return new Point(transformed);
     }
 }
