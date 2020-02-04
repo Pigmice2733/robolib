@@ -3,6 +3,8 @@ package com.pigmice.frc.lib.controllers;
 import java.util.Arrays;
 import java.util.List;
 
+import com.pigmice.frc.lib.motion.setpoint.ISetpoint;
+import com.pigmice.frc.lib.motion.setpoint.Setpoint;
 import com.pigmice.frc.lib.utils.Range;
 import com.pigmice.frc.lib.utils.Utils;
 
@@ -12,25 +14,45 @@ import org.junit.jupiter.api.Test;
 public class PIDTest {
     private static final double epsilon = 1e-6;
 
-    private static class TestPoint {
+    private static class TestPoint implements ISetpoint {
         public double input;
-        private double setpoint, velocity, acceleration;
+        private double position, velocity, acceleration;
         private double output;
 
-        public TestPoint(double output, double input, double setpoint, double velocity,
+        public TestPoint(double output, double input, double position, double velocity,
                 double acceleration) {
             this.input = input;
-            this.setpoint = setpoint;
+            this.position = position;
             this.velocity = velocity;
             this.acceleration = acceleration;
             this.output = output;
+        }
+
+        public double getAcceleration() {
+            return acceleration;
+        }
+
+        public double getVelocity() {
+            return velocity;
+        }
+
+        public double getPosition() {
+            return position;
+        }
+
+        public double getCurvature() {
+            return 0;
+        }
+
+        public double getHeading() {
+            return 0;
         }
     }
 
     private static void checkData(PID controller, List<TestPoint> testData) {
         for (int i = 0; i < testData.size(); i++) {
             TestPoint datum = testData.get(i);
-            double output = controller.calculateOutput(datum.input, datum.setpoint, datum.velocity, datum.acceleration);
+            double output = controller.calculateOutput(datum.input, datum);
             if (!Utils.almostEquals(datum.output, output, epsilon)) {
                 System.out.format("PID error, datum #%d", i + 1);
             }
@@ -61,7 +83,7 @@ public class PIDTest {
         PID p = new PID(gains, outputBounds, 1.0);
 
         p.initialize(0.0, 0.0);
-        double output = p.calculateOutput(-5.0, 0.0);
+        double output = p.calculateOutput(-5.0, new Setpoint(0.0, 0.0, 0.0, 0.0, 0.0));
         Assertions.assertEquals(1.0, output, epsilon);
     }
 

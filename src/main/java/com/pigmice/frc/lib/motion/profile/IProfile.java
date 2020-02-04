@@ -1,7 +1,9 @@
-package com.pigmice.frc.lib.motion;
+package com.pigmice.frc.lib.motion.profile;
+
+import com.pigmice.frc.lib.motion.setpoint.ISetpoint;
 
 public interface IProfile {
-    public Setpoint getSetpoint(double time);
+    public ISetpoint getSetpoint(double time);
     public double getDuration();
     public void reset();
 

@@ -1,10 +1,11 @@
 package com.pigmice.frc.lib.controllers;
 
+import com.pigmice.frc.lib.motion.setpoint.ISetpoint;
 import com.pigmice.frc.lib.utils.Range;
 
 /**
  * Implementation of robust and simple to tune "Take Back Half" controller,
- * controller designed by W. Steven Woodward.
+ * controller designed by W. Steven Woodward. Velocity controller.
  */
 public class TakeBackHalf implements IController {
     private double gain;
@@ -32,8 +33,8 @@ public class TakeBackHalf implements IController {
         takeBackHalf = 2*targetOutput - 1;
     }
 
-    public double calculateOutput(double input, double setpoint) {
-        double error = setpoint - input;
+    public double calculateOutput(double input, ISetpoint setpoint) {
+        double error = setpoint.getVelocity() - input;
 
         if (Math.signum(previousError) != Math.signum(error)) {
             currentOutput = 0.5 * (currentOutput + takeBackHalf);
