@@ -26,11 +26,18 @@ public class OdometryTest {
         Assertions.assertEquals(10.0, odometer.getPose().getY(), epsilon);
         Assertions.assertEquals(0.5 * Math.PI, odometer.getPose().getHeading(), epsilon);
 
+        // Stopped
+        odometer.update(10.0, 10.0, 0.5 * Math.PI);
+
+        Assertions.assertEquals(0.0, odometer.getPose().getX(), epsilon);
+        Assertions.assertEquals(10.0, odometer.getPose().getY(), epsilon);
+        Assertions.assertEquals(0.5 * Math.PI, odometer.getPose().getHeading(), epsilon);
+
         // Drive backwards 15
         odometer.update(-15.0, -15.0, 0.5 * Math.PI);
 
         Assertions.assertEquals(0.0, odometer.getPose().getX(), epsilon);
-        Assertions.assertEquals(-5.0, odometer.getPose().getY(), epsilon);
+        Assertions.assertEquals(-15.0, odometer.getPose().getY(), epsilon);
         Assertions.assertEquals(0.5 * Math.PI, odometer.getPose().getHeading(), epsilon);
     }
 
@@ -52,11 +59,11 @@ public class OdometryTest {
         Assertions.assertEquals(Math.PI, odometer.getPose().getHeading(), epsilon);
 
         // Drive backward quarter-circle, end facing backwards, to (10, 20)
-        odometer.update(Math.PI * -5.5, Math.PI * -4.5, -0.5 * Math.PI);
+        odometer.update(Math.PI * (4 - 5.5), Math.PI * (6 - 4.5), 1.5 * Math.PI);
 
         Assertions.assertEquals(10.0, odometer.getPose().getX(), epsilon);
         Assertions.assertEquals(20.0, odometer.getPose().getY(), epsilon);
-        Assertions.assertEquals(-0.5 * Math.PI, odometer.getPose().getHeading(), epsilon);
+        Assertions.assertEquals(1.5 * Math.PI, odometer.getPose().getHeading(), epsilon);
     }
 
     @Test
