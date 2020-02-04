@@ -1,25 +1,25 @@
 package com.pigmice.frc.lib.motion.execution;
 
-import com.pigmice.frc.lib.motion.IProfile;
-import com.pigmice.frc.lib.motion.Setpoint;
+import com.pigmice.frc.lib.motion.profile.IProfile;
+import com.pigmice.frc.lib.motion.setpoint.ISetpoint;
 
 public class ProfileMock implements IProfile {
-    private Setpoint[] data;
+    private ISetpoint[] data;
     private int current;
     private double duration;
 
-    public ProfileMock(Setpoint[] data, double duration) {
+    public ProfileMock(ISetpoint[] data, double duration) {
         this.data = data;
         this.current = 0;
         this.duration = duration;
     }
 
-    public Setpoint getSetpoint(double time) {
+    public ISetpoint getSetpoint(double time) {
         if(time == duration) {
             return data[data.length - 1];
         }
 
-        Setpoint sp = data[current];
+        ISetpoint sp = data[current];
         current = (current + 1) % data.length;
         return sp;
     }

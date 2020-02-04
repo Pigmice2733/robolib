@@ -1,6 +1,6 @@
 package com.pigmice.frc.lib.plots;
 
-import com.pigmice.frc.lib.motion.Setpoint;
+import com.pigmice.frc.lib.motion.setpoint.ISetpoint;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.plot.PlotOrientation;
@@ -16,7 +16,7 @@ public class ProfilePlot extends Plot {
      * Data source for a series to plot.
      */
     public interface Data {
-        Setpoint get(double time);
+        ISetpoint get(double time);
     }
 
     /**
@@ -37,7 +37,7 @@ public class ProfilePlot extends Plot {
         XYSeries position = new XYSeries("Position", false);
 
         for (double i = 0.0; i < duration; i += step) {
-            Setpoint sp = data.get(i);
+            ISetpoint sp = data.get(i);
             acceleration.add(i, sp.getAcceleration());
             velocity.add(i, sp.getVelocity());
             position.add(i, sp.getPosition());

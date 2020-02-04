@@ -1,6 +1,6 @@
-package com.pigmice.frc.lib.motion;
+package com.pigmice.frc.lib.motion.setpoint;
 
-public class Setpoint {
+public class Setpoint implements ISetpoint{
     private final double position, velocity, acceleration;
     private final double curvature, heading;
 
@@ -8,14 +8,6 @@ public class Setpoint {
         this.acceleration = acceleration;
         this.velocity = velocity;
         this.position = position;
-        this.curvature = curvature;
-        this.heading = heading;
-    }
-
-    public Setpoint(Chunk chunk, double time, double previousDistance, double curvature, double heading) {
-        acceleration = chunk.getAcceleration();
-        velocity = chunk.getVelocity(time);
-        position = chunk.getPosition(time) + previousDistance;
         this.curvature = curvature;
         this.heading = heading;
     }
@@ -43,10 +35,10 @@ public class Setpoint {
     /***
      * Converts angular setpoint from being in terms of angle (<b>in radians</b>) to the arc length
      * distance of the robot's wheels.
-     * 
+     *
      * The arc length is the distance covered while turning
      * from 0 to the angle specified by this setpoint, using the specified turning radius.
-     * 
+     *
      * The position, velocity, and acceleration are converted from radians per time to position per
      * time. Curvature is calculated as the inverse of the turning radius, and heading is the angle.
      *
@@ -60,10 +52,10 @@ public class Setpoint {
    /***
      * Converts angular setpoint from being in terms of angle to the arc length
      * distance of the robot's wheels.
-     * 
+     *
      * The arc length is the distance covered while turning
      * from 0 to the angle specified by this setpoint, using the specified turning radius.
-     * 
+     *
      * The position, velocity, and acceleration are converted from radians/degree per time to position per
      * time. Curvature is calculated as the inverse of the turning radius, and heading is the angle.
      *
@@ -89,7 +81,7 @@ public class Setpoint {
     /**
      * Negates this setpoint. Position, velocity, and acceleration are negated, curvature and heading
      * are unchanged.
-     * 
+     *
      * @return The negated setpoint
      */
     public Setpoint negate() {

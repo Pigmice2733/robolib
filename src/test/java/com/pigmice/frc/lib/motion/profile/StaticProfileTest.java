@@ -1,5 +1,6 @@
-package com.pigmice.frc.lib.motion;
+package com.pigmice.frc.lib.motion.profile;
 
+import com.pigmice.frc.lib.motion.setpoint.Setpoint;
 import com.pigmice.frc.lib.plots.TimePlot;
 
 import org.junit.jupiter.api.AfterAll;

@@ -1,5 +1,6 @@
 package com.pigmice.frc.lib.controllers;
 
+import com.pigmice.frc.lib.motion.setpoint.ISetpoint;
 import com.pigmice.frc.lib.utils.Range;
 
 public class PID implements IController {
@@ -48,12 +49,8 @@ public class PID implements IController {
         previousError = 0;
     }
 
-    public double calculateOutput(double input, double setpoint) {
-        return calculateOutput(input, setpoint, 0.0, 0.0);
-    }
-
-    public double calculateOutput(double input, double setpoint, double velocity, double acceleration) {
-        double error = setpoint - input;
+    public double calculateOutput(double input, ISetpoint setpoint) {
+        double error = setpoint.getPosition() - input;
         if (continuous) {
             error = calculateContinuousError(error);
         }
@@ -72,7 +69,9 @@ public class PID implements IController {
         previousError = error;
 
         double feedback = gains.kP() * error + integralTerm + gains.kD() * derivative;
-        double feedforward = gains.kF() * setpoint + gains.kV() * velocity + gains.kA() * acceleration;
+        double feedforward = gains.kF() * setpoint.getPosition() +
+                             gains.kV() * setpoint.getVelocity() +
+                             gains.kA() * setpoint.getAcceleration();
 
         double output = feedforward + feedback;
 

@@ -1,7 +1,8 @@
-package com.pigmice.frc.lib.motion;
+package com.pigmice.frc.lib.motion.profile;
 
 import java.util.ArrayList;
 
+import com.pigmice.frc.lib.motion.setpoint.Setpoint;
 import com.pigmice.frc.lib.utils.Utils;
 
 public class StaticProfile implements IProfile {
@@ -156,6 +157,14 @@ public class StaticProfile implements IProfile {
         chunkEndTime += chunk.getDuration();
     }
 
+    private static Setpoint createSetpoint(Chunk chunk, double time, double previousDistance) {
+        double position = chunk.getPosition(time) + previousDistance;
+        double velocity = chunk.getVelocity(time);
+        double acceleration = chunk.getAcceleration();
+
+        return new Setpoint(position, velocity, acceleration, 0.0, 0.0);
+    }
+
     public Setpoint getSetpoint(double time) {
         if (time >= duration) {
             return getEndSetpoint(distance);
@@ -165,6 +174,6 @@ public class StaticProfile implements IProfile {
             advanceChunk();
         }
 
-        return new Setpoint(chunk, time - chunkStartTime, previousDistance, 0.0, 0.0);
+        return createSetpoint(chunk, time - chunkStartTime, previousDistance);
     }
 }

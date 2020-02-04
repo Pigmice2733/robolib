@@ -1,4 +1,6 @@
-package com.pigmice.frc.lib.motion;
+package com.pigmice.frc.lib.motion.profile;
+
+import com.pigmice.frc.lib.motion.setpoint.ISetpoint;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -115,7 +117,7 @@ public class ChunkTest {
     @Test
     public void setpointTest() {
         Chunk chunk = Chunk.createVelocityTransition(-5.0, -11.0, 2.0, 3.0);
-        Setpoint sp = chunk.getSetpoint(1.0);
+        ISetpoint sp = chunk.getSetpoint(1.0);
         Assertions.assertEquals(-6.0, sp.getPosition(), epsilon);
         Assertions.assertEquals(-7.0, sp.getVelocity(), epsilon);
         Assertions.assertEquals(-2.0, sp.getAcceleration(), epsilon);

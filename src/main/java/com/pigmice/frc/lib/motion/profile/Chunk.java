@@ -1,5 +1,7 @@
-package com.pigmice.frc.lib.motion;
+package com.pigmice.frc.lib.motion.profile;
 
+import com.pigmice.frc.lib.motion.setpoint.ISetpoint;
+import com.pigmice.frc.lib.motion.setpoint.Setpoint;
 import com.pigmice.frc.lib.utils.Transition;
 
 class Chunk {
@@ -55,7 +57,7 @@ class Chunk {
         return new Chunk(distance, velocity, Transition.zero(), Transition.zero(), duration);
     }
 
-    protected Setpoint getSetpoint(double time) {
+    protected ISetpoint getSetpoint(double time) {
         return new Setpoint(getPosition(time), getVelocity(time), acceleration, getCurvature(time), getHeading(time));
     }
 
