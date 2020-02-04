@@ -45,8 +45,8 @@ public class Odometry {
      * @param initialPose Starting pose of the robot
      */
     public Odometry(Pose initialPose) {
-        lastLeft = 0;
-        lastRight = 0;
+        lastLeft = 0.0;
+        lastRight = 0.0;
         pose = initialPose;
     }
 
@@ -62,6 +62,9 @@ public class Odometry {
         double deltaLeft = leftPosition - lastLeft;
         double deltaRight = rightPosition - lastRight;
         double deltaAngle = angle - pose.heading;
+
+        lastLeft = leftPosition;
+        lastRight = rightPosition;
 
         double distance = (deltaLeft + deltaRight) / 2.0;
         if (Math.abs(deltaAngle) > Math.PI) {
