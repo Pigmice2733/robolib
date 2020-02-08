@@ -31,34 +31,64 @@ public class ProfileExecutorTest {
         }
     }
 
+    private static class Input implements ProfileExecutor.Input {
+        public double value;
+
+        public double get() {
+            return value;
+        }
+    }
+
     @Test
     public void errorTest() {
         Setpoint[] data = new Setpoint[] { new Setpoint(5.0, 2.0, 0.0, 0.0, 0.0) };
         ProfileMock profile = new ProfileMock(data, 10);
+        Input timeInput = new Input();
         PassThroughController controller = new PassThroughController();
 
-        List<Double> input = new ArrayList<Double>();
-
-        input.add(3.0);
-        input.add(3.0);
-        input.add(3.5);
-        input.add(6.5);
-        input.add(4.5);
-        input.add(5.0);
-        input.add(0.0);
+        Input input = new Input();
 
         ProfileExecutor executor = new ProfileExecutor(
-            profile, controller, (double sp) -> {}, () -> input.remove(0), 1.0
+            profile, controller, (double sp) -> {}, input, 1.0, 0.25, timeInput
         );
+
+        timeInput.value = 0.0;
+        input.value = 0.0;
 
         executor.initialize();
 
+        // Too far away
         Assertions.assertFalse(executor.update());
+
+        // Still too far
+        timeInput.value = 1.0;
+        input.value = 0.0;
         Assertions.assertFalse(executor.update());
+
+        // At target, but too fast
+        timeInput.value = 2.0;
+        input.value = 5.0;
         Assertions.assertFalse(executor.update());
+
+        // Close to target, slow enough
+        timeInput.value = 3.0;
+        input.value = 5.1;
         Assertions.assertTrue(executor.update());
-        Assertions.assertTrue(executor.update());
+
+        // Too far, too fast
+        timeInput.value = 4.0;
+        input.value = 10.0;
         Assertions.assertFalse(executor.update());
+
+        // Close enough, too fast
+        timeInput.value = 5.0;
+        input.value = 5.0;
+        Assertions.assertFalse(executor.update());
+
+        // Close to target, slow enough
+        timeInput.value = 10.0;
+        input.value = 4.1;
+        Assertions.assertTrue(executor.update());
     }
 
     @Test
@@ -73,8 +103,11 @@ public class ProfileExecutorTest {
         ProfileMock profile = new ProfileMock(data, 10);
         PassThroughController controller = new PassThroughController();
 
+        Input timeInput = new Input();
+        timeInput.value = 0.0;
+
         ProfileExecutor executor = new ProfileExecutor(
-            profile, controller, (double sp) -> {}, () -> 3, 1.0);
+            profile, controller, (double sp) -> {}, () -> 3, 1.0, 0.1, timeInput);
         executor.initialize();
 
         executor.update();

@@ -4,8 +4,6 @@ import com.pigmice.frc.lib.controllers.IController;
 import com.pigmice.frc.lib.motion.profile.IProfile;
 import com.pigmice.frc.lib.motion.setpoint.ISetpoint;
 
-import edu.wpi.first.wpilibj.Timer;
-
 public class ProfileExecutor {
     public interface Output {
         void set(double output);
@@ -22,11 +20,15 @@ public class ProfileExecutor {
     private final Input input;
 
     private final double allowableError;
+    private final double maxFinalSpeed;
     private final double finalTarget;
 
+    private final Input timeInput;
     private double startTime;
+    private double previousInput;
+    private double previousTime;
 
-    public ProfileExecutor(IProfile profile, IController controller, Output output, Input input, double allowableError) {
+    public ProfileExecutor(IProfile profile, IController controller, Output output, Input input, double allowableError, double maxFinalSpeed, Input timeInput) {
         this.profile = profile;
         this.controller = controller;
 
@@ -34,22 +36,27 @@ public class ProfileExecutor {
         this.input = input;
 
         this.allowableError = allowableError;
+        this.maxFinalSpeed = maxFinalSpeed;
+
+        this.timeInput = timeInput;
+        this.previousInput = 0.0;
+        this.previousTime = 0.0;
 
         finalTarget = profile.getPosition(profile.getDuration());
     }
 
     public void initialize() {
-        startTime = Timer.getFPGATimestamp();
+        startTime = timeInput.get();
         profile.reset();
         controller.initialize(input.get(), 0.0);
     }
 
     /**
-     * Returns whether the error is within the allowable error, and outputs the
-     * current setpoint
+     * Returns whether the error is within the allowable error and below the max speed,
+     * and outputs the current setpoint
      */
     public boolean update() {
-        double time = Timer.getFPGATimestamp() - startTime;
+        double time = timeInput.get() - startTime;
         ISetpoint sp = profile.getSetpoint(time);
 
         double currentInput = input.get();
@@ -58,6 +65,11 @@ public class ProfileExecutor {
 
         output.set(outputDemand);
 
-        return Math.abs(finalTarget - currentInput) <= allowableError;
+        double speed = Math.abs((currentInput - previousInput)/(time - previousTime));
+
+        previousInput = currentInput;
+        previousTime = time;
+
+        return (Math.abs(finalTarget - currentInput) <= allowableError) && (speed <= maxFinalSpeed);
     }
 }

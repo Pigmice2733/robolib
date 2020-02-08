@@ -89,4 +89,20 @@ public class OdometryTest {
         Assertions.assertEquals(5.0, odometer.getPose().getY(), epsilon);
         Assertions.assertEquals(-1.5 * Math.PI, odometer.getPose().getHeading(), epsilon);
     }
+
+    @Test
+    public void flipTest() {
+        Pose startingPose = new Pose(0.0, 0.0, 0.5 * Math.PI);
+        Odometry odometer = new Odometry(startingPose);
+
+        Assertions.assertEquals(0.0, odometer.getPose().getX(), epsilon);
+        Assertions.assertEquals(0.0, odometer.getPose().getY(), epsilon);
+        Assertions.assertEquals(0.5 * Math.PI, odometer.getPose().getHeading(), epsilon);
+
+        odometer.update(10.0, 10.0, 2.5 * Math.PI);
+
+        Assertions.assertEquals(0.0, odometer.getPose().getX(), epsilon);
+        Assertions.assertEquals(10.0, odometer.getPose().getY(), epsilon);
+        Assertions.assertEquals(2.5 * Math.PI, odometer.getPose().getHeading(), epsilon);
+    }
 }

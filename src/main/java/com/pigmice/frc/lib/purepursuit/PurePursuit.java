@@ -7,8 +7,8 @@ import com.pigmice.frc.lib.utils.Vector;
 
 public class PurePursuit {
     public static class Output {
-        final double velocity;
-        final double curvature;
+        public final double velocity;
+        public final double curvature;
 
         public Output(double velocity, double curvature) {
             this.velocity = velocity;
