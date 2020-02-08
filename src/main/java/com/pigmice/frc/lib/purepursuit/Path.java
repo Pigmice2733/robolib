@@ -61,6 +61,7 @@ public class Path {
             final double endVelocity = velocities.get(i + 1);
 
             final Vector delta = end.subtract(start);
+
             if(delta.getMagnitude() < 1e-6) {
                 continue;
             }
@@ -68,6 +69,10 @@ public class Path {
             final List<Double> intersections = Utils.circleLineIntersections(start, delta, position, lookAhead);
 
             intersections.removeIf((Double x) -> (x < 0.0 || x > 1.0));
+
+            if(intersections.size() == 0 && i == positions.size() - 2 && searchStart.segment == i) {
+                return new Target(end, endVelocity, i);
+            }
 
             if (intersections.size() == 0) {
                 continue;

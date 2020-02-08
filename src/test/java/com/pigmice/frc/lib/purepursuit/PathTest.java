@@ -71,6 +71,13 @@ public class PathTest {
         Assertions.assertEquals(5.0, target.position.getX(), epsilon);
         Assertions.assertEquals(30.0, target.position.getY(), epsilon);
         Assertions.assertEquals(1.0, target.velocity, epsilon);
+
+        target = path.findTarget(new Point(2.0, 30.0), 5.0,
+                path.new Target(new Point(2.0, 30.0), 1.0, 3));
+
+        Assertions.assertEquals(0.0, target.position.getX(), epsilon);
+        Assertions.assertEquals(30.0, target.position.getY(), epsilon);
+        Assertions.assertEquals(0.0, target.velocity, epsilon);
     }
 
     @Test

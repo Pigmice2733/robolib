@@ -76,6 +76,7 @@ public class Odometry {
             double deltaY = distance * Math.sin(angle);
             pose.x += deltaX;
             pose.y += deltaY;
+            pose.heading = angle;
 
             return;
         }
