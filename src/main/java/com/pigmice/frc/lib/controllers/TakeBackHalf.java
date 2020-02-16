@@ -27,6 +27,10 @@ public class TakeBackHalf implements IController {
         takeBackHalf = 2*targetOutput - 1;
     }
 
+    public void updateTargetOutput(double targetOutput) {
+        this.targetOutput = targetOutput;
+    }
+
     public void initialize(double input, double currentOutput) {
         this.currentOutput = currentOutput;
         previousError = 1;
