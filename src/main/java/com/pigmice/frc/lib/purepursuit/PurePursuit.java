@@ -9,10 +9,12 @@ public class PurePursuit {
     public static class Output {
         public final double velocity;
         public final double curvature;
+        public final boolean done;
 
-        public Output(double velocity, double curvature) {
+        public Output(double velocity, double curvature, boolean done) {
             this.velocity = velocity;
             this.curvature = curvature;
+            this.done = done;
         }
     }
 
@@ -27,6 +29,9 @@ public class PurePursuit {
         Target closest = path.closestPoint(robotPosition);
         Target target = path.findTarget(robotPosition, lookAhead, closest);
 
+        // Path is done once the closest point on the path is the end
+        boolean done = closest.position.subtract(path.end()).magnitude() < 1e-4;
+
         if (target == null) {
             target = closest;
         }
@@ -35,6 +40,6 @@ public class PurePursuit {
         Vector targetDelta = relativeTargetPosition.subtract(Point.origin());
         double curvature = (2 * relativeTargetPosition.getX()) / (targetDelta.dot(targetDelta));
 
-        return new Output(closest.velocity, curvature);
+        return new Output(closest.velocity, curvature, done);
     }
 }
