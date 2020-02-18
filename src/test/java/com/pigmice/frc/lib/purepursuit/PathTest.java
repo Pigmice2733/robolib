@@ -13,6 +13,14 @@ public class PathTest {
     private static final Path path = createTestPath();
 
     @Test
+    public void endPointTest() {
+        Point end = path.end();
+
+        Assertions.assertEquals(0.0, end.getX(), epsilon);
+        Assertions.assertEquals(30.0, end.getY(), epsilon);
+    }
+
+    @Test
     public void closestTest() {
         Target closest = path.closestPoint(Point.origin());
 
