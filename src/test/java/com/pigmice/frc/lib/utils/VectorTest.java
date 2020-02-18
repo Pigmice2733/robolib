@@ -95,9 +95,24 @@ public class VectorTest {
         Vector negative = new Vector(-3.0, -4.0);
         Vector zero = new Vector(0.0, 0.0);
 
-        Assertions.assertEquals(Math.sqrt(29.0), mixedSign.getMagnitude(), epsilon);
-        Assertions.assertEquals(5.0, negative.getMagnitude(), epsilon);
-        Assertions.assertEquals(0.0, zero.getMagnitude(), epsilon);
+        Assertions.assertEquals(Math.sqrt(29.0), mixedSign.magnitude(), epsilon);
+        Assertions.assertEquals(5.0, negative.magnitude(), epsilon);
+        Assertions.assertEquals(0.0, zero.magnitude(), epsilon);
+    }
+
+    @Test
+    public void normalizeTest() {
+        Vector vector = new Vector(-1.0, 0.0);
+        Vector normalized = vector.normalize();
+
+        Assertions.assertEquals(-1.0, normalized.getX(), epsilon);
+        Assertions.assertEquals(0.0, normalized.getY(), epsilon);
+
+        vector = new Vector(2.0, -3.0);
+        normalized = vector.normalize();
+
+        Assertions.assertEquals(2.0 / Math.sqrt(13.0), normalized.getX(), epsilon);
+        Assertions.assertEquals(-3.0 / Math.sqrt(13.0), normalized.getY(), epsilon);
     }
 
     @Test
@@ -107,10 +122,10 @@ public class VectorTest {
         Vector negativeY = new Vector(0.0, -1.0);
         Vector negativeHalf = new Vector(-1.0, -1.0);
 
-        Assertions.assertEquals(0.0, xAxis.getAngle(), epsilon);
-        Assertions.assertEquals(0.5 * Math.PI, yAxis.getAngle(), epsilon);
-        Assertions.assertEquals(-0.5 * Math.PI, negativeY.getAngle(), epsilon);
-        Assertions.assertEquals(-0.75 * Math.PI, negativeHalf.getAngle(), epsilon);
+        Assertions.assertEquals(0.0, xAxis.angle(), epsilon);
+        Assertions.assertEquals(0.5 * Math.PI, yAxis.angle(), epsilon);
+        Assertions.assertEquals(-0.5 * Math.PI, negativeY.angle(), epsilon);
+        Assertions.assertEquals(-0.75 * Math.PI, negativeHalf.angle(), epsilon);
     }
 
     @Test

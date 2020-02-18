@@ -87,8 +87,17 @@ public class Vector implements XY {
      *
      * @return The magnitude of this Vector
      */
-    public double getMagnitude() {
+    public double magnitude() {
         return Math.sqrt(x * x + y * y);
+    }
+
+    /**
+     * Normalizes this Vector
+     *
+     * @return The normalized Vector of this Vector
+     */
+    public Vector normalize() {
+        return scale( 1.0/ magnitude());
     }
 
     /**
@@ -97,7 +106,7 @@ public class Vector implements XY {
      *
      * @return The angle of this Vector in radians
      */
-    public double getAngle() {
+    public double angle() {
         return Math.atan2(y, x);
     }
 
