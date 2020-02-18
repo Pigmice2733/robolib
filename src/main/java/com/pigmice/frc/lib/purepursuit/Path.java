@@ -27,6 +27,10 @@ public class Path {
         this.velocities = velocities;
     }
 
+    public Point end() {
+        return positions.get(positions.size() - 1);
+    }
+
     public Target closestPoint(Point position) {
         int closestSegment = 0;
         Point closestPoint = null;
@@ -37,7 +41,7 @@ public class Path {
             final Vector delta = positions.get(i + 1).subtract(positions.get(i));
             final double projection = Utils.project(position, positions.get(i), delta);
             final Point point = positions.get(i).translate(delta.scale(projection));
-            final double distance = position.subtract(point).getMagnitude();
+            final double distance = position.subtract(point).magnitude();
 
             if (distance < closestDistance) {
                 closestDistance = distance;
@@ -62,7 +66,7 @@ public class Path {
 
             final Vector delta = end.subtract(start);
 
-            if(delta.getMagnitude() < 1e-6) {
+            if (delta.magnitude() < 1e-6) {
                 continue;
             }
 
@@ -70,8 +74,20 @@ public class Path {
 
             intersections.removeIf((Double x) -> (x < 0.0 || x > 1.0));
 
-            if(intersections.size() == 0 && i == positions.size() - 2 && searchStart.segment == i) {
-                return new Target(end, endVelocity, i);
+            // If the robot is on the last segment of the path, and close enough to the end
+            // that the look ahead distance is beyond the end of the path, the path is "extended"
+            // in the same direction as the final path segment. The target is kept at one look
+            // ahead from the robot's position, just as if the robot was not near the end of the
+            // path. The velocity is kept the same as the final point on the path.
+            if (intersections.size() == 0 && i == positions.size() - 2 && searchStart.segment == i) {
+                Vector endDirection = end.subtract(positions.get(i)).normalize();
+                // Since the robot is likely not exactly on the path, the actual look ahead
+                // distance is longer than the distance on the path from the robot's projected
+                // position to the chosen target.
+                double projectionDistance = searchStart.position.subtract(position).magnitude();
+                double lookAheadOnPath = Math.sqrt(lookAhead*lookAhead - projectionDistance * projectionDistance);
+                Point target = searchStart.position.translate(endDirection.scale(lookAheadOnPath));
+                return new Target(target, endVelocity, i);
             }
 
             if (intersections.size() == 0) {

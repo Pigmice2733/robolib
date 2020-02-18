@@ -149,17 +149,17 @@ public class UtilsTest {
             Assertions.assertEquals(0.0, point.getY(), epsilon);
 
             start = new Point(2.0, 5.0);
-            delta = new Vector(0.0, -10.0);
+            delta = new Vector(0.0, -12.0);
             projection = Utils.project(Point.origin(), start, delta);
             point = start.translate(delta.scale(projection));
             Assertions.assertEquals(2.0, point.getX(), epsilon);
             Assertions.assertEquals(0.0, point.getY(), epsilon);
 
             start = new Point(12.0, -1.0);
-            delta = new Vector(-24.0, 0.0);
-            projection = Utils.project(Point.origin(), start, delta);
+            delta = new Vector(-36.0, 0.0);
+            projection = Utils.project(new Point(-20, -18), start, delta);
             point = start.translate(delta.scale(projection));
-            Assertions.assertEquals(0.0, point.getX(), epsilon);
+            Assertions.assertEquals(-20.0, point.getX(), epsilon);
             Assertions.assertEquals(-1.0, point.getY(), epsilon);
 
             start = new Point(-25.0, -5.0);
