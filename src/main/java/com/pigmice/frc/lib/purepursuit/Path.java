@@ -10,11 +10,13 @@ public class Path {
     public class Target {
         public final int segment;
         public final double velocity;
+        public final double acceleration;
         public final Point position;
 
-        public Target(Point position, double velocity, int segment) {
+        public Target(Point position, double velocity, double acceleration, int segment) {
             this.position = position;
             this.velocity = velocity;
+            this.acceleration = acceleration;
             this.segment = segment;
         }
     }
@@ -54,7 +56,13 @@ public class Path {
         final double startVelocity = velocities.get(closestSegment);
         final double endVelocity = velocities.get(closestSegment + 1);
         final double velocity = Utils.lerp(closestPointCompletionFactor, 0.0, 1.0, startVelocity, endVelocity);
-        return new Target(closestPoint, velocity, closestSegment);
+
+        final double distance = positions.get(closestSegment + 1).subtract(positions.get(closestSegment)).magnitude();
+
+        // (v_f)^2 = (v_i)^2 + 2(a)(dx)
+        final double acceleration = (endVelocity*endVelocity - startVelocity*startVelocity) / (2*distance);
+
+        return new Target(closestPoint, velocity, acceleration, closestSegment);
     }
 
     public Target findTarget(Point position, double lookAhead, Target searchStart) {
@@ -87,7 +95,7 @@ public class Path {
                 double projectionDistance = searchStart.position.subtract(position).magnitude();
                 double lookAheadOnPath = Math.sqrt(lookAhead*lookAhead - projectionDistance * projectionDistance);
                 Point target = searchStart.position.translate(endDirection.scale(lookAheadOnPath));
-                return new Target(target, endVelocity, i);
+                return new Target(target, endVelocity, 0.0, i);
             }
 
             if (intersections.size() == 0) {
@@ -97,7 +105,12 @@ public class Path {
             final double targetIntersection = intersections.get(intersections.size() - 1);
             final Point targetPosition = start.translate(delta.scale(targetIntersection));
             final double velocity = Utils.lerp(targetIntersection, 0.0, 1.0, startVelocity, endVelocity);
-            return new Target(targetPosition, velocity, i);
+
+            final double distance = positions.get(i + 1).subtract(positions.get(i)).magnitude();
+            // (v_f)^2 = (v_i)^2 + 2(a)(dx)
+            final double acceleration = (endVelocity * endVelocity - startVelocity * startVelocity) / (2 * distance);
+
+            return new Target(targetPosition, velocity, acceleration, i);
         }
 
         return null;

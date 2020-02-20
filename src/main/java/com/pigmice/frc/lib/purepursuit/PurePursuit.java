@@ -8,17 +8,21 @@ import com.pigmice.frc.lib.utils.Vector;
 public class PurePursuit {
     public static class Output {
         public final double velocity;
+        public final double acceleration;
         public final double curvature;
-        public final boolean done;
+        public final int pathSegment;
+        public final boolean atEnd;
 
-        public Output(double velocity, double curvature, boolean done) {
+        public Output(double velocity, double acceleration, double curvature, int pathSegment, boolean atEnd) {
             this.velocity = velocity;
+            this.acceleration = acceleration;
             this.curvature = curvature;
-            this.done = done;
+            this.pathSegment = pathSegment;
+            this.atEnd = atEnd;
         }
     }
 
-    private Path path;
+    private final Path path;
 
     public PurePursuit(Path path) {
         this.path = path;
@@ -40,6 +44,6 @@ public class PurePursuit {
         Vector targetDelta = relativeTargetPosition.subtract(Point.origin());
         double curvature = (2 * relativeTargetPosition.getX()) / (targetDelta.dot(targetDelta));
 
-        return new Output(closest.velocity, curvature, done);
+        return new Output(closest.velocity, closest.acceleration, curvature, closest.segment, done);
     }
 }
