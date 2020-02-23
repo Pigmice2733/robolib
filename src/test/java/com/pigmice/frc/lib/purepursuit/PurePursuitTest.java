@@ -17,7 +17,7 @@ public class PurePursuitTest {
         Path path = new Path(List.of(Point.origin(), new Point(0.0, 2.0), new Point(0.0, 8.0), new Point(0.0, 10.0)),
                 List.of(2.0, 3.0, 2.0, 0.0));
 
-        PurePursuit controller = new PurePursuit(path);
+        PurePursuit controller = new PurePursuit(path, 1e-4);
 
         Output output = controller.process(new Pose(0.0, 0.0, 0.5 * Math.PI), 1.0);
         Assertions.assertEquals(0.0, output.curvature, epsilon);
@@ -69,7 +69,7 @@ public class PurePursuitTest {
                         new Point(-1.0, Math.sqrt(3.0)), new Point(-2.0, 0.0), new Point(-2.0, -0.1)),
                 List.of(0.0, 2.0, 5.0, 2.0, 0.0, 0.0));
 
-        PurePursuit controller = new PurePursuit(path);
+        PurePursuit controller = new PurePursuit(path, 1e-4);
 
         Output output = controller.process(new Pose(1.0, 0.0, 0.0), 1.0);
         Assertions.assertEquals(-1.73207621135, output.curvature, epsilon);
@@ -98,9 +98,16 @@ public class PurePursuitTest {
         Path path = new Path(List.of(new Point(-5.0, 10.0), new Point(5.0, 10.0), new Point(6.0, 10.0)),
                 List.of(5.0, 1.0, 0.0));
 
-        PurePursuit controller = new PurePursuit(path);
+        PurePursuit controller = new PurePursuit(path, 1e-4);
 
         Output output = controller.process(new Pose(0.0, 0.0, 0.5 * Math.PI), 9.0);
+        Assertions.assertEquals(3.0, output.velocity, epsilon);
+        Assertions.assertEquals(0.0, output.curvature, epsilon);
+        Assertions.assertEquals(-1.2, output.acceleration, epsilon);
+        Assertions.assertEquals(0, output.pathSegment);
+        Assertions.assertFalse(output.atEnd);
+
+        output = controller.process(new Pose(0.0, 0.0, 1.5 * Math.PI), 9.0);
         Assertions.assertEquals(3.0, output.velocity, epsilon);
         Assertions.assertEquals(0.0, output.curvature, epsilon);
         Assertions.assertEquals(-1.2, output.acceleration, epsilon);

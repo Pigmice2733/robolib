@@ -138,6 +138,25 @@ public class PathTest {
         Assertions.assertNull(target);
     }
 
+    @Test
+    public void nearEnd() {
+        List<Point> waypoints = List.of(Point.origin(), new Point(0.1, 0.0), new Point(0.2, 0.0),
+                new Point(0.3, 0.0), new Point(0.4, 0.0), new Point(0.5, 0.0));
+
+        List<Double> velocities = List.of(1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+
+        Path path = new Path(waypoints, velocities);
+
+        Target target = path.findTarget(new Point(0.05, 0.0), 1.0,
+                path.new Target(new Point(0.05, 0.0), 1.0, 0.0, 0));
+
+        Assertions.assertEquals(1.05, target.position.getX(), epsilon);
+        Assertions.assertEquals(0.0, target.position.getY(), epsilon);
+        Assertions.assertEquals(1.0, target.velocity, epsilon);
+        Assertions.assertEquals(0.0, target.acceleration, epsilon);
+        Assertions.assertEquals(4, target.segment);
+    }
+
     private static Path createTestPath() {
         List<Point> waypoints = List.of(Point.origin(), new Point(0.0, 10.0), new Point(10.0, 20.0),
                 new Point(10.0, 30.0), new Point(0.0, 30.0));

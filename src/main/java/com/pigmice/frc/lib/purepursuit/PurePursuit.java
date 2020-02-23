@@ -23,9 +23,11 @@ public class PurePursuit {
     }
 
     private final Path path;
+    private final double allowableError;
 
-    public PurePursuit(Path path) {
+    public PurePursuit(Path path, double allowableError) {
         this.path = path;
+        this.allowableError = allowableError;
     }
 
     public Output process(Pose robotPose, double lookAhead) {
@@ -34,7 +36,7 @@ public class PurePursuit {
         Target target = path.findTarget(robotPosition, lookAhead, closest);
 
         // Path is done once the closest point on the path is the end
-        boolean done = closest.position.subtract(path.end()).magnitude() < 1e-4;
+        boolean done = closest.position.subtract(path.end()).magnitude() < allowableError;
 
         if (target == null) {
             target = closest;
