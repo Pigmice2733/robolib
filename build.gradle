@@ -5,7 +5,7 @@ buildscript {
       }
     }
     dependencies {
-        classpath "edu.wpi.first:GradleRIO:2020.1.2"
+        classpath "edu.wpi.first:GradleRIO:2020.3.2"
     }
 }
 
@@ -19,7 +19,6 @@ if(!project.getPlugins().hasPlugin("edu.wpi.first.GradleRIO")) {
 }
 
 repositories {
-    mavenCentral()
     jcenter()
 }
 
