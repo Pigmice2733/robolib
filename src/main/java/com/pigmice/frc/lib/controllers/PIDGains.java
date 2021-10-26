@@ -1,8 +1,8 @@
 package com.pigmice.frc.lib.controllers;
 
 public class PIDGains {
-    private double kP, kI, kD;
-    private double kF, kV, kA;
+    private double kP, kI, kD; //Proportional, Integral, and Derivative
+    private double kF, kV, kA; //Friction, Velocity, and Acceleration
 
     public PIDGains(double kP, double kI, double kD) {
         this(kP, kI, kD, 0.0, 0.0, 0.0);
