@@ -25,3 +25,6 @@ graphs/
 
 # VSCode Java build output
 bin/
+
+#MacOS
+**/.DS_Store
