@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.ShuffleboardHelper;
+package com.pigmice.frc.lib.shuffleboardHelper;
 
 import java.util.ArrayList;
 import java.util.Map;
