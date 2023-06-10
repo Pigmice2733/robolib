@@ -17,8 +17,14 @@ public class NodeGrid {
     private int numNodesX;
     private int numNodesY;
 
+    /**
+     * @param botLeftBound the field position of the bottom left corner
+     * @param topRightBound the field position of the top right corner
+     * @param robotWidth the width of the robot including the bumper
+     * @param distanceMap the distance map to generate nodes from
+     */
     public NodeGrid(Translation2d botLeftBound, Translation2d topRightBound, double robotWidth,
-            BufferedImage distanceMap, Pathfinder pathfinder) {
+            BufferedImage distanceMap) {
         numNodesX = distanceMap.getWidth();
         numNodesY = distanceMap.getHeight();
 
@@ -37,7 +43,7 @@ public class NodeGrid {
                 Translation2d worldPos = GridToWorldPos(x, y);
                 double distanceFromEdge = new Color(distanceMap.getRGB(x, y)).getRed() / 255d * fieldSize.getX()
                         - robotWidth / 2;
-                nodes[x][y] = new Node(x, y, worldPos, distanceFromEdge, pathfinder);
+                nodes[x][y] = new Node(x, y, worldPos, distanceFromEdge, distanceFromEdge, robotWidth);
             }
         }
 

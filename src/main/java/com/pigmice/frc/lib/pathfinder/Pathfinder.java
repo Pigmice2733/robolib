@@ -18,7 +18,7 @@ public class Pathfinder {
     public double robotWidth = 0;
     public NodeGrid grid = null;
 
-    /**
+    /** The pathfinder class contains a NodeGrid and has functions for finding shortest paths
      * @param robotWidth the width of the robot including bumpers
      * @param distanceMapName the name of the imported distance map to use when pathfinding
      */
@@ -37,7 +37,7 @@ public class Pathfinder {
         }
 
         this.robotWidth = robotWidth;
-        grid = new NodeGrid(new Translation2d(0, 0), new Translation2d(3, 3), robotWidth, image, this);
+        grid = new NodeGrid(new Translation2d(0, 0), new Translation2d(3, 3), robotWidth, image);
     }
 
     /**

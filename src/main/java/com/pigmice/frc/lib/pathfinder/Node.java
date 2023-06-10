@@ -14,21 +14,22 @@ public class Node {
 
     public double gCost;
     public double hCost;
-    public double fCost() { return gCost + hCost; }
+
+    public double fCost() {
+        return gCost + hCost;
+    }
 
     public Node parent;
 
-    public Node(int gridX, int gridY, Translation2d worldPos, double distFromObj, Pathfinder pathfinder)
-    {
+    public Node(int gridX, int gridY, Translation2d worldPos, double distFromObj, double distanceCutoff,
+            double robotWidth) {
         this.gridX = gridX;
         this.gridY = gridY;
         this.worldPos = worldPos;
-        this.distFromObj = distFromObj - pathfinder.robotWidth/2d;
+        this.distFromObj = distFromObj - robotWidth / 2d;
         this.driveable = (distFromObj) > 0;
 
-        double cutoff = pathfinder.distanceCutoff;
-        if (distFromObj < cutoff) // if the robot is near a wall, scale distanceWeight from 0-1 based on how close it is
-            distanceWeight = MathUtil.interpolate(1, 0, distFromObj / cutoff);
-        else distanceWeight = 0;
+        distanceWeight = (distFromObj < distanceCutoff && driveable) ? // if the robot is near a wall, scale distanceWeight from 0-1 based on how close it is
+                MathUtil.interpolate(1, 0, distFromObj / distanceCutoff) : 0;
     }
 }
