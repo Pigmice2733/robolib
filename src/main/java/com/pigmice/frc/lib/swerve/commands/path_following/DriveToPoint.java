@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.pigmice.frc.lib.swerve.commands.pathfinder;
+package com.pigmice.frc.lib.swerve.commands.path_following;
 
 import java.util.List;
 
@@ -10,7 +10,6 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pigmice.frc.lib.swerve.SwerveDrivetrain;
-import com.pigmice.frc.lib.swerve.commands.path_following.FollowPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,6 +32,8 @@ public class DriveToPoint extends CommandBase {
         this.drivetrain = drivetrain;
         this.targetPose = targetPose;
         this.controllerToRumble = controllerToRumble;
+
+        addRequirements(drivetrain);
     }
 
     @Override

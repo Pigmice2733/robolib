@@ -20,7 +20,10 @@ public class DriveWithBoundaries extends CommandBase {
     private final Translation2d minBound;
     private final Translation2d maxBound;
 
-    /** Field oriented DriveWithJoysticks but the robot will not go past the specified boundaries. */
+    /**
+     * Field oriented DriveWithJoysticks but the robot will not go past the
+     * specified boundaries.
+     */
     public DriveWithBoundaries(SwerveDrivetrain drivetrain, Supplier<Double> driveSpeedX, Supplier<Double> driveSpeedY,
             Supplier<Double> turnSpeed, Translation2d minBound, Translation2d maxBound) {
 

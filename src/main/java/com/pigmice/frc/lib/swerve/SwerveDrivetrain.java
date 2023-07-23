@@ -27,7 +27,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     private final SwerveModule backLeftModule;
     private final SwerveModule backRightModule;
 
-    private final AHRS gyro;
+    private final AHRS gyro; 
     private final SwerveDriveOdometry odometry;
 
     private Pose2d pose = new Pose2d();

@@ -3,7 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 package com.pigmice.frc.lib.swerve.commands;
 
-
 import java.util.function.Supplier;
 
 import com.pigmice.frc.lib.swerve.SwerveDrivetrain;

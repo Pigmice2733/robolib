@@ -19,8 +19,12 @@ public class DriveFacingPosition extends CommandBase {
     private final Translation2d targetPos;
     private PIDController controller = new PIDController(0.1, 0, 0);
 
-    /** Field oriented DriveWithJoysticks with the robot always facing the specified target positions */
-    public DriveFacingPosition(SwerveDrivetrain drivetrain, Supplier<Double> driveSpeedX, Supplier<Double> driveSpeedY, Translation2d targetPos) {
+    /**
+     * Field oriented DriveWithJoysticks with the robot always facing the specified
+     * target positions
+     */
+    public DriveFacingPosition(SwerveDrivetrain drivetrain, Supplier<Double> driveSpeedX, Supplier<Double> driveSpeedY,
+            Translation2d targetPos) {
         this.drivetrain = drivetrain;
         this.driveSpeedX = driveSpeedX;
         this.driveSpeedY = driveSpeedY;
@@ -34,9 +38,11 @@ public class DriveFacingPosition extends CommandBase {
     public void execute() {
         Translation2d robotPose = drivetrain.getPose().getTranslation();
 
-        double angle = Math.toDegrees(Math.atan2(targetPos.getY()-robotPose.getY(), targetPos.getX()-robotPose.getX()));
+        double angle = Math
+                .toDegrees(Math.atan2(targetPos.getY() - robotPose.getY(), targetPos.getX() - robotPose.getX()));
         double radPerSec = controller.calculate(drivetrain.getPose().getRotation().getDegrees(), angle);
-        
-        drivetrain.driveChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(driveSpeedY.get(), driveSpeedX.get(), radPerSec, drivetrain.getHeading()));
+
+        drivetrain.driveChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(driveSpeedY.get(), driveSpeedX.get(),
+                radPerSec, drivetrain.getHeading()));
     }
 }

@@ -22,9 +22,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class RetracePath extends CommandBase {
     private final SwerveDrivetrain drivetrain;
 
-    /** While running: periodicly record robots positions. On End: scheduce a FollowPath command to retrace the robots path */
+    /**
+     * While running: periodicly record robots positions. On End: scheduce a
+     * FollowPath command to retrace the robots path
+     */
     public RetracePath(SwerveDrivetrain drivetrain) {
         this.drivetrain = drivetrain;
+
+        addRequirements(drivetrain);
     }
 
     Timer timer;
@@ -62,25 +67,26 @@ public class RetracePath extends CommandBase {
         timer.purge();
         task.cancel();
 
-        if (positions.size() < 2) return;
+        if (positions.size() < 2)
+            return;
 
         Collections.reverse(positions);
 
         ArrayList<PathPoint> points = new ArrayList<PathPoint>();
-        for (int i = 0; i < positions.size()-1; i++) {
+        for (int i = 0; i < positions.size() - 1; i++) {
             Pose2d current = positions.get(i);
-            Pose2d next = positions.get(i+1);
+            Pose2d next = positions.get(i + 1);
             Rotation2d angleToNext = Rotation2d.fromRadians(Math.atan2(
-                next.getY() - current.getY(),
-                next.getX() - current.getX()));
-        
+                    next.getY() - current.getY(),
+                    next.getX() - current.getX()));
+
             points.add(new PathPoint(current.getTranslation(), angleToNext, current.getRotation()));
         }
 
         points.add(new PathPoint(
-            positions.get(positions.size()-1).getTranslation(), 
-            points.get(points.size()-1).heading,
-            positions.get(positions.size()-1).getRotation()));
+                positions.get(positions.size() - 1).getTranslation(),
+                points.get(points.size() - 1).heading,
+                positions.get(positions.size() - 1).getRotation()));
 
         PathPlannerTrajectory trajectory = PathPlanner.generatePath(drivetrain.config.pathConstraints, points);
         CommandScheduler.getInstance().schedule(new FollowPath(drivetrain, trajectory));
