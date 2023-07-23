@@ -51,7 +51,7 @@ public class SwerveConfig {
     public SwerveConfig(MkSwerveModuleBuilder frontLeftModule, MkSwerveModuleBuilder frontRightModule,
             MkSwerveModuleBuilder backLeftModule, MkSwerveModuleBuilder backRightModule,
             PathConstraints pathConstraints, PIDController pathDrivePID, PIDController pathTurnPID,
-            float manualDriveSpeed, float manualTurnSpeed, SwerveDriveKinematics kinematics,
+            double manualDriveSpeed, double manualTurnSpeed, SwerveDriveKinematics kinematics,
             SimpleMotorFeedforward feedForward, ShuffleboardTab drivetrainTab) {
 
         this.frontLeftModule = frontLeftModule;
