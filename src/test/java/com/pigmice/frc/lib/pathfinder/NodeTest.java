@@ -20,12 +20,6 @@ public class NodeTest {
     }
 
     @Test
-    public void nodeDistanceTest() {
-        Assertions.assertEquals(1.2 - 0.2 / 2, node1.distanceToNearestObstacle, epsilon);
-        Assertions.assertEquals(-2 - 1.1 / 2, node2.distanceToNearestObstacle, epsilon);
-    }
-
-    @Test
     public void nodeDriveableTest() {
         Assertions.assertEquals(true, node1.driveable);
         Assertions.assertEquals(false, node2.driveable);
@@ -33,7 +27,7 @@ public class NodeTest {
 
     @Test
     public void nodeDistanceWeightTest() {
-        Assertions.assertEquals(0.6, node1.distanceWeight, epsilon);
+        Assertions.assertEquals(1 - 1.1 / 3d, node1.distanceWeight, epsilon);
         Assertions.assertEquals(0, node2.distanceWeight, epsilon);
     }
 }

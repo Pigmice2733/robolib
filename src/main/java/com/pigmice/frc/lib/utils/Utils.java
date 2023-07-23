@@ -95,13 +95,14 @@ public class Utils {
      * For an intersection specified by the Double <code>x</code>, the
      * intersection Point is equal to <code>lineStart + x*lineDirection</code>.
      *
-     * @param lineStart A Point on the line
+     * @param lineStart     A Point on the line
      * @param lineDirection Vector direction of the line
-     * @param circleCenter The center of the circle
-     * @param radius The radius of the circle
+     * @param circleCenter  The center of the circle
+     * @param radius        The radius of the circle
      * @return A list of all the intersection locations, given as described above
      */
-    public static List<Double> circleLineIntersections(Point lineStart, Vector lineDirection, Point circleCenter, double radius) {
+    public static List<Double> circleLineIntersections(Point lineStart, Vector lineDirection, Point circleCenter,
+            double radius) {
         final double A = lineDirection.dot(lineDirection);
 
         final Vector dist = lineStart.subtract(circleCenter);
@@ -109,7 +110,7 @@ public class Utils {
 
         final double C = dist.dot(dist) - (radius * radius);
 
-        final double discriminant = B*B - 4*A*C;
+        final double discriminant = B * B - 4 * A * C;
 
         if (discriminant < 0.0) {
             return new ArrayList<>();
@@ -129,9 +130,9 @@ public class Utils {
      * projected Point is given as a fraction of the line Vector starting at
      * <code>start</code>.
      *
-     * @param point The Point to project
-     * @param start The start of the line segment
-     * @param direction   Direction and length of the line
+     * @param point     The Point to project
+     * @param start     The start of the line segment
+     * @param direction Direction and length of the line
      * @return The projected point, specified as described above
      */
     public static double project(Point point, Point start, Vector direction) {
