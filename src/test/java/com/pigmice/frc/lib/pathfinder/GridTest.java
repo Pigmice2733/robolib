@@ -10,11 +10,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-
 public class GridTest {
     private static final double epsilon = 1e-6;
 
-    private static final NodeGrid grid = new NodeGrid(new Translation2d(-1.5, -1.5), new Translation2d(1.5, 1.5), 0.5, createTestDistanceMap());
+    // private static final NodeGrid grid = new NodeGrid(new Translation2d(-1.5,
+    // -1.5), new Translation2d(1.5, 1.5), 0.5, createTestDistanceMap());
 
     @Test
     public void SizeTest() {
@@ -24,7 +24,8 @@ public class GridTest {
     private static BufferedImage createTestDistanceMap() {
         BufferedImage image = null;
         try {
-            image = ImageIO.read(new File(Filesystem.getDeployDirectory(), "C:\\Programming\\Robotics\\Projects\\robolib\\src\\test\\java\\com\\pigmice\\frc\\lib\\pathfinder\\TestDistanceMap.png"));
+            image = ImageIO.read(new File(Filesystem.getDeployDirectory(),
+                    "C:\\Programming\\Robotics\\Projects\\robolib\\src\\test\\java\\com\\pigmice\\frc\\lib\\pathfinder\\TestDistanceMap.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }

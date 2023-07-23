@@ -4,7 +4,7 @@ package com.pigmice.frc.lib.swerve;
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 import com.kauailabs.navx.frc.AHRS;
-import com.pigmice.frc.lib.shuffleboardHelper.ShuffleboardHelper;
+import com.pigmice.frc.lib.shuffleboard_helper.ShuffleboardHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.MathUtil;
@@ -38,11 +38,11 @@ public class SwerveDrivetrain extends SubsystemBase {
     public SwerveDrivetrain(SwerveConfig config) {
         this.config = config;
 
-        frontLeftModule = config.frontLeftModule.build();        
+        frontLeftModule = config.frontLeftModule.build();
         frontRightModule = config.frontRightModule.build();
         backLeftModule = config.backLeftModule.build();
-        backRightModule = config.backRightModule.build();    
-        
+        backRightModule = config.backRightModule.build();
+
         gyro = new AHRS();
 
         states = getModuleStates();

@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.shuffleboardHelper;
+package com.pigmice.frc.lib.shuffleboard_helper;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -110,8 +110,9 @@ public class ShuffleboardHelper {
         }
     }
 
-    /** 
+    /**
      * Add a new output field to shuffleboard that will be automatically updated
+     * 
      * @param supplier returns a value to output to shuffleboard
      */
     public static ShuffleboardOutput addOutput(String name, ShuffleboardContainer tab, Supplier<Object> supplier) {
@@ -120,8 +121,9 @@ public class ShuffleboardHelper {
         return shuffleboardOutput;
     }
 
-    /** 
+    /**
      * Add a new input field to shuffleboard that will be automatically updated
+     * 
      * @param consumer will be automatically called with the inputted value
      */
     public static ShuffleboardInput addInput(String name, ShuffleboardContainer tab, Consumer<Double> consumer) {
@@ -133,16 +135,19 @@ public class ShuffleboardHelper {
     /** Output the position, velocity, temperature, and output of a motor in amps */
     public static void addMotorInfo(String name, ShuffleboardTab tab, CANSparkMax motor, int xPos, int yPos) {
         ShuffleboardLayout layout = tab.getLayout(name, BuiltInLayouts.kList)
-            .withSize(2, 3)
-            .withPosition(xPos, yPos);
-        
+                .withSize(2, 3)
+                .withPosition(xPos, yPos);
+
         addOutput("Encoder Position", layout, () -> motor.getEncoder().getPosition()).withPosition(0, 1);
         addOutput("Encoder Velocity", layout, () -> motor.getEncoder().getVelocity()).withPosition(0, 2);
         addOutput("Temperature", layout, () -> motor.getMotorTemperature()).withPosition(0, 3);
         addOutput("Motor Output (amps)", layout, () -> motor.getOutputCurrent()).withPosition(0, 4);
     }
 
-    /** <strong>Call in Robot.robotPeriodic</strong>, updates all shuffleboard inputs and outputs. */
+    /**
+     * <strong>Call in Robot.robotPeriodic</strong>, updates all shuffleboard inputs
+     * and outputs.
+     */
     public static void update() {
         for (ShuffleboardObject shuffleboardObject : shuffleboardObjects) {
             if (shuffleboardObject.isDebug && !debugEnabled)

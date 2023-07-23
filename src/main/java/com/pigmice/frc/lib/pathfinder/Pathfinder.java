@@ -4,52 +4,38 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
-import javax.imageio.ImageIO;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import com.pigmice.frc.lib.pathfinder.field_loading.Field;
+import com.pigmice.frc.lib.pathfinder.field_loading.FieldParser;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.Filesystem;
 
 public class Pathfinder {
-    public double distanceCutoff = 1;
-    public double robotWidth = 0;
+    public static final double DISTANCE_CUTOFF = 1;
+
     public NodeGrid grid = null;
+    public Field field;
 
-    /** The pathfinder class contains a NodeGrid and has functions for finding shortest paths
-     * @param robotWidth the width of the robot including bumpers
-     * @param distanceMapName the name of the imported distance map to use when pathfinding
+    /**
+     * @param robotWidthMeters the width of the robot including bumpers
+     * @param distanceMapName  the name of the imported distance map to use when
+     *                         pathfinding
      */
-    public Pathfinder(double robotWidth, String distanceMapName) {
-        BufferedImage image = null;
-        System.out.println(Filesystem.getDeployDirectory().toString() + "/" + distanceMapName + ".png");
-        try {
-            image = ImageIO.read(new File(Filesystem.getDeployDirectory(), "pathfinder/" + distanceMapName + ".png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public Pathfinder(double robotWidthMeters, String distanceMapName) {
+        field = FieldParser.parseField("TestField");
 
-        if (image == null) {
-            System.out.println("Image is NULL");
-            return;
-        }
-
-        this.robotWidth = robotWidth;
-        grid = new NodeGrid(new Translation2d(0, 0), new Translation2d(3, 3), robotWidth, image);
+        grid = new NodeGrid(robotWidthMeters, field);
     }
 
     /**
      * @return PathfinderResult contains a list of waypoints from currentPos to
      *         goalPos avoiding obstacles
      */
-    public PathfinderResult FindPath(Translation2d currentPos, Translation2d goalPos) {
+    public PathfinderResult findPath(Translation2d currentPos, Translation2d goalPos) {
         Node start = grid.FindCloseNode(currentPos);
         Node end = grid.FindCloseNode(goalPos);
 
         if (start == end || !start.driveable || !end.driveable)
-            return new PathfinderResult(false, null, null);
+            return new PathfinderResult(false, null);
 
         boolean pathFound = false;
         ArrayList<Node> path = new ArrayList<Node>();
@@ -72,9 +58,9 @@ public class Pathfinder {
             closedSet.add(currentNode);
 
             if (currentNode == end) {
-                path = RetracePath(start, end);
+                path = retracePath(start, end);
 
-                simplifiedPath = SimplifyPath(path);
+                simplifiedPath = simplifyPath(path);
 
                 simplifiedPath.set(0, currentPos);
                 simplifiedPath.set(simplifiedPath.size() - 1, goalPos);
@@ -85,22 +71,22 @@ public class Pathfinder {
             for (Node neighbor : grid.GetNeighbors(currentNode)) {
                 if (!neighbor.driveable || closedSet.contains(neighbor))
                     continue;
-                double newMovementCostToNeighbor = currentNode.gCost + GetDistance(currentNode, neighbor);
+                double newMovementCostToNeighbor = currentNode.gCost + getDistance(currentNode, neighbor);
                 newMovementCostToNeighbor += neighbor.distanceWeight * 10;
                 if (newMovementCostToNeighbor < neighbor.gCost || !openSet.contains(neighbor)) {
                     neighbor.gCost = newMovementCostToNeighbor;
-                    neighbor.hCost = GetDistance(neighbor, end);
+                    neighbor.hCost = getDistance(neighbor, end);
                     neighbor.parent = currentNode;
                     if (!openSet.contains(neighbor))
                         openSet.add(neighbor);
                 }
             }
         }
-        return new PathfinderResult(pathFound, simplifiedPath, path);
+        return new PathfinderResult(pathFound, simplifiedPath);
     }
 
     /** @return the path traced back from the end node */
-    static ArrayList<Node> RetracePath(Node start, Node end) {
+    static ArrayList<Node> retracePath(Node start, Node end) {
         ArrayList<Node> path = new ArrayList<Node>();
         Node currentNode = end;
 
@@ -115,28 +101,31 @@ public class Pathfinder {
     }
 
     /** @return a simplified version of the path that only contains turns */
-    static ArrayList<Translation2d> SimplifyPath(ArrayList<Node> path) {
+    static ArrayList<Translation2d> simplifyPath(ArrayList<Node> path) {
         ArrayList<Translation2d> waypoints = new ArrayList<Translation2d>();
         Translation2d oldDirection = new Translation2d();
 
-        waypoints.add(path.get(0).worldPos);
+        waypoints.add(path.get(0).fieldPos);
 
         for (int i = 1; i < path.size() - 1; i++) {
 
-            Translation2d newDirection = path.get(i).worldPos.minus(path.get(i + 1).worldPos);
+            Translation2d newDirection = path.get(i).fieldPos.minus(path.get(i + 1).fieldPos);
             if (!newDirection.equals(oldDirection)) {
-                waypoints.add(path.get(i).worldPos);
+                waypoints.add(path.get(i).fieldPos);
                 oldDirection = newDirection;
             }
         }
-        waypoints.remove(path.get(1).worldPos);
-        waypoints.add(path.get(path.size() - 1).worldPos);
+        waypoints.remove(path.get(1).fieldPos);
+        waypoints.add(path.get(path.size() - 1).fieldPos);
 
         return waypoints;
     }
 
-    /** @return the smallest number of steps between nodeA and nodeB ignoring obstacles */
-    static double GetDistance(Node nodeA, Node nodeB) {
+    /**
+     * @return the smallest number of steps between nodeA and nodeB ignoring
+     *         obstacles
+     */
+    static double getDistance(Node nodeA, Node nodeB) {
         double distX = Math.abs(nodeA.gridX - nodeB.gridX);
         double distY = Math.abs(nodeA.gridY - nodeB.gridY);
 

@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public class NodeTest {
     private static final double epsilon = 1e-6;
-    
+
     private static final Node node1 = new Node(10, 4, new Translation2d(10.2, -3.4), 1.2, 3, 0.2);
     private static final Node node2 = new Node(10, -21, new Translation2d(-10.2, 3.4), -2, 1, 1.1);
 
@@ -15,14 +15,14 @@ public class NodeTest {
     public void nodePositionTest() {
         Assertions.assertEquals(10, node1.gridX, epsilon);
         Assertions.assertEquals(4, node1.gridY, epsilon);
-        Assertions.assertEquals(10.2, node1.worldPos.getX(), epsilon);
-        Assertions.assertEquals(-3.4, node1.worldPos.getY(), epsilon);
+        Assertions.assertEquals(10.2, node1.fieldPos.getX(), epsilon);
+        Assertions.assertEquals(-3.4, node1.fieldPos.getY(), epsilon);
     }
 
     @Test
     public void nodeDistanceTest() {
-        Assertions.assertEquals(1.2 - 0.2/2, node1.distFromObj, epsilon);
-        Assertions.assertEquals(-2 - 1.1/2, node2.distFromObj, epsilon);
+        Assertions.assertEquals(1.2 - 0.2 / 2, node1.distanceToNearestObstacle, epsilon);
+        Assertions.assertEquals(-2 - 1.1 / 2, node2.distanceToNearestObstacle, epsilon);
     }
 
     @Test
