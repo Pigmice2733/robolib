@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.pigmice.frc.lib.swerve.commands.path_following;
+package com.pigmice.frc.lib.swerve.commands.pathfinder;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pigmice.frc.lib.swerve.SwerveDrivetrain;
+import com.pigmice.frc.lib.swerve.commands.path_following.FollowPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -37,9 +38,8 @@ public class DriveToPoint extends CommandBase {
     @Override
     public void initialize() {
         pathCommand = new SequentialCommandGroup(
-            new FollowPath(drivetrain, generateTrajectory(drivetrain, targetPose)),
-            new InstantCommand(() -> controllerToRumble.setRumble(RumbleType.kBothRumble, 0.75))
-        );
+                new FollowPath(drivetrain, generateTrajectory(drivetrain, targetPose)),
+                new InstantCommand(() -> controllerToRumble.setRumble(RumbleType.kBothRumble, 0.75)));
         CommandScheduler.getInstance().schedule(pathCommand);
     }
 
@@ -61,11 +61,11 @@ public class DriveToPoint extends CommandBase {
 
         // Angle facing the end point when at the current point
         Rotation2d angleToEnd = Rotation2d.fromRadians(Math.atan2(targetPose.getY() - currentPose.getY(),
-            targetPose.getX() - currentPose.getX()));
-        
+                targetPose.getX() - currentPose.getX()));
+
         PathPoint currentPoint = new PathPoint(currentPose.getTranslation(), angleToEnd, currentPose.getRotation());
         PathPoint endPoint = new PathPoint(targetPose.getTranslation(), angleToEnd, targetPose.getRotation());
-        
+
         return PathPlanner.generatePath(drivetrain.config.pathConstraints, List.of(currentPoint, endPoint));
-  }
+    }
 }
