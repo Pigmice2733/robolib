@@ -27,7 +27,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     private final SwerveModule backLeftModule;
     private final SwerveModule backRightModule;
 
-    private final AHRS gyro; 
+    private final AHRS gyro;
     private final SwerveDriveOdometry odometry;
 
     private Pose2d pose = new Pose2d();
@@ -149,6 +149,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     /** Reset odometry & gyro to pose (0, 0) with 0 rotation */
     public void resetOdometry() {
+        System.out.println("Reset odometry");
         resetOdometry(new Pose2d());
     }
 

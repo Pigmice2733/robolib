@@ -53,6 +53,14 @@ public class FollowPath extends SequentialCommandGroup {
     public FollowPath(SwerveDrivetrain drivetrain, PathPlannerTrajectory trajectory,
             HashMap<String, Command> eventMap) {
         SwerveConfig config = drivetrain.config;
+        System.out.println(trajectory.getMarkers());
+        System.out.println("TEST");
+        System.out.println("TEST");
+        System.out.println("TEST");
+        System.out.println("TEST");
+        System.out.println("TEST");
+        System.out.println("TEST");
+        System.out.println("TEST");
         addCommands(
                 drivetrain.resetOdometryCommand(trajectory.getInitialHolonomicPose()),
                 new FollowPathWithEvents(
