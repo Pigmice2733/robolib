@@ -115,8 +115,9 @@ public class ShuffleboardHelper {
      * 
      * @param supplier returns a value to output to shuffleboard
      */
-    public static ShuffleboardOutput addOutput(String name, ShuffleboardContainer tab, Supplier<Object> supplier) {
-        ShuffleboardOutput shuffleboardOutput = new ShuffleboardOutput(tab.add(name, supplier.get()), supplier);
+    public static ShuffleboardOutput addOutput(String name, ShuffleboardContainer container,
+            Supplier<Object> supplier) {
+        ShuffleboardOutput shuffleboardOutput = new ShuffleboardOutput(container.add(name, supplier.get()), supplier);
         shuffleboardObjects.add(shuffleboardOutput);
         return shuffleboardOutput;
     }
@@ -126,8 +127,8 @@ public class ShuffleboardHelper {
      * 
      * @param consumer will be automatically called with the inputted value
      */
-    public static ShuffleboardInput addInput(String name, ShuffleboardContainer tab, Consumer<Double> consumer) {
-        ShuffleboardInput shuffleboardInput = new ShuffleboardInput(tab.add(name, 0), consumer);
+    public static ShuffleboardInput addInput(String name, ShuffleboardContainer container, Consumer<Double> consumer) {
+        ShuffleboardInput shuffleboardInput = new ShuffleboardInput(container.add(name, 0), consumer);
         shuffleboardObjects.add(shuffleboardInput);
         return shuffleboardInput;
     }
