@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pigmice.frc.lib.utils.Utils;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory.State;
@@ -40,6 +41,8 @@ public class GridVisualizer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        System.out.println("Saved to " + outputLocation);
     }
 
     /**
@@ -50,10 +53,17 @@ public class GridVisualizer {
     private GridVisualizer addObstacles() {
         for (int x = 0; x < _image.getWidth(); x++) {
             for (int y = 0; y < _image.getHeight(); y++) {
-                if (_grid.getNodeAt(x, y).driveable) {
-                    _image.setRGB(x, y, getIntFromColor(.3, .3, .3));
-                } else
-                    _image.setRGB(x, y, getIntFromColor(0, 0, 0));
+                var node = _grid.getNodeAt(x, y);
+                if (node.driveable) {
+                    double col = Utils.lerp(0.5, 0.2, node.distanceWeight);
+                    _image.setRGB(x, y, getIntFromColor(col, col, col));
+                } else {
+                    if (node.edgeToCenterDistance < 0)
+                        _image.setRGB(x, y, getIntFromColor(0, 0, 0));
+                    else
+                        _image.setRGB(x, y, getIntFromColor(.3, .3, .3));
+                }
+
             }
         }
         return this;
@@ -68,7 +78,7 @@ public class GridVisualizer {
     public GridVisualizer addWaypoints(PathfinderResult result) {
         for (Translation2d waypoint : result.getPositionList()) {
             Node node = _grid.FindCloseNode(waypoint);
-            _image.setRGB(node.gridX, node.gridY, getIntFromColor(1, 0, 0));
+            _image.setRGB(node.gridX, node.gridY, getIntFromColor(0, 1, 0));
         }
         return this;
     }
