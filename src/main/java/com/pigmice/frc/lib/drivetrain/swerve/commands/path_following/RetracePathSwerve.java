@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.pigmice.frc.lib.swerve.commands.path_following;
+package com.pigmice.frc.lib.drivetrain.swerve.commands.path_following;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,21 +12,21 @@ import java.util.TimerTask;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
-import com.pigmice.frc.lib.swerve.SwerveDrivetrain;
+import com.pigmice.frc.lib.drivetrain.swerve.SwerveDrivetrain;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-public class RetracePath extends CommandBase {
+public class RetracePathSwerve extends CommandBase {
     private final SwerveDrivetrain drivetrain;
 
     /**
      * While running: periodicly record robots positions. On End: scheduce a
      * FollowPath command to retrace the robots path
      */
-    public RetracePath(SwerveDrivetrain drivetrain) {
+    public RetracePathSwerve(SwerveDrivetrain drivetrain) {
         this.drivetrain = drivetrain;
 
         addRequirements(drivetrain);
@@ -89,7 +89,7 @@ public class RetracePath extends CommandBase {
                 positions.get(positions.size() - 1).getRotation()));
 
         PathPlannerTrajectory trajectory = PathPlanner.generatePath(drivetrain.config.PATH_CONSTRAINTS, points);
-        CommandScheduler.getInstance().schedule(new FollowPath(drivetrain, trajectory));
+        CommandScheduler.getInstance().schedule(new FollowPathSwerve(drivetrain, trajectory));
     }
 
     @Override

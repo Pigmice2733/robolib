@@ -2,18 +2,18 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-package com.pigmice.frc.lib.swerve.commands;
+package com.pigmice.frc.lib.drivetrain.swerve.commands.constraints;
 
 import java.util.function.Supplier;
 
-import com.pigmice.frc.lib.swerve.SwerveDrivetrain;
+import com.pigmice.frc.lib.drivetrain.swerve.SwerveDrivetrain;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class DriveFacingPosition extends CommandBase {
+public class DriveFacingPositionSwerve extends CommandBase {
     private final SwerveDrivetrain drivetrain;
     private final Supplier<Double> driveSpeedX, driveSpeedY;
     private final Translation2d targetPos;
@@ -23,7 +23,8 @@ public class DriveFacingPosition extends CommandBase {
      * Field oriented DriveWithJoysticks with the robot always facing the specified
      * target positions
      */
-    public DriveFacingPosition(SwerveDrivetrain drivetrain, Supplier<Double> driveSpeedX, Supplier<Double> driveSpeedY,
+    public DriveFacingPositionSwerve(SwerveDrivetrain drivetrain, Supplier<Double> driveSpeedX,
+            Supplier<Double> driveSpeedY,
             Translation2d targetPos) {
         this.drivetrain = drivetrain;
         this.driveSpeedX = driveSpeedX;

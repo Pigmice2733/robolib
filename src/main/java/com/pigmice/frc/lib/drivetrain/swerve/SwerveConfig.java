@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.swerve;
+package com.pigmice.frc.lib.drivetrain.swerve;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.auto.PIDConstants;
@@ -33,7 +33,7 @@ public class SwerveConfig {
     public final ShuffleboardTab DRIVETRAIN_TAB;
 
     /**
-     * <strong>Recommended use:</strong> create a SwerveConfig objects in constants
+     * <strong>Recommended use:</strong> create a SwerveConfig object in constants
      * to pass into any subsystems and commands that need it
      * 
      * @param modules          swerve module objects for use in the subsystem

@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.swerve.commands;
+package com.pigmice.frc.lib.drivetrain.swerve.commands.constraints;
 
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
@@ -6,14 +6,14 @@ package com.pigmice.frc.lib.swerve.commands;
 
 import java.util.function.Supplier;
 
-import com.pigmice.frc.lib.swerve.SwerveDrivetrain;
+import com.pigmice.frc.lib.drivetrain.swerve.SwerveDrivetrain;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class DriveWithBoundaries extends CommandBase {
+public class DriveWithBoundariesSwerve extends CommandBase {
     private final SwerveDrivetrain drivetrain;
     private final Supplier<Double> driveSpeedX, driveSpeedY, turnSpeed;
 
@@ -24,7 +24,8 @@ public class DriveWithBoundaries extends CommandBase {
      * Field oriented DriveWithJoysticks but the robot will not go past the
      * specified boundaries.
      */
-    public DriveWithBoundaries(SwerveDrivetrain drivetrain, Supplier<Double> driveSpeedX, Supplier<Double> driveSpeedY,
+    public DriveWithBoundariesSwerve(SwerveDrivetrain drivetrain, Supplier<Double> driveSpeedX,
+            Supplier<Double> driveSpeedY,
             Supplier<Double> turnSpeed, Translation2d minBound, Translation2d maxBound) {
 
         this.drivetrain = drivetrain;

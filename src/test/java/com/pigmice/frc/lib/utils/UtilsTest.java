@@ -37,7 +37,22 @@ public class UtilsTest {
 
         @Test
         public void lerpMixedSignRanges() {
-            Assertions.assertEquals(Utils.lerp(-1.0, 0.0, -2.0, 5.0, 9.0), 7.0, epsilon);
+            Assertions.assertEquals(7.0, Utils.lerp(-1.0, 0.0, -2.0, 5.0, 9.0), epsilon);
+        }
+
+        @Test
+        public void lerpHalf1d() {
+            Assertions.assertEquals(4, Utils.lerp(2.0, 6.0, 0.5), epsilon);
+        }
+
+        @Test
+        public void lerpBackwards1d() {
+            Assertions.assertEquals(1, Utils.lerp(2, -3, 0.2), epsilon);
+        }
+
+        @Test
+        public void lerpMixedSign1d() {
+            Assertions.assertEquals(0, Utils.lerp(-5, 5, 0.5), epsilon);
         }
     }
 
@@ -93,7 +108,7 @@ public class UtilsTest {
             Vector direction = new Vector(6.0, 0.0);
 
             List<Double> intersections = Utils.circleLineIntersections(
-                start, direction, Point.origin(), 5.0);
+                    start, direction, Point.origin(), 5.0);
 
             Assertions.assertEquals(2, intersections.size());
 
@@ -109,7 +124,7 @@ public class UtilsTest {
             direction = new Vector(-6.0, -6.0);
 
             intersections = Utils.circleLineIntersections(
-                start, direction, new Point(2.0, -3.0), 4.0);
+                    start, direction, new Point(2.0, -3.0), 4.0);
 
             Assertions.assertEquals(2, intersections.size());
 
@@ -125,12 +140,12 @@ public class UtilsTest {
         @Test
         public void noIntersections() {
             List<Double> intersections = Utils.circleLineIntersections(
-                Point.origin(), new Vector(1.0, 0.0), new Point(0.0, 6.0), 5.0);
+                    Point.origin(), new Vector(1.0, 0.0), new Point(0.0, 6.0), 5.0);
 
             Assertions.assertEquals(0, intersections.size());
 
             intersections = Utils.circleLineIntersections(
-                new Point(5.0, 5.0), new Vector(0.0, -10.0), Point.origin(), 4.0);
+                    new Point(5.0, 5.0), new Vector(0.0, -10.0), Point.origin(), 4.0);
 
             Assertions.assertEquals(0, intersections.size());
         }

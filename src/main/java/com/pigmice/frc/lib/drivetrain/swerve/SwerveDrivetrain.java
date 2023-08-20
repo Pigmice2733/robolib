@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.swerve;
+package com.pigmice.frc.lib.drivetrain.swerve;
 
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
