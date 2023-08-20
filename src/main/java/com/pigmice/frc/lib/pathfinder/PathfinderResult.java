@@ -48,7 +48,11 @@ public class PathfinderResult {
             }
             Rotation2d angleToNext = new Rotation2d(rotation);
 
-            points.add(new PathPoint(current, angleToNext, new Rotation2d()).withControlLengths(0.75, 0.75));
+            double distance = current.getDistance(next) / 3.0;
+
+            points.add(new PathPoint(current, angleToNext, new Rotation2d())
+                    .withControlLengths(distance / 3,
+                            distance / 5));
         }
 
         points.add(new PathPoint(

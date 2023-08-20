@@ -13,8 +13,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 
 public class GridVisualizer {
-    private final NodeGrid _grid;
-    private final BufferedImage _image;
+    private final NodeGrid grid;
+    private final BufferedImage image;
 
     /**
      * Creates a new grid visual and adds obstacles
@@ -22,8 +22,8 @@ public class GridVisualizer {
      * @param pathfinder the pathfinder to get a grid from to visualize
      */
     public GridVisualizer(Pathfinder pathfinder) {
-        this._grid = pathfinder.grid;
-        this._image = new BufferedImage(_grid.getWidth(), _grid.getHeight(), BufferedImage.TYPE_INT_RGB);
+        this.grid = pathfinder.grid;
+        this.image = new BufferedImage(grid.getWidth(), grid.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         addObstacles();
     }
@@ -37,7 +37,7 @@ public class GridVisualizer {
     public void saveAsPNG(String outputLocation) {
         File outputfile = new File(outputLocation);
         try {
-            ImageIO.write(_image, "PNG", outputfile);
+            ImageIO.write(image, "PNG", outputfile);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,17 +51,17 @@ public class GridVisualizer {
      * @return this instance to allow chaining methods
      */
     private GridVisualizer addObstacles() {
-        for (int x = 0; x < _image.getWidth(); x++) {
-            for (int y = 0; y < _image.getHeight(); y++) {
-                var node = _grid.getNodeAt(x, y);
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                Node node = grid.getNodeAt(x, y);
                 if (node.driveable) {
                     double col = Utils.lerp(0.5, 0.2, node.distanceWeight);
-                    _image.setRGB(x, y, getIntFromColor(col, col, col));
+                    image.setRGB(x, y, getIntFromColor(col, col, col));
                 } else {
                     if (node.edgeToCenterDistance < 0)
-                        _image.setRGB(x, y, getIntFromColor(0, 0, 0));
+                        image.setRGB(x, y, getIntFromColor(0, 0, 0));
                     else
-                        _image.setRGB(x, y, getIntFromColor(.3, .3, .3));
+                        image.setRGB(x, y, getIntFromColor(.3, .3, .3));
                 }
 
             }
@@ -77,8 +77,8 @@ public class GridVisualizer {
      */
     public GridVisualizer addWaypoints(PathfinderResult result) {
         for (Translation2d waypoint : result.getPositionList()) {
-            Node node = _grid.FindCloseNode(waypoint);
-            _image.setRGB(node.gridX, node.gridY, getIntFromColor(0, 1, 0));
+            Node node = grid.FindCloseNode(waypoint);
+            image.setRGB(node.gridX, node.gridY, getIntFromColor(0, 1, 0));
         }
         return this;
     }
@@ -91,18 +91,30 @@ public class GridVisualizer {
      */
     public GridVisualizer addTrajectory(PathPlannerTrajectory trajectory) {
         for (State state : trajectory.getStates()) {
-            Node node = _grid.FindCloseNode(state.poseMeters.getTranslation());
-            _image.setRGB(node.gridX, node.gridY, getIntFromColor(1, 0, 0));
+            Node node = grid.FindCloseNode(state.poseMeters.getTranslation());
+            image.setRGB(node.gridX, node.gridY, getIntFromColor(1, 0, 0));
         }
+        return this;
+    }
+
+    /**
+     * Adds a single point to the image
+     * 
+     * @param fieldPosition the position in field space to draw the point
+     * @return this instance to allow chaining methods
+     */
+    public GridVisualizer addPoint(Translation2d fieldPosition) {
+        Node node = grid.FindCloseNode(fieldPosition);
+        image.setRGB(node.gridX, node.gridY, getIntFromColor(1, 0, 0));
         return this;
     }
 
     /**
      * Converts RGB values to an integer representing a color
      * 
-     * @param Red   the red component of the color (0-1)
-     * @param Green the green component of the color (0-1)
-     * @param Blue  the blue component of the color (0-1)
+     * @param Red   the red component of the color (0.0 - 1.0)
+     * @param Green the green component of the color (0.0 - 1.0)
+     * @param Blue  the blue component of the color (0.0 - 1.0)
      * @return an integer representing a color
      */
     public static int getIntFromColor(double Red, double Green, double Blue) {
