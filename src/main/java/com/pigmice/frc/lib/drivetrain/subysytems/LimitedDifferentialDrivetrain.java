@@ -2,11 +2,13 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.pigmice.frc.lib.drivetrain.differential;
+package com.pigmice.frc.lib.drivetrain.subysytems;
 
 import static edu.wpi.first.math.system.plant.LinearSystemId.identifyDrivetrainSystem;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pigmice.frc.lib.drivetrain.differential.AccelLimiterConfig;
+import com.pigmice.frc.lib.drivetrain.differential.DifferentialConfig;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -29,8 +31,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class DifferentialDrivetrain extends SubsystemBase {
+public class LimitedDifferentialDrivetrain extends SubsystemBase {
     private final DifferentialConfig config;
+    private final AccelLimiterConfig accelLimConfig;
+
     GenericEntry xPosEntry;
 
     // TODO
@@ -70,8 +74,9 @@ public class DifferentialDrivetrain extends SubsystemBase {
 
     private Field2d field = new Field2d();
 
-    public DifferentialDrivetrain(DifferentialConfig config) {
+    public LimitedDifferentialDrivetrain(DifferentialConfig config, AccelLimiterConfig accelLimConfig) {
         this.config = config;
+        this.accelLimConfig = accelLimConfig;
 
         leftDrive = new CANSparkMax(config.LEFT_DRIVE_PORT, MotorType.kBrushless);
         rightDrive = new CANSparkMax(config.RIGHT_DRIVE_PORT, MotorType.kBrushless);
@@ -90,23 +95,23 @@ public class DifferentialDrivetrain extends SubsystemBase {
         rightGroup.setInverted(config.RIGHT_INVERTED);
 
         drivetrainModel = identifyDrivetrainSystem(
-                config.FEED_FORWARD.LINEAR_V,
-                config.FEED_FORWARD.LINEAR_A,
-                config.FEED_FORWARD.ANGULAR_V,
-                config.FEED_FORWARD.ANGULAR_A);
+                accelLimConfig.LINEAR_V,
+                accelLimConfig.LINEAR_A,
+                accelLimConfig.ANGULAR_V,
+                accelLimConfig.ANGULAR_A);
 
-        kinematics = new DifferentialDriveKinematics(config.DRIVETRAIN_WIDTH);
+        kinematics = new DifferentialDriveKinematics(config.TRACK_WIDTH);
 
         accelerationLimiter = new DifferentialDriveAccelerationLimiter(
                 drivetrainModel,
-                config.DRIVETRAIN_WIDTH,
-                config.MAX_ACCELERATION,
-                config.MAX_ANGULAR_ACCELERATION);
+                config.TRACK_WIDTH,
+                accelLimConfig.MAX_ACCELERATION,
+                accelLimConfig.MAX_ANGULAR_ACCELERATION);
 
         feedforward = new DifferentialDriveFeedforward(
-                config.FEED_FORWARD.LINEAR_V, config.FEED_FORWARD.LINEAR_A,
-                config.FEED_FORWARD.ANGULAR_V, config.FEED_FORWARD.ANGULAR_A,
-                config.DRIVETRAIN_WIDTH);
+                accelLimConfig.LINEAR_V, accelLimConfig.LINEAR_A,
+                accelLimConfig.ANGULAR_V, accelLimConfig.ANGULAR_A,
+                config.TRACK_WIDTH);
 
         rightDrive.restoreFactoryDefaults();
         leftDrive.restoreFactoryDefaults();
