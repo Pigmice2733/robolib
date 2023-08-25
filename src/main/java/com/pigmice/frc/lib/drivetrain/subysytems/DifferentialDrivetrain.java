@@ -14,9 +14,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DifferentialDrivetrain extends SubsystemBase {
@@ -36,11 +35,7 @@ public class DifferentialDrivetrain extends SubsystemBase {
 
     private Pose2d pose = new Pose2d();
 
-    private boolean slowEnabled = false;
-    private boolean backwards = false;
     public double outputFactor = 1;
-
-    private Field2d field = new Field2d();
 
     public DifferentialDrivetrain(DifferentialConfig config, boolean onlyUseDriveMotors) {
         this.config = config;
@@ -88,40 +83,7 @@ public class DifferentialDrivetrain extends SubsystemBase {
      * @param slowEnabled whether or not slowmode should be enabled
      */
     public void setSlow(boolean slowEnabled) {
-        this.slowEnabled = slowEnabled;
         outputFactor = slowEnabled ? config.SLOW_MULTIPLIER : 1;
-    }
-
-    public void enableSlow() {
-        setSlow(true);
-    }
-
-    public void disableSlow() {
-        setSlow(false);
-    }
-
-    public void toggleSlow() {
-        setSlow(!this.slowEnabled);
-    }
-
-    public boolean isSlow() {
-        return slowEnabled;
-    }
-
-    public void setBackwards(boolean backwards) {
-        this.backwards = backwards;
-    }
-
-    public void enableBackwards() {
-        setBackwards(true);
-    }
-
-    public void disableBackwards() {
-        setBackwards(false);
-    }
-
-    public void toggleBackwards() {
-        setBackwards(!this.backwards);
     }
 
     /** Updates the odometry pose with the heading and position measurements. */
@@ -145,9 +107,7 @@ public class DifferentialDrivetrain extends SubsystemBase {
         return gyro.getRoll();
     }
 
-    /**
-     * Returns the average distance moved by left and right wheels since last reset.
-     */
+    /** Returns the average distance moved by left and right since last reset */
     public double getAverageDistance() {
         double left = leftDrive.getEncoder().getPosition() * (leftGroup.getInverted() ? -1 : 1);
         double right = rightDrive.getEncoder().getPosition() * (rightGroup.getInverted() ? -1 : 1);
@@ -178,7 +138,7 @@ public class DifferentialDrivetrain extends SubsystemBase {
 
     /** resetOdometry() as a command */
     public Command resetOdometryCommand() {
-        return new InstantCommand(() -> resetOdometry());
+        return Commands.runOnce(() -> resetOdometry());
     }
 
     /** Sets odometry to a specific Pose2d. */
@@ -193,9 +153,13 @@ public class DifferentialDrivetrain extends SubsystemBase {
 
     /** setOdometryPose() as a command */
     public Command setOdometryPoseCommand(Pose2d pose) {
-        return new InstantCommand(() -> setOdometryPose(pose));
+        return Commands.runOnce(() -> setOdometryPose(pose));
     }
 
+    /**
+     * Calculates and applies left and right motor outputs from arcade drive forward
+     * and turn values
+     */
     public void arcadeDrive(double forward, double turn) {
         double left = forward + turn;
         double right = forward - turn;
@@ -203,20 +167,24 @@ public class DifferentialDrivetrain extends SubsystemBase {
         setPercentOutputs(left, right);
     }
 
+    /** Sets the motors to a specific voltage */
     public void setVoltages(double left, double right) {
         leftGroup.setVoltage(left * outputFactor);
         rightGroup.setVoltage(right * outputFactor);
     }
 
+    /** Sets the motors to a percent output (zero to one) */
     public void setPercentOutputs(double left, double right) {
         leftGroup.set(left);
         rightGroup.set(right);
     }
 
+    /** Stops all drivetrain motors */
     public void stop() {
         setVoltages(0, 0);
     }
 
+    /** @return whether or not the NavX is currently connected */
     public boolean navxConnected() {
         return gyro.isConnected();
     }
