@@ -45,9 +45,9 @@ public class DifferentialConfig {
      *                                     motor output in slow mode
      */
     public DifferentialConfig(int leftDrivePort, int rightDrivePort, int leftFollowPort, int rightFollowPort,
-            boolean leftInverted, boolean rightInverted, double trackWidth, double rotationToDistanceConversion,
-            double slowMultiplier, double pathP, double pathI, double pathD, double feedForwardS, double feedForwardV,
-            double maxTrajectoryVel, double maxTrajectoryAcc) {
+            boolean leftInverted, boolean rightInverted, double trackWidth, double gearRatio,
+            double wheelDiameterMeters, double slowMultiplier, double pathP, double pathI, double pathD,
+            double feedForwardS, double feedForwardV, double maxTrajectoryVel, double maxTrajectoryAcc) {
 
         this.LEFT_DRIVE_PORT = leftDrivePort;
         this.RIGHT_DRIVE_PORT = rightDrivePort;
@@ -60,7 +60,7 @@ public class DifferentialConfig {
         this.TRACK_WIDTH = trackWidth;
 
         // TODO: take in things like gear ratio and wheel diameter and calc this here
-        this.ROTATION_TO_DISTANCE_CONVERSION = rotationToDistanceConversion;
+        this.ROTATION_TO_DISTANCE_CONVERSION = (Math.PI * wheelDiameterMeters) * gearRatio;
         KINEMATICS = new DifferentialDriveKinematics(trackWidth);
         this.SLOW_MULTIPLIER = slowMultiplier;
 
