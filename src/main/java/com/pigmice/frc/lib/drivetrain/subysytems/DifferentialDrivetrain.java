@@ -11,15 +11,15 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DifferentialDrivetrain extends SubsystemBase {
-    private final DifferentialConfig config;
+    public final DifferentialConfig config;
 
     private final MotorControllerGroup leftGroup;
     private final MotorControllerGroup rightGroup;
@@ -29,7 +29,6 @@ public class DifferentialDrivetrain extends SubsystemBase {
 
     private final AHRS gyro = new AHRS();
 
-    private final DifferentialDriveKinematics kinematics;
     private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(new Rotation2d(), 0, 0,
             new Pose2d());
 
@@ -45,8 +44,6 @@ public class DifferentialDrivetrain extends SubsystemBase {
 
         leftDrive.restoreFactoryDefaults();
         rightDrive.restoreFactoryDefaults();
-
-        kinematics = new DifferentialDriveKinematics(config.TRACK_WIDTH);
 
         leftDrive.getEncoder().setPositionConversionFactor(config.ROTATION_TO_DISTANCE_CONVERSION);
         rightDrive.getEncoder().setPositionConversionFactor(config.ROTATION_TO_DISTANCE_CONVERSION);
@@ -68,6 +65,9 @@ public class DifferentialDrivetrain extends SubsystemBase {
             leftGroup = new MotorControllerGroup(leftDrive, leftFollow);
             rightGroup = new MotorControllerGroup(rightDrive, rightFollow);
         }
+
+        rightGroup.setInverted(true);
+        rightDrive.getEncoder().setInverted(true);
 
         resetOdometry();
     }
@@ -115,9 +115,11 @@ public class DifferentialDrivetrain extends SubsystemBase {
         return (left + right) / 2d;
     }
 
-    /** Returns the DifferentialDriveKinematics object used by the drivetrain. */
-    public DifferentialDriveKinematics getKinematics() {
-        return kinematics;
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        double left = (leftGroup.getInverted() ? -1 : 1) * leftDrive.getEncoder().getVelocity();
+        double right = (rightGroup.getInverted() ? -1 : 1) * rightDrive.getEncoder().getVelocity();
+
+        return new DifferentialDriveWheelSpeeds(left, right);
     }
 
     /** Returns the robot's current pose. */

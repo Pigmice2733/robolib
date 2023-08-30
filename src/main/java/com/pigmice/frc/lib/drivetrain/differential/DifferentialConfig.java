@@ -1,5 +1,10 @@
 package com.pigmice.frc.lib.drivetrain.differential;
 
+import com.pathplanner.lib.PathConstraints;
+
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+
 public class DifferentialConfig {
     public final int LEFT_DRIVE_PORT;
     public final int RIGHT_DRIVE_PORT;
@@ -13,6 +18,15 @@ public class DifferentialConfig {
 
     public final double ROTATION_TO_DISTANCE_CONVERSION;
     public final double SLOW_MULTIPLIER;
+
+    public final DifferentialDriveKinematics KINEMATICS;
+    public final double PATH_P;
+    public final double PATH_I;
+    public final double PATH_D;
+
+    public final SimpleMotorFeedforward FEED_FORWARD;
+
+    public final PathConstraints PATH_CONSTRAINTS;
 
     /**
      * <strong>Recommended use:</strong> create a DifferentialConfig object in
@@ -32,7 +46,8 @@ public class DifferentialConfig {
      */
     public DifferentialConfig(int leftDrivePort, int rightDrivePort, int leftFollowPort, int rightFollowPort,
             boolean leftInverted, boolean rightInverted, double trackWidth, double rotationToDistanceConversion,
-            double slowMultiplier) {
+            double slowMultiplier, double pathP, double pathI, double pathD, double feedForwardS, double feedForwardV,
+            double maxTrajectoryVel, double maxTrajectoryAcc) {
 
         this.LEFT_DRIVE_PORT = leftDrivePort;
         this.RIGHT_DRIVE_PORT = rightDrivePort;
@@ -43,8 +58,17 @@ public class DifferentialConfig {
         this.RIGHT_INVERTED = rightInverted;
 
         this.TRACK_WIDTH = trackWidth;
-        this.ROTATION_TO_DISTANCE_CONVERSION = rotationToDistanceConversion; // TODO: take in things like gear ratio and
-                                                                             // wheel diameter and calc this here
+
+        // TODO: take in things like gear ratio and wheel diameter and calc this here
+        this.ROTATION_TO_DISTANCE_CONVERSION = rotationToDistanceConversion;
+        KINEMATICS = new DifferentialDriveKinematics(trackWidth);
         this.SLOW_MULTIPLIER = slowMultiplier;
+
+        PATH_P = pathP;
+        PATH_I = pathI;
+        PATH_D = pathD;
+
+        FEED_FORWARD = new SimpleMotorFeedforward(feedForwardS, feedForwardV);
+        PATH_CONSTRAINTS = new PathConstraints(maxTrajectoryVel, maxTrajectoryAcc);
     }
 }
