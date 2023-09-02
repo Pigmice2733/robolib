@@ -1,14 +1,15 @@
 package com.pigmice.frc.lib.swerve.commands.path_following;
 
+import java.util.HashMap;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.FollowPathWithEvents;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.pigmice.frc.lib.swerve.SwerveConfig;
 import com.pigmice.frc.lib.swerve.SwerveDrivetrain;
 
-import java.util.HashMap;
-
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -32,10 +33,10 @@ public class FollowPath extends SequentialCommandGroup {
                 new PPSwerveControllerCommand(
                         trajectory,
                         drivetrain::getPose,
-                        config.kinematics,
-                        config.pathDrivePID, // X controller
-                        config.pathDrivePID, // Y controller
-                        config.pathTurnPID, // turn controller
+                        config.KINEMATICS,
+                        config.PATH_DRIVE_PID, // X controller
+                        config.PATH_DRIVE_PID, // Y controller
+                        config.PATH_TURN_PID, // turn controller
                         (output) -> drivetrain.driveModuleStates(output),
                         drivetrain),
                 new InstantCommand(() -> this.cancel()));
@@ -53,20 +54,21 @@ public class FollowPath extends SequentialCommandGroup {
     public FollowPath(SwerveDrivetrain drivetrain, PathPlannerTrajectory trajectory,
             HashMap<String, Command> eventMap) {
         SwerveConfig config = drivetrain.config;
+
+        SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+                drivetrain::getPose,
+                drivetrain::resetOdometry,
+                config.KINEMATICS,
+                config.PATH_DRIVE_PID_CONSTANTS,
+                config.PATH_TURN_PID_CONSTNATS,
+                (SwerveModuleState[] output) -> drivetrain.driveModuleStates(output),
+                eventMap,
+                false,
+                drivetrain);
+
         addCommands(
                 drivetrain.resetOdometryCommand(trajectory.getInitialHolonomicPose()),
-                new FollowPathWithEvents(
-                        new PPSwerveControllerCommand(
-                                trajectory,
-                                drivetrain::getPose,
-                                config.kinematics,
-                                config.pathDrivePID, // X controller
-                                config.pathDrivePID, // Y controller
-                                config.pathTurnPID, // turn controller
-                                (output) -> drivetrain.driveModuleStates(output),
-                                drivetrain),
-                        trajectory.getMarkers(),
-                        eventMap));
+                autoBuilder.fullAuto(trajectory));
         addRequirements(drivetrain);
     }
 
@@ -82,7 +84,7 @@ public class FollowPath extends SequentialCommandGroup {
                 drivetrain,
                 PathPlanner.loadPath(
                         pathName,
-                        drivetrain.config.pathConstraints,
+                        drivetrain.config.PATH_CONSTRAINTS,
                         reversed));
     }
 
@@ -101,7 +103,7 @@ public class FollowPath extends SequentialCommandGroup {
                 drivetrain,
                 PathPlanner.loadPath(
                         pathName,
-                        drivetrain.config.pathConstraints,
+                        drivetrain.config.PATH_CONSTRAINTS,
                         reversed),
                 eventMap);
     }

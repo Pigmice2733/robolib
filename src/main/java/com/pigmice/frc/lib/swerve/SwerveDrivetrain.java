@@ -27,7 +27,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     private final SwerveModule backLeftModule;
     private final SwerveModule backRightModule;
 
-    private final AHRS gyro; 
+    private final AHRS gyro;
     private final SwerveDriveOdometry odometry;
 
     private Pose2d pose = new Pose2d();
@@ -38,34 +38,34 @@ public class SwerveDrivetrain extends SubsystemBase {
     public SwerveDrivetrain(SwerveConfig config) {
         this.config = config;
 
-        frontLeftModule = config.frontLeftModule.build();
-        frontRightModule = config.frontRightModule.build();
-        backLeftModule = config.backLeftModule.build();
-        backRightModule = config.backRightModule.build();
+        frontLeftModule = config.FRONT_LEFT_MODULE.build();
+        frontRightModule = config.FRONT_RIGHT_MODULE.build();
+        backLeftModule = config.BACK_LEFT_MODULE.build();
+        backRightModule = config.BACK_RIGHT_MODULE.build();
 
         gyro = new AHRS();
 
         states = getModuleStates();
-        odometry = new SwerveDriveOdometry(config.kinematics, new Rotation2d(), getModulePositions());
+        odometry = new SwerveDriveOdometry(config.KINEMATICS, new Rotation2d(), getModulePositions());
 
         resetOdometry();
 
-        config.drivetrainTab.add("Heading", gyro).withPosition(4, 0);
-        ShuffleboardHelper.addOutput("Pose X", config.drivetrainTab, () -> pose.getX()).withPosition(4, 2);
-        ShuffleboardHelper.addOutput("Pose Y", config.drivetrainTab, () -> pose.getY()).withPosition(5, 2);
+        config.DRIVETRAIN_TAB.add("Heading", gyro).withPosition(4, 0);
+        ShuffleboardHelper.addOutput("Pose X", config.DRIVETRAIN_TAB, () -> pose.getX()).withPosition(4, 2);
+        ShuffleboardHelper.addOutput("Pose Y", config.DRIVETRAIN_TAB, () -> pose.getY()).withPosition(5, 2);
 
         ShuffleboardHelper
-                .addOutput("Target X vel", config.drivetrainTab, () -> targetSpeeds.vxMetersPerSecond)
+                .addOutput("Target X vel", config.DRIVETRAIN_TAB, () -> targetSpeeds.vxMetersPerSecond)
                 .withPosition(0, 3);
         ShuffleboardHelper
-                .addOutput("Target Y vel", config.drivetrainTab, () -> targetSpeeds.vyMetersPerSecond)
+                .addOutput("Target Y vel", config.DRIVETRAIN_TAB, () -> targetSpeeds.vyMetersPerSecond)
                 .withPosition(1, 3);
-        ShuffleboardHelper.addOutput("Target Rot. vel", config.drivetrainTab,
+        ShuffleboardHelper.addOutput("Target Rot. vel", config.DRIVETRAIN_TAB,
                 () -> targetSpeeds.omegaRadiansPerSecond).withPosition(2, 3);
 
-        ShuffleboardHelper.addOutput("Velocity X", config.drivetrainTab, () -> gyro.getVelocityX());
-        ShuffleboardHelper.addOutput("Velocity Y", config.drivetrainTab, () -> gyro.getVelocityY());
-        ShuffleboardHelper.addOutput("Speed", config.drivetrainTab,
+        ShuffleboardHelper.addOutput("Velocity X", config.DRIVETRAIN_TAB, () -> gyro.getVelocityX());
+        ShuffleboardHelper.addOutput("Velocity Y", config.DRIVETRAIN_TAB, () -> gyro.getVelocityY());
+        ShuffleboardHelper.addOutput("Speed", config.DRIVETRAIN_TAB,
                 () -> Math.sqrt(Math.pow(gyro.getVelocityX(), 2) + Math.pow(gyro.getVelocityY(), 2)));
     }
 
@@ -80,7 +80,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         if (states == null)
             System.out.println("Module states are NULL");
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, config.maxAttainableSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, config.MAX_ATTAINABLE_SPEED);
 
         frontLeftModule.set(calculateFeedForward(states[0].speedMetersPerSecond),
                 states[0].angle.getRadians());
@@ -94,18 +94,18 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     private double calculateFeedForward(double velocity) {
         velocity = MathUtil.applyDeadband(velocity, 0.001);
-        return config.feedForward.calculate(velocity);
+        return config.FEED_FORWARD.calculate(velocity);
     }
 
     /** @param speeds set target swerve module states based on a ChassisSpeed */
     public void driveChassisSpeeds(ChassisSpeeds speeds) {
         targetSpeeds = speeds;
-        driveModuleStates(config.kinematics.toSwerveModuleStates(speeds));
+        driveModuleStates(config.KINEMATICS.toSwerveModuleStates(speeds));
     }
 
     /** @param states set target swerve module states */
     public void driveModuleStates(SwerveModuleState[] states) {
-        targetSpeeds = config.kinematics.toChassisSpeeds(states);
+        targetSpeeds = config.KINEMATICS.toChassisSpeeds(states);
         this.states = states;
     }
 
@@ -149,6 +149,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     /** Reset odometry & gyro to pose (0, 0) with 0 rotation */
     public void resetOdometry() {
+        System.out.println("Reset odometry");
         resetOdometry(new Pose2d());
     }
 

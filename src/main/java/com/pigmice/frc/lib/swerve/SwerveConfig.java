@@ -1,6 +1,7 @@
 package com.pigmice.frc.lib.swerve;
 
 import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.auto.PIDConstants;
 import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -9,24 +10,27 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class SwerveConfig {
-    public final MkSwerveModuleBuilder frontLeftModule;
-    public final MkSwerveModuleBuilder frontRightModule;
-    public final MkSwerveModuleBuilder backLeftModule;
-    public final MkSwerveModuleBuilder backRightModule;
+    public final MkSwerveModuleBuilder FRONT_LEFT_MODULE;
+    public final MkSwerveModuleBuilder FRONT_RIGHT_MODULE;
+    public final MkSwerveModuleBuilder BACK_LEFT_MODULE;
+    public final MkSwerveModuleBuilder BACK_RIGHT_MODULE;
 
-    public final PathConstraints pathConstraints;
-    public final PIDController pathDrivePID;
-    public final PIDController pathTurnPID;
+    public final PathConstraints PATH_CONSTRAINTS;
+    public final PIDController PATH_DRIVE_PID;
+    public final PIDController PATH_TURN_PID;
 
-    public final double manualDriveSpeed;
-    public final double manualTurnSpeed;
+    public final PIDConstants PATH_DRIVE_PID_CONSTANTS;
+    public final PIDConstants PATH_TURN_PID_CONSTNATS;
 
-    public final SwerveDriveKinematics kinematics;
-    public final SimpleMotorFeedforward feedForward;
+    public final double MANUAL_DRIVE_SPEED;
+    public final double MANUAL_TURN_SPEED;
 
-    public final double maxAttainableSpeed;
+    public final SwerveDriveKinematics KINEMATICS;
+    public final SimpleMotorFeedforward FEED_FORWARD;
 
-    public final ShuffleboardTab drivetrainTab;
+    public final double MAX_ATTAINABLE_SPEED;
+
+    public final ShuffleboardTab DRIVETRAIN_TAB;
 
     /**
      * <strong>Recommended use:</strong> create a SwerveConfig objects in constants
@@ -54,23 +58,30 @@ public class SwerveConfig {
             double manualDriveSpeed, double manualTurnSpeed, SwerveDriveKinematics kinematics,
             SimpleMotorFeedforward feedForward, ShuffleboardTab drivetrainTab) {
 
-        this.frontLeftModule = frontLeftModule;
-        this.frontRightModule = frontRightModule;
-        this.backLeftModule = backLeftModule;
-        this.backRightModule = backRightModule;
+        this.FRONT_LEFT_MODULE = frontLeftModule;
+        this.FRONT_RIGHT_MODULE = frontRightModule;
+        this.BACK_LEFT_MODULE = backLeftModule;
+        this.BACK_RIGHT_MODULE = backRightModule;
 
-        this.pathConstraints = pathConstraints;
-        this.pathDrivePID = pathDrivePID;
-        this.pathTurnPID = pathTurnPID;
+        this.PATH_CONSTRAINTS = pathConstraints;
+        this.PATH_DRIVE_PID = pathDrivePID;
+        this.PATH_TURN_PID = pathTurnPID;
 
-        this.manualDriveSpeed = manualDriveSpeed; // max meters / second
-        this.manualTurnSpeed = manualTurnSpeed; // max radians / second
+        this.PATH_DRIVE_PID_CONSTANTS = constantsFromController(pathDrivePID);
+        this.PATH_TURN_PID_CONSTNATS = constantsFromController(pathTurnPID);
 
-        this.kinematics = kinematics;
-        this.feedForward = feedForward;
+        this.MANUAL_DRIVE_SPEED = manualDriveSpeed; // max meters / second
+        this.MANUAL_TURN_SPEED = manualTurnSpeed; // max radians / second
 
-        maxAttainableSpeed = (12.0 - feedForward.ks) / feedForward.kv;
+        this.KINEMATICS = kinematics;
+        this.FEED_FORWARD = feedForward;
 
-        this.drivetrainTab = drivetrainTab;
+        MAX_ATTAINABLE_SPEED = (12.0 - feedForward.ks) / feedForward.kv;
+
+        this.DRIVETRAIN_TAB = drivetrainTab;
+    }
+
+    private static PIDConstants constantsFromController(PIDController controller) {
+        return new PIDConstants(controller.getP(), controller.getI(), controller.getD());
     }
 }

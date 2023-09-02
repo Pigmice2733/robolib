@@ -31,6 +31,22 @@ public class Utils {
     }
 
     /**
+     * lerp (linear interpolation) maps numbers to other numbers via a linear
+     * function. Given a line defined by two points, lerp caculates the y value of
+     * the line at a given x value. The x and y values are not constrained to be
+     * within the given points, so this function can also perform linear
+     * extrapolation.
+     *
+     * @param a The first value, or the minimum input value
+     * @param b The second value, or the maximum output value
+     * @param t The value between 0 and 1 to sample
+     * @return The y value the specified x value maps onto
+     */
+    public static double lerp(double a, double b, double t) {
+        return a + t * (b - a);
+    }
+
+    /**
      * Checks whether two doubles are within <code>1e-6</code> of each other. This
      * is useful for cases where floating point rounding and errors may build up,
      * but it is still desirable to check values for equality.

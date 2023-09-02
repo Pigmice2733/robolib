@@ -88,7 +88,7 @@ public class RetracePath extends CommandBase {
                 points.get(points.size() - 1).heading,
                 positions.get(positions.size() - 1).getRotation()));
 
-        PathPlannerTrajectory trajectory = PathPlanner.generatePath(drivetrain.config.pathConstraints, points);
+        PathPlannerTrajectory trajectory = PathPlanner.generatePath(drivetrain.config.PATH_CONSTRAINTS, points);
         CommandScheduler.getInstance().schedule(new FollowPath(drivetrain, trajectory));
     }
 
