@@ -46,7 +46,10 @@ public class ShuffleboardHelper {
 
         @Override
         public void update() {
-            entry.setValue(supplier.get());
+            Object value = supplier.get();
+
+            if (value != null)
+                entry.setValue(value);
         }
 
         public ShuffleboardOutput asNotDebug() {
@@ -116,7 +119,7 @@ public class ShuffleboardHelper {
      * @param supplier returns a value to output to shuffleboard
      */
     public static ShuffleboardOutput addOutput(String name, ShuffleboardContainer tab, Supplier<Object> supplier) {
-        ShuffleboardOutput shuffleboardOutput = new ShuffleboardOutput(tab.add(name, supplier.get()), supplier);
+        ShuffleboardOutput shuffleboardOutput = new ShuffleboardOutput(tab.add(name, 0), supplier);
         shuffleboardObjects.add(shuffleboardOutput);
         return shuffleboardOutput;
     }
