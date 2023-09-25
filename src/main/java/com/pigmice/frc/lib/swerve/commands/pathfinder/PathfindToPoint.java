@@ -36,7 +36,7 @@ public class PathfindToPoint extends CommandBase {
             end(true);
             return;
         }
-        pathCommand = new FollowPath(drivetrain, result.getAsTrajectory(drivetrain.config.pathConstraints));
+        pathCommand = new FollowPath(drivetrain, result.getAsTrajectory(drivetrain.config.PATH_CONSTRAINTS));
         pathCommand.schedule();
     }
 

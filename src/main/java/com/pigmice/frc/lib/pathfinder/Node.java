@@ -4,6 +4,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class Node {
+    public final double edgeToCenterDistance;
+    public final double edgeToBumperDistance;
+
     public final int gridX;
     public final int gridY;
 
@@ -41,13 +44,15 @@ public class Node {
         this.gridY = gridY;
         this.fieldPos = fieldPos;
 
-        distanceToNearestObj -= robotWidth / 2d; // account for width of robot
+        this.edgeToCenterDistance = distanceToNearestObj;
 
-        this.driveable = (distanceToNearestObj) > 0;
+        this.edgeToBumperDistance = distanceToNearestObj - (robotWidth / 2d); // account for width of robot
 
-        distanceWeight = (distanceToNearestObj < distanceCutoff && driveable) // if the node is near a wall, scale
+        this.driveable = (edgeToBumperDistance) > 0;
+
+        this.distanceWeight = (edgeToBumperDistance < distanceCutoff && driveable) // if the node is near a wall, scale
                 // distanceWeight from 0-1 based on how close it is
-                ? MathUtil.interpolate(1, 0, distanceToNearestObj / distanceCutoff)
+                ? MathUtil.interpolate(1, 0, edgeToBumperDistance / distanceCutoff)
                 : 0;
     }
 }

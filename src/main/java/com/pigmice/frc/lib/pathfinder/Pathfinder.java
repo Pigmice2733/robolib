@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public class Pathfinder {
     public static final double DISTANCE_CUTOFF = 1;
+    public static final double BIAS_AWAY_FROM_EDGE = 1;
 
     public NodeGrid grid = null;
     public Field field;
@@ -21,7 +22,7 @@ public class Pathfinder {
      *                         pathfinding
      */
     public Pathfinder(double robotWidthMeters, String distanceMapName) {
-        field = FieldParser.parseField("TestField");
+        field = FieldParser.parseField(distanceMapName);
 
         grid = new NodeGrid(robotWidthMeters, field);
     }
@@ -72,7 +73,7 @@ public class Pathfinder {
                 if (!neighbor.driveable || closedSet.contains(neighbor))
                     continue;
                 double newMovementCostToNeighbor = currentNode.gCost + getDistance(currentNode, neighbor);
-                newMovementCostToNeighbor += neighbor.distanceWeight * 10;
+                newMovementCostToNeighbor += neighbor.distanceWeight * BIAS_AWAY_FROM_EDGE;
                 if (newMovementCostToNeighbor < neighbor.gCost || !openSet.contains(neighbor)) {
                     neighbor.gCost = newMovementCostToNeighbor;
                     neighbor.hCost = getDistance(neighbor, end);

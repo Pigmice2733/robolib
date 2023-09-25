@@ -129,8 +129,8 @@ public class ShuffleboardHelper {
      * 
      * @param consumer will be automatically called with the inputted value
      */
-    public static ShuffleboardInput addInput(String name, ShuffleboardContainer tab, Consumer<Double> consumer) {
-        ShuffleboardInput shuffleboardInput = new ShuffleboardInput(tab.add(name, 0), consumer);
+    public static ShuffleboardInput addInput(String name, ShuffleboardContainer container, Consumer<Double> consumer) {
+        ShuffleboardInput shuffleboardInput = new ShuffleboardInput(container.add(name, 0), consumer);
         shuffleboardObjects.add(shuffleboardInput);
         return shuffleboardInput;
     }
