@@ -7,6 +7,7 @@ package com.pigmice.frc.lib.drivetrain.subysytems;
 import com.kauailabs.navx.frc.AHRS;
 import com.pigmice.frc.lib.drivetrain.differential.DifferentialConfig;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -45,6 +46,9 @@ public class DifferentialDrivetrain extends SubsystemBase {
         leftDrive.restoreFactoryDefaults();
         rightDrive.restoreFactoryDefaults();
 
+        leftDrive.setIdleMode(IdleMode.kBrake);
+        rightDrive.setIdleMode(IdleMode.kBrake);
+
         leftDrive.getEncoder().setPositionConversionFactor(config.ROTATION_TO_DISTANCE_CONVERSION);
         rightDrive.getEncoder().setPositionConversionFactor(config.ROTATION_TO_DISTANCE_CONVERSION);
 
@@ -67,7 +71,7 @@ public class DifferentialDrivetrain extends SubsystemBase {
         }
 
         rightGroup.setInverted(true);
-        rightDrive.getEncoder().setInverted(true);
+        // rightDrive.getEncoder().setInverted(true);
 
         resetOdometry();
     }
