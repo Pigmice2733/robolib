@@ -67,12 +67,12 @@ public class ShuffleboardHelper {
             return this;
         }
 
-        public ShuffleboardOutput asDial(float min, float max) {
+        public ShuffleboardOutput asDial(double min, double max) {
             widget.withWidget(BuiltInWidgets.kDial).withProperties(Map.of("min", min, "max", max));
             return this;
         }
 
-        public ShuffleboardOutput asNumberBar(float min, float max) {
+        public ShuffleboardOutput asNumberBar(double min, double max) {
             widget.withWidget(BuiltInWidgets.kNumberBar).withProperties(Map.of("min", min, "max", max));
             return this;
         }
@@ -107,7 +107,7 @@ public class ShuffleboardHelper {
             return this;
         }
 
-        public ShuffleboardInput asNumberSlider(float min, float max) {
+        public ShuffleboardInput asNumberSlider(double min, double max) {
             widget.withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", min, "max", max));
             return this;
         }
