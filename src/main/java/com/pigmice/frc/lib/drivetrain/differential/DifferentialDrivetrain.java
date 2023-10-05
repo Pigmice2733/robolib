@@ -2,10 +2,9 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.pigmice.frc.lib.drivetrain.subysytems;
+package com.pigmice.frc.lib.drivetrain.differential;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.pigmice.frc.lib.drivetrain.differential.DifferentialConfig;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
