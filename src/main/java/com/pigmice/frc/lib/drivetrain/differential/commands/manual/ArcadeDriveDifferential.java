@@ -2,7 +2,7 @@ package com.pigmice.frc.lib.drivetrain.differential.commands.manual;
 
 import java.util.function.DoubleSupplier;
 
-import com.pigmice.frc.lib.drivetrain.subysytems.DifferentialDrivetrain;
+import com.pigmice.frc.lib.drivetrain.differential.DifferentialDrivetrain;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
