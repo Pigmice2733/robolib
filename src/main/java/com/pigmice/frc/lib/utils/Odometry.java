@@ -29,6 +29,7 @@ public class Odometry {
 
     private Pose pose;
     private double lastLeft, lastRight;
+    private double deltaLeft, deltaRight, deltaAngle, distance, radius, chordAngle, chordLength;
 
     /**
      * Get the pose of the robot
@@ -48,6 +49,7 @@ public class Odometry {
         lastLeft = 0.0;
         lastRight = 0.0;
         pose = initialPose;
+        deltaAngle = deltaLeft = deltaRight = distance = radius = chordAngle = chordLength = 0;
     }
 
     /**
@@ -59,38 +61,33 @@ public class Odometry {
      * @param angle         Current angle, counter-clockwise from x axis in radians
      */
     public void update(double leftPosition, double rightPosition, double angle) {
-        double deltaLeft = leftPosition - lastLeft;
-        double deltaRight = rightPosition - lastRight;
-        double deltaAngle = angle - pose.heading;
+        deltaLeft = leftPosition - lastLeft;
+        deltaRight = rightPosition - lastRight;
+        deltaAngle = angle - pose.heading;
 
         lastLeft = leftPosition;
         lastRight = rightPosition;
 
-        double distance = (deltaLeft + deltaRight) / 2.0;
+        distance = (deltaLeft + deltaRight) / 2.0;
+
         if (Math.abs(deltaAngle) > Math.PI) {
             deltaAngle = Math.copySign(2.0 * Math.PI - Math.abs(deltaAngle), -deltaAngle);
         }
 
         if (Math.abs(deltaAngle) < 1e-6) {
-            double deltaX = distance * Math.cos(angle);
-            double deltaY = distance * Math.sin(angle);
-            pose.x += deltaX;
-            pose.y += deltaY;
+            pose.x += distance * Math.cos(angle);
+            pose.y += distance * Math.sin(angle);
             pose.heading = angle;
 
             return;
         }
 
-        double radius = distance / Math.abs(deltaAngle);
-        double chordAngle = pose.heading + deltaAngle / 2.0;
-        double chordLength = 2.0 * radius * Math.sin(Math.abs(deltaAngle) / 2.0);
+        radius = distance / Math.abs(deltaAngle);
+        chordAngle = pose.heading + deltaAngle / 2.0;
+        chordLength = 2.0 * radius * Math.sin(Math.abs(deltaAngle) / 2.0);
 
-        double deltaX = chordLength * Math.cos(chordAngle);
-        double deltaY = chordLength * Math.sin(chordAngle);
-
-        pose.x += deltaX;
-        pose.y += deltaY;
-
+        pose.x += chordLength * Math.cos(chordAngle);
+        pose.y += chordLength * Math.sin(chordAngle);
         pose.heading = angle;
 
         return;

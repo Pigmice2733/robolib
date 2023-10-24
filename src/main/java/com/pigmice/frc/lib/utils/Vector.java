@@ -1,7 +1,7 @@
 package com.pigmice.frc.lib.utils;
 
 /**
- * A 2D vector data type
+ * A type representing 2-D vectors.
  */
 public class Vector implements XY {
     private final double x, y;
@@ -9,8 +9,8 @@ public class Vector implements XY {
     /**
      * Constructs a Vector from x and y components.
      *
-     * @param x The x component of the Vector
-     * @param y The y component of the Vector
+     * @param x the x-component of the Vector
+     * @param y the y-component of the Vector
      */
     public Vector(double x, double y) {
         this.x = x;
@@ -18,10 +18,9 @@ public class Vector implements XY {
     }
 
     /**
-     * Returns the zero Vector, which has no length or direction and each component
-     * is zero.
+     * Returns the zero Vector, <0,0>.
      *
-     * @return The zero Vector
+     * @return the zero Vector
      */
     public static Vector zero() {
         return new Vector(0, 0);
@@ -43,8 +42,7 @@ public class Vector implements XY {
         if ((o == null) || (o.getClass() != this.getClass())) {
             return false;
         }
-        Vector other = (Vector) o;
-        return x == other.x && y == other.y;
+        return x == ((Vector) o).x && y == ((Vector) o).y;
     }
 
     @Override
@@ -55,56 +53,57 @@ public class Vector implements XY {
     /**
      * Scales this Vector by a scalar factor.
      *
-     * @param scale The factor to scale by
-     * @return The scaled Vector
+     * @param scale the factor to scale by
+     * @return the scaled Vector
      */
     public Vector scale(double scale) {
         return new Vector(x * scale, y * scale);
     }
 
     /**
-     * Adds another Vector to this Vector
+     * Adds another Vector to this Vector.
      *
-     * @param v The Vector to add to this one
-     * @return The sum of the Vectors
+     * @param v the Vector to add to this one
+     * @return the sum of the Vectors
      */
     public Vector add(Vector v) {
         return new Vector(x + v.x, y + v.y);
     }
 
     /**
-     * Compute the dot product of this Vector and another Vector
+     * Compute the dot product of this Vector and another Vector.
      *
-     * @param v The other vector
-     * @return The dot product of the Vectors
+     * @param v the other vector
+     * @return the dot product of the Vectors
      */
     public double dot(Vector v) {
-        return x*v.x + y*v.y;
+        return x * v.x + y * v.y;
     }
 
     /**
      * Computes the magnitude of this Vector.
      *
-     * @return The magnitude of this Vector
+     * @return the magnitude of this Vector
      */
     public double magnitude() {
         return Math.sqrt(x * x + y * y);
     }
 
     /**
-     * Normalizes this Vector
+     * Normalizes this Vector; i.e., returns a new Vector with the same direction
+     * and magnitude 1.
      *
-     * @return The normalized Vector of this Vector
+     * @return the normalized Vector
      */
     public Vector normalize() {
-        return scale( 1.0/ magnitude());
+        return scale(1.0 / magnitude());
     }
 
     /**
      * Calculates the angle of this Vector in radians. The angle is measured
-     * counterclockwise from the x axis.
+     * counterclockwise from the x-axis.
      *
-     * @return The angle of this Vector in radians
+     * @return the angle of this Vector in radians
      */
     public double angle() {
         return Math.atan2(y, x);
@@ -113,12 +112,12 @@ public class Vector implements XY {
     /**
      * Returns this Vector rotated counterclockwise by a specified angle.
      *
-     * @param angle The rotation angle in radians
-     * @return The rotated Vector
+     * @param angle the rotation angle in radians
+     * @return the rotated Vector
      */
     public Vector rotate(double angle) {
-        double rotatedX = x * Math.cos(angle) - y * Math.sin(angle);
-        double rotatedY = x * Math.sin(angle) + y * Math.cos(angle);
-        return new Vector(rotatedX, rotatedY);
+        return new Vector(
+                x * Math.cos(angle) - y * Math.sin(angle),
+                x * Math.sin(angle) + y * Math.cos(angle));
     }
 }

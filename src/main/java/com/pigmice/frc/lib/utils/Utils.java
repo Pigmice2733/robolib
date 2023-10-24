@@ -5,42 +5,41 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Utils hold utility functions that don't belong as their own classes
+ * A class for useful mathematical functions and other utilities.
  */
 public class Utils {
 
     /**
      * lerp (linear interpolation) maps numbers to other numbers via a linear
-     * function. Given a line defined by two points, lerp caculates the y value of
-     * the line at a given x value. The x and y values are not constrained to be
+     * function. Given a line defined by two points, lerp caculates the y-value of
+     * the line at a given x-value. The x- and y-values are not constrained to be
      * within the given points, so this function can also perform linear
      * extrapolation.
      *
-     * @param val The x value to map
-     * @param x0  The x coordinate of the first point, or the minimum input value
-     * @param x1  The x coordinate of the second point, or the maximum input value
-     * @param y0  The y value of the first point, or the minimum output value
-     * @param y1  The y value of the second point, or the maximum output value
-     * @return The y value the specified x value maps onto
+     * @param val The x-value to map
+     * @param x0  The x-coordinate of the first point, or the minimum input value
+     * @param x1  The x-coordinate of the second point, or the maximum input value
+     * @param y0  The y-value of the first point, or the minimum output value
+     * @param y1  The y-value of the second point, or the maximum output value
+     * @return The y-value the specified x-value maps onto
      * @see <a href="https://en.wikipedia.org/wiki/Linear_interpolation">Linear
      *      interpolation on Wikipedia</a>
      */
     public static double lerp(double val, double x0, double x1, double y0, double y1) {
-        final double weight = (val - x0) / (x1 - x0);
-        return weight * (y1 - y0) + y0;
+        return (val - x0) * (y1 - y0) / (x1 - x0) + y0;
     }
 
     /**
      * lerp (linear interpolation) maps numbers to other numbers via a linear
-     * function. Given a line defined by two points, lerp caculates the y value of
-     * the line at a given x value. The x and y values are not constrained to be
+     * function. Given a line defined by two points, lerp calculates the y-value of
+     * the line at a given x-value. The x- and y-values are not constrained to be
      * within the given points, so this function can also perform linear
      * extrapolation.
      *
-     * @param a The first value, or the minimum input value
-     * @param b The second value, or the maximum output value
-     * @param t The value between 0 and 1 to sample
-     * @return The y value the specified x value maps onto
+     * @param a the first value, or the minimum input value
+     * @param b the second value, or the maximum output value
+     * @param t the x-value, as a fraction of the range, to sample
+     * @return the y-value the specified x-value maps onto
      */
     public static double lerp(double a, double b, double t) {
         return a + t * (b - a);
@@ -48,11 +47,11 @@ public class Utils {
 
     /**
      * Checks whether two doubles are within <code>1e-6</code> of each other. This
-     * is useful for cases where floating point rounding and errors may build up,
+     * is useful for cases where floating-point rounding and errors may build up,
      * but it is still desirable to check values for equality.
      *
-     * @param a The first double
-     * @param b The second double
+     * @param a the first double
+     * @param b the second double
      * @return <code>True</code> if the values are very close, <code>False</code>
      *         otherwise
      * @see #almostEquals(double, double, double)
@@ -62,14 +61,15 @@ public class Utils {
     }
 
     /**
-     * Checks whether two doubles are within a specified epsilon of each other. This
-     * is useful for cases where floating point rounding and errors may build up,
+     * Checks whether two doubles are within a specified difference. This
+     * is useful for cases where floating-point rounding and errors may build up,
      * but it is still desirable to check values for equality.
      *
-     * @param a The first double
-     * @param b The second double
+     * @param a the first double
+     * @param b the second double
      * @return <code>True</code> if the difference between the values is less than
-     *         epsilon, <code>False</code> if it is greater than or equal to epsilon
+     *         <code>epsilon</code>, <code>False</code> if it is greater than or
+     *         equal to <code>epsilon</code>
      * @see #almostEquals(double, double)
      */
     public static boolean almostEquals(double a, double b, double epsilon) {
@@ -81,20 +81,22 @@ public class Utils {
      * returning the largest index such that the number at that index is smaller
      * than a target value.
      *
-     * @param data   The array of numbers to search for
-     * @param target The target value
-     * @return The index of the largest number smaller than the target
+     * @param data   the array of numbers to search
+     * @param target the target value
+     * @return the index of the largest number smaller than the target
      */
     public static int binarySearch(ArrayList<Double> data, double target) {
         return _binarySearch(data, target, 0, data.size() - 1);
     }
+
+    private static int mid;
 
     private static int _binarySearch(ArrayList<Double> data, double target, int lowIndex, int highIndex) {
         if (highIndex - lowIndex == 1) {
             return lowIndex;
         }
 
-        final int mid = (lowIndex + highIndex) / 2;
+        mid = (lowIndex + highIndex) / 2;
 
         if (data.get(mid) < target) {
             return _binarySearch(data, target, mid, highIndex);
@@ -103,42 +105,41 @@ public class Utils {
         }
     }
 
+    private static double a, b, discriminant, t0, t1;
+    private static Vector dist;
+
     /**
-     * Finds the locations of intersections between a circle and an infinite line
-     * defined by a Point and a Vector. The locations are given as a fraction
-     * of the Vector, starting at <code>lineStart</code>.
+     * Finds the point(s) of intersection between a circle and an infinite line
+     * defined by a Point and a Vector. The locations are given as fractional
+     * multiples of the Vector, starting at <code>lineStart</code>. That is, for an
+     * intersection specified by the output <code>x</code>, the intersection Point
+     * is <code> lineStart + x * lineDirection</code>.
      *
-     * For an intersection specified by the Double <code>x</code>, the
-     * intersection Point is equal to <code>lineStart + x*lineDirection</code>.
-     *
-     * @param lineStart     A Point on the line
-     * @param lineDirection Vector direction of the line
-     * @param circleCenter  The center of the circle
-     * @param radius        The radius of the circle
-     * @return A list of all the intersection locations, given as described above
+     * @param lineStart     a Point on the line
+     * @param lineDirection vector direction of the line
+     * @param circleCenter  the center of the circle
+     * @param radius        the radius of the circle
+     * @return a list of all the intersection locations, given as described above
      */
     public static List<Double> circleLineIntersections(Point lineStart, Vector lineDirection, Point circleCenter,
             double radius) {
-        final double A = lineDirection.dot(lineDirection);
+        a = lineDirection.dot(lineDirection);
+        b = 2 * lineDirection.dot(dist);
+        dist = lineStart.subtract(circleCenter);
 
-        final Vector dist = lineStart.subtract(circleCenter);
-        final double B = 2 * lineDirection.dot(dist);
-
-        final double C = dist.dot(dist) - (radius * radius);
-
-        final double discriminant = B * B - 4 * A * C;
+        discriminant = b * b - 4 * a * (dist.dot(dist) - (radius * radius));
 
         if (discriminant < 0.0) {
             return new ArrayList<>();
         }
 
-        final double sqrtdiscr = Math.sqrt(discriminant);
-
-        final double t0 = (-B - sqrtdiscr) / (2 * A);
-        final double t1 = (-B + sqrtdiscr) / (2 * A);
+        t0 = (-b - Math.sqrt(discriminant)) / (2 * a);
+        t1 = (-b + Math.sqrt(discriminant)) / (2 * a);
 
         return new ArrayList<>(Arrays.asList(t0, t1));
     }
+
+    private static double t;
 
     /**
      * Projects a Point onto a line segment (defined by a Point and a Vector),
@@ -146,15 +147,13 @@ public class Utils {
      * projected Point is given as a fraction of the line Vector starting at
      * <code>start</code>.
      *
-     * @param point     The Point to project
-     * @param start     The start of the line segment
-     * @param direction Direction and length of the line
-     * @return The projected point, specified as described above
+     * @param point     the Point to project
+     * @param start     the start of the line segment
+     * @param direction direction and length of the line
+     * @return the projected point, specified as described above
      */
     public static double project(Point point, Point start, Vector direction) {
-        Vector toStart = point.subtract(start);
-        double t = toStart.dot(direction) / direction.dot(direction);
-
+        t = point.subtract(start).dot(direction) / direction.dot(direction);
         return Range.natural().clamp(t);
     }
 }

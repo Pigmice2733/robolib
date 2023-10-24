@@ -57,8 +57,7 @@ public class Point implements XY {
             return false;
         }
 
-        Point other = (Point) o;
-        return x == other.x && y == other.y;
+        return x == ((Point) o).x && y == ((Point) o).y;
     }
 
     @Override
@@ -94,9 +93,7 @@ public class Point implements XY {
      * @return The rotated Point
      */
     public Point rotate(double angle, Point center) {
-        Vector offset = subtract(center);
-        Vector rotated = offset.rotate(angle);
-        return center.translate(rotated);
+        return center.translate(this.subtract(center).rotate(angle));
     }
 
     /**
@@ -106,9 +103,6 @@ public class Point implements XY {
      * @return The transformed Point
      */
     public Point relativeTo(Pose pose) {
-        Vector translation = this.subtract(new Point(pose));
-        Vector transformed = translation.rotate(0.5*Math.PI - pose.heading);
-
-        return new Point(transformed);
+        return new Point(this.subtract(new Point(pose)).rotate(0.5 * Math.PI - pose.heading));
     }
 }
