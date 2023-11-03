@@ -157,4 +157,25 @@ public class Utils {
 
         return Range.natural().clamp(t);
     }
+
+    /**
+     * Provides a software stop on a mechanism with given bounds by checking that a
+     * given output will not go past the bounds.
+     * 
+     * @param position the current position/rotation of the mechanism
+     * @param speed    the provisional output for the mechanism
+     * @param limit    the maximum position (in either direction) that the mechanism
+     *                 should go
+     * @return an appropriate output for the speed--the given value if possible or 0
+     *         otherwise
+     */
+    public static double rotationStop(double position, double speed, double limit) {
+        if (position > limit && speed > 0) {
+            return 0;
+        } else if (position < -limit && speed < 0) {
+            return 0;
+        } else {
+            return speed;
+        }
+    }
 }
