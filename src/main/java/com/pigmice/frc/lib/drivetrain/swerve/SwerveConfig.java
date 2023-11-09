@@ -20,7 +20,7 @@ public class SwerveConfig {
     public final PIDController PATH_TURN_PID;
 
     public final PIDConstants PATH_DRIVE_PID_CONSTANTS;
-    public final PIDConstants PATH_TURN_PID_CONSTNATS;
+    public final PIDConstants PATH_TURN_PID_CONSTANTS;
 
     public final double MANUAL_DRIVE_SPEED;
     public final double MANUAL_TURN_SPEED;
@@ -68,7 +68,7 @@ public class SwerveConfig {
         this.PATH_TURN_PID = pathTurnPID;
 
         this.PATH_DRIVE_PID_CONSTANTS = constantsFromController(pathDrivePID);
-        this.PATH_TURN_PID_CONSTNATS = constantsFromController(pathTurnPID);
+        this.PATH_TURN_PID_CONSTANTS = constantsFromController(pathTurnPID);
 
         this.MANUAL_DRIVE_SPEED = manualDriveSpeed; // max meters / second
         this.MANUAL_TURN_SPEED = manualTurnSpeed; // max radians / second

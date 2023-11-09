@@ -169,10 +169,10 @@ public class Utils {
      * @return an appropriate output for the speed--the given value if possible or 0
      *         otherwise
      */
-    public static double rotationStop(double position, double speed, double limit) {
-        if (position > limit && speed > 0) {
+    public static double applySoftwareStop(double position, double speed, double limit) {
+        if (position >= limit && speed > 0) {
             return 0;
-        } else if (position < -limit && speed < 0) {
+        } else if (position <= -limit && speed < 0) {
             return 0;
         } else {
             return speed;
