@@ -30,10 +30,11 @@ public class SwerveDrivetrain extends SubsystemBase {
     private final AHRS gyro;
     private final SwerveDriveOdometry odometry;
 
-    private Pose2d pose = new Pose2d();
+    private Pose2d pose;
+    private ChassisSpeeds targetSpeeds;
+    private SwerveModuleState[] states;
 
-    private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
-    private SwerveModuleState[] states = new SwerveModuleState[4];
+    private boolean isSlow;
 
     public SwerveDrivetrain(SwerveConfig config) {
         this.config = config;
@@ -44,29 +45,40 @@ public class SwerveDrivetrain extends SubsystemBase {
         backRightModule = config.BACK_RIGHT_MODULE.build();
 
         gyro = new AHRS();
-
+        pose = new Pose2d();
+        targetSpeeds = new ChassisSpeeds();
         states = getModuleStates();
-        odometry = new SwerveDriveOdometry(config.KINEMATICS, new Rotation2d(), getModulePositions());
 
+        odometry = new SwerveDriveOdometry(config.KINEMATICS, new Rotation2d(),
+                getModulePositions());
         resetOdometry();
 
+        isSlow = false;
+
         config.DRIVETRAIN_TAB.add("Heading", gyro).withPosition(4, 0);
-        ShuffleboardHelper.addOutput("Pose X", config.DRIVETRAIN_TAB, () -> pose.getX()).withPosition(4, 2);
-        ShuffleboardHelper.addOutput("Pose Y", config.DRIVETRAIN_TAB, () -> pose.getY()).withPosition(5, 2);
+        ShuffleboardHelper.addOutput("Pose X", config.DRIVETRAIN_TAB, () -> pose.getX())
+                .withPosition(4, 2);
+        ShuffleboardHelper.addOutput("Pose Y", config.DRIVETRAIN_TAB, () -> pose.getY())
+                .withPosition(5, 2);
 
         ShuffleboardHelper
-                .addOutput("Target X vel", config.DRIVETRAIN_TAB, () -> targetSpeeds.vxMetersPerSecond)
+                .addOutput("Target X vel", config.DRIVETRAIN_TAB,
+                        () -> targetSpeeds.vxMetersPerSecond)
                 .withPosition(0, 3);
         ShuffleboardHelper
-                .addOutput("Target Y vel", config.DRIVETRAIN_TAB, () -> targetSpeeds.vyMetersPerSecond)
+                .addOutput("Target Y vel", config.DRIVETRAIN_TAB,
+                        () -> targetSpeeds.vyMetersPerSecond)
                 .withPosition(1, 3);
         ShuffleboardHelper.addOutput("Target Rot. vel", config.DRIVETRAIN_TAB,
                 () -> targetSpeeds.omegaRadiansPerSecond).withPosition(2, 3);
 
-        ShuffleboardHelper.addOutput("Velocity X", config.DRIVETRAIN_TAB, () -> gyro.getVelocityX());
-        ShuffleboardHelper.addOutput("Velocity Y", config.DRIVETRAIN_TAB, () -> gyro.getVelocityY());
+        ShuffleboardHelper.addOutput("Velocity X", config.DRIVETRAIN_TAB,
+                () -> gyro.getVelocityX());
+        ShuffleboardHelper.addOutput("Velocity Y", config.DRIVETRAIN_TAB,
+                () -> gyro.getVelocityY());
         ShuffleboardHelper.addOutput("Speed", config.DRIVETRAIN_TAB,
-                () -> Math.sqrt(Math.pow(gyro.getVelocityX(), 2) + Math.pow(gyro.getVelocityY(), 2)));
+                () -> Math
+                        .sqrt(Math.pow(gyro.getVelocityX(), 2) + Math.pow(gyro.getVelocityY(), 2)));
     }
 
     @Override
@@ -75,7 +87,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         pose = odometry.update(getHeading(), getModulePositions());
     }
 
-    /** Apply the current target swerve module states */
+    /** Apply the current target swerve module states. */
     private void applyModuleStates() {
         if (states == null)
             System.out.println("Module states are NULL");
@@ -94,22 +106,26 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     private double calculateFeedForward(double velocity) {
         velocity = MathUtil.applyDeadband(velocity, 0.001);
+        velocity *= isSlow ? config.SLOWMODE_MULTIPLIER : 1;
         return config.FEED_FORWARD.calculate(velocity);
     }
 
-    /** @param speeds set target swerve module states based on a ChassisSpeed */
+    /** Set target swerve module states based on a ChassisSpeeds object. */
     public void driveChassisSpeeds(ChassisSpeeds speeds) {
         targetSpeeds = speeds;
         driveModuleStates(config.KINEMATICS.toSwerveModuleStates(speeds));
     }
 
-    /** @param states set target swerve module states */
+    /** Set target swerve module states. */
     public void driveModuleStates(SwerveModuleState[] states) {
         targetSpeeds = config.KINEMATICS.toChassisSpeeds(states);
         this.states = states;
     }
 
-    /** @return module positions representing the drivetrains swerve modules */
+    /**
+     * Returns an array of SwerveModulePosition objects, containing the position and angle of each
+     * module.
+     */
     public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] positions = {
                 new SwerveModulePosition(frontLeftModule.getDriveDistance(),
@@ -124,7 +140,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         return positions;
     }
 
-    /** @return module states representing the drivetrains swerve modules */
+    /**
+     * Returns an array of SwerveModuleState objects, containing the velocity and angle of each
+     * module.
+     */
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = {
                 new SwerveModuleState(frontLeftModule.getDriveVelocity(),
@@ -139,7 +158,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         return states;
     }
 
-    /** @param pose a pose to set the odometry and gyro to */
+    /** Resets the odometry and gyro to the given pose. */
     public void resetOdometry(Pose2d pose) {
         System.out.println("Reset Odometry to: " + pose);
         gyro.reset();
@@ -147,25 +166,36 @@ public class SwerveDrivetrain extends SubsystemBase {
         odometry.resetPosition(getHeading(), getModulePositions(), pose);
     }
 
-    /** Reset odometry & gyro to pose (0, 0) with 0 rotation */
+    /** Resets the odometry and gyro to the origin position. */
     public void resetOdometry() {
         System.out.println("Reset odometry");
         resetOdometry(new Pose2d());
     }
 
+    /** Returns a command to reset the odometry to the given pose. */
     public Command resetOdometryCommand(Pose2d pose) {
         return new InstantCommand(() -> resetOdometry(pose));
     }
 
-    /** @return the current yaw of the robot */
+    /** Returns the current yaw of the robot. */
     public Rotation2d getHeading() {
         return new Rotation2d(Math.toRadians(-gyro.getAngle()));
     }
 
-    /** @return the current estimated pose of the robot */
+    /** Returns the current (estimated) pose of the robot. */
     public Pose2d getPose() {
         if (pose == null)
             System.out.println("Robot pose is NULL");
         return pose;
+    }
+
+    /** Returns true if slowmode is enabled, false otherwise. */
+    public boolean slowmodeEnabled() {
+        return isSlow;
+    }
+
+    /** Turn slowmode on and off. */
+    public void slowmode(boolean slow) {
+        isSlow = slow;
     }
 }

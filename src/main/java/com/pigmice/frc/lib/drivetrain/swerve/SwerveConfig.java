@@ -25,6 +25,8 @@ public class SwerveConfig {
     public final double MANUAL_DRIVE_SPEED;
     public final double MANUAL_TURN_SPEED;
 
+    public final double SLOWMODE_MULTIPLIER;
+
     public final SwerveDriveKinematics KINEMATICS;
     public final SimpleMotorFeedforward FEED_FORWARD;
 
@@ -34,7 +36,7 @@ public class SwerveConfig {
 
     /**
      * <strong>Recommended use:</strong> create a SwerveConfig object in constants
-     * to pass into any subsystems and commands that need it
+     * to pass into any subsystems and commands that need it.
      * 
      * @param modules          swerve module objects for use in the subsystem
      * @param pathConstraints  max allowed speed and acceleration in path following
@@ -42,46 +44,47 @@ public class SwerveConfig {
      *                         following
      * @param pathTurnPID      a PID controller used for turning during path
      *                         following
-     * @param manualDriveSpeed the max speed while driving with joysticks (meters /
-     *                         second)
-     * @param manualTurnSpeed  the max speed while turning with joysticks (radians /
-     *                         second)
+     * @param manualDriveSpeed max speed while driving with joysticks (m/s)
+     * @param manualTurnSpeed  max speed while turning with joysticks (rad/s)
+     * @param slowMultiplier   multiplied by speed when slowmode is on
      * @param kinematics       used to convert chassis speeds to individual module
      *                         speeds
-     * @param feedForward      used to convert wheel speeds (m/s) to volts
-     * @param drivetrainTab    the shuffleboard tab to use for all drivetrain
+     * @param feedForward      used to convert wheel speeds to volts
+     * @param drivetrainTab    Shuffleboard tab to use for all drivetrain
      *                         debugging
      */
-    public SwerveConfig(MkSwerveModuleBuilder frontLeftModule, MkSwerveModuleBuilder frontRightModule,
+    public SwerveConfig(MkSwerveModuleBuilder frontLeftModule,
+            MkSwerveModuleBuilder frontRightModule,
             MkSwerveModuleBuilder backLeftModule, MkSwerveModuleBuilder backRightModule,
             PathConstraints pathConstraints, PIDController pathDrivePID, PIDController pathTurnPID,
-            double manualDriveSpeed, double manualTurnSpeed, SwerveDriveKinematics kinematics,
-            SimpleMotorFeedforward feedForward, ShuffleboardTab drivetrainTab) {
+            double manualDriveSpeed, double manualTurnSpeed, double slowMultiplier,
+            SwerveDriveKinematics kinematics, SimpleMotorFeedforward feedForward,
+            ShuffleboardTab drivetrainTab) {
 
-        this.FRONT_LEFT_MODULE = frontLeftModule;
-        this.FRONT_RIGHT_MODULE = frontRightModule;
-        this.BACK_LEFT_MODULE = backLeftModule;
-        this.BACK_RIGHT_MODULE = backRightModule;
+        FRONT_LEFT_MODULE = frontLeftModule;
+        FRONT_RIGHT_MODULE = frontRightModule;
+        BACK_LEFT_MODULE = backLeftModule;
+        BACK_RIGHT_MODULE = backRightModule;
 
-        this.PATH_CONSTRAINTS = pathConstraints;
-        this.PATH_DRIVE_PID = pathDrivePID;
-        this.PATH_TURN_PID = pathTurnPID;
+        PATH_CONSTRAINTS = pathConstraints;
+        PATH_DRIVE_PID = pathDrivePID;
+        PATH_TURN_PID = pathTurnPID;
 
-        this.PATH_DRIVE_PID_CONSTANTS = constantsFromController(pathDrivePID);
-        this.PATH_TURN_PID_CONSTANTS = constantsFromController(pathTurnPID);
+        PATH_DRIVE_PID_CONSTANTS = new PIDConstants(
+                pathDrivePID.getP(), pathDrivePID.getI(), pathDrivePID.getD());
+        PATH_TURN_PID_CONSTANTS = new PIDConstants(
+                pathDrivePID.getP(), pathDrivePID.getI(), pathDrivePID.getD());
 
-        this.MANUAL_DRIVE_SPEED = manualDriveSpeed; // max meters / second
-        this.MANUAL_TURN_SPEED = manualTurnSpeed; // max radians / second
+        MANUAL_DRIVE_SPEED = manualDriveSpeed; // max meters / second
+        MANUAL_TURN_SPEED = manualTurnSpeed; // max radians / second
 
-        this.KINEMATICS = kinematics;
-        this.FEED_FORWARD = feedForward;
+        SLOWMODE_MULTIPLIER = slowMultiplier;
+
+        KINEMATICS = kinematics;
+        FEED_FORWARD = feedForward;
 
         MAX_ATTAINABLE_SPEED = (12.0 - feedForward.ks) / feedForward.kv;
 
-        this.DRIVETRAIN_TAB = drivetrainTab;
-    }
-
-    private static PIDConstants constantsFromController(PIDController controller) {
-        return new PIDConstants(controller.getP(), controller.getI(), controller.getD());
+        DRIVETRAIN_TAB = drivetrainTab;
     }
 }
