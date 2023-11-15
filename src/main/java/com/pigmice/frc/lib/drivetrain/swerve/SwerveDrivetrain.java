@@ -190,12 +190,12 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     /** Returns true if slowmode is enabled, false otherwise. */
-    public boolean slowmodeEnabled() {
+    public boolean getSlowmode() {
         return isSlow;
     }
 
     /** Turn slowmode on and off. */
-    public void slowmode(boolean slow) {
+    public void setSlowmode(boolean slow) {
         isSlow = slow;
     }
 }
