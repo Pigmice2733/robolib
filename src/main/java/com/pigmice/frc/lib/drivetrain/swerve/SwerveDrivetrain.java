@@ -78,7 +78,8 @@ public class SwerveDrivetrain extends SubsystemBase {
                 () -> gyro.getVelocityY());
         ShuffleboardHelper.addOutput("Speed", config.DRIVETRAIN_TAB,
                 () -> Math
-                        .sqrt(Math.pow(gyro.getVelocityX(), 2) + Math.pow(gyro.getVelocityY(), 2)));
+                        .sqrt(Math.pow(gyro.getVelocityX(), 2)
+                                + Math.pow(gyro.getVelocityY(), 2)));
     }
 
     @Override
@@ -113,7 +114,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     /** Set target swerve module states based on a ChassisSpeeds object. */
     public void driveChassisSpeeds(ChassisSpeeds speeds) {
         targetSpeeds = speeds;
-        driveModuleStates(config.KINEMATICS.toSwerveModuleStates(speeds));
+        driveModuleStates(config.KINEMATICS.toSwerveModuleStates(speeds, config.ROTATION_CENTER_OFFSET));
     }
 
     /** Set target swerve module states. */
@@ -123,7 +124,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     /**
-     * Returns an array of SwerveModulePosition objects, containing the position and angle of each
+     * Returns an array of SwerveModulePosition objects, containing the position and
+     * angle of each
      * module.
      */
     public SwerveModulePosition[] getModulePositions() {
@@ -141,7 +143,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     /**
-     * Returns an array of SwerveModuleState objects, containing the velocity and angle of each
+     * Returns an array of SwerveModuleState objects, containing the velocity and
+     * angle of each
      * module.
      */
     public SwerveModuleState[] getModuleStates() {

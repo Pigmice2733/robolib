@@ -6,6 +6,7 @@ import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
@@ -34,6 +35,8 @@ public class SwerveConfig {
 
     public final ShuffleboardTab DRIVETRAIN_TAB;
 
+    public final Translation2d ROTATION_CENTER_OFFSET;
+
     /**
      * <strong>Recommended use:</strong> create a SwerveConfig object in constants
      * to pass into any subsystems and commands that need it.
@@ -59,7 +62,7 @@ public class SwerveConfig {
             PathConstraints pathConstraints, PIDController pathDrivePID, PIDController pathTurnPID,
             double manualDriveSpeed, double manualTurnSpeed, double slowMultiplier,
             SwerveDriveKinematics kinematics, SimpleMotorFeedforward feedForward,
-            ShuffleboardTab drivetrainTab) {
+            ShuffleboardTab drivetrainTab, Translation2d rotationCenterOffset) {
 
         FRONT_LEFT_MODULE = frontLeftModule;
         FRONT_RIGHT_MODULE = frontRightModule;
@@ -86,5 +89,7 @@ public class SwerveConfig {
         MAX_ATTAINABLE_SPEED = (12.0 - feedForward.ks) / feedForward.kv;
 
         DRIVETRAIN_TAB = drivetrainTab;
+
+        this.ROTATION_CENTER_OFFSET = rotationCenterOffset;
     }
 }
