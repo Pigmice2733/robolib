@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class MotorTester {
-    public static final ShuffleboardTab SHUFFLEBOARD_TAB = Shuffleboard.getTab("Motor Tester");
     public static final ArrayList<TestMotor> motors = new ArrayList<TestMotor>();
 
     private static GenericEntry motorsEnabled;
@@ -29,22 +28,26 @@ public class MotorTester {
 
     private static boolean createdWidgets = false;
 
+    /** <strong>Call in Robot.testInit</strong> **/
     public static void createWidgets() {
         if (createdWidgets)
             return;
 
+        ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Motor Tester");
+
         createdWidgets = true;
 
         for (var motor : motors) {
-            outputEntries.add(SHUFFLEBOARD_TAB.add(motor.name, 0)
+            outputEntries.add(shuffleboardTab.add(motor.name, 0)
                     .withWidget(BuiltInWidgets.kNumberSlider)
                     .withProperties(Map.of("min", -1, "max", 1)).getEntry());
         }
 
-        motorsEnabled = SHUFFLEBOARD_TAB.add("Enable Motors", false)
+        motorsEnabled = shuffleboardTab.add("Enable Motors", false)
                 .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
     }
 
+    /** <strong>Call in Robot.testPeriodic</strong> **/
     public static void periodic() {
         if (!motorsEnabled.getBoolean(false)) {
             stopMotors();
