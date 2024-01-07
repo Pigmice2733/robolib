@@ -39,7 +39,7 @@ public class PIDSubsystemBase extends SubsystemBase {
     private boolean runPID = true;
 
     public PIDSubsystemBase(CANSparkMax motor, double p, double i, double d, Constraints constraints,
-            boolean motorInverted, double motorRotationConversion,
+            boolean motorInverted, double motorRotationConversion, int currentLimit,
             ShuffleboardTab shuffleboardTab, boolean controllerTuningMode) {
 
         this.shuffleboardTab = shuffleboardTab;
@@ -48,6 +48,7 @@ public class PIDSubsystemBase extends SubsystemBase {
         motor.getEncoder().setPosition(0);
         motor.setInverted(false);
         motor.getEncoder().setPositionConversionFactor(motorRotationConversion);
+        motor.setSmartCurrentLimit(currentLimit);
 
         this.motor = motor;
 
@@ -209,6 +210,10 @@ public class PIDSubsystemBase extends SubsystemBase {
 
     public boolean limitSwitchPressed() {
         return lsInverted ? !limitSwitch.get() : limitSwitch.get();
+    }
+
+    public CANSparkMax getMotor() {
+        return motor;
     }
 
     public enum LimitSwitchSide {
