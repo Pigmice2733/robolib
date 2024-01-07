@@ -164,18 +164,18 @@ public class Utils {
      * 
      * @param position the current position/rotation of the mechanism
      * @param speed    the provisional output for the mechanism
-     * @param limit    the maximum position (in either direction) that the mechanism
-     *                 should go
+     * @param minLimit the min position that the mechanism should go
+     * @param maxLimit the max position that the mechanism should go
      * @return an appropriate output for the speed--the given value if possible or 0
      *         otherwise
      */
-    public static double applySoftwareStop(double position, double speed, double limit) {
-        if (position >= limit && speed > 0) {
+    public static double applySoftwareStop(double position, double velocity, double minLimit, double maxLimit) {
+        if (position >= maxLimit && velocity > 0) {
             return 0;
-        } else if (position <= -limit && speed < 0) {
+        } else if (position <= minLimit && velocity < 0) {
             return 0;
         } else {
-            return speed;
+            return velocity;
         }
     }
 }
