@@ -9,8 +9,11 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import swervelib.parser.SwerveDriveConfiguration;
 
 public class SwerveConfig {
+    public final SwerveDriveConfiguration SWERVE_LIB_CONFIG;
+
     public final MkSwerveModuleBuilder FRONT_LEFT_MODULE;
     public final MkSwerveModuleBuilder FRONT_RIGHT_MODULE;
     public final MkSwerveModuleBuilder BACK_LEFT_MODULE;
@@ -56,13 +59,15 @@ public class SwerveConfig {
      * @param drivetrainTab    Shuffleboard tab to use for all drivetrain
      *                         debugging
      */
-    public SwerveConfig(MkSwerveModuleBuilder frontLeftModule,
+    public SwerveConfig(SwerveDriveConfiguration swerveLibConfig, MkSwerveModuleBuilder frontLeftModule,
             MkSwerveModuleBuilder frontRightModule,
             MkSwerveModuleBuilder backLeftModule, MkSwerveModuleBuilder backRightModule,
             PathConstraints pathConstraints, PIDController pathDrivePID, PIDController pathTurnPID,
             double manualDriveSpeed, double manualTurnSpeed, double slowMultiplier,
             SwerveDriveKinematics kinematics, SimpleMotorFeedforward feedForward,
             ShuffleboardTab drivetrainTab, Translation2d rotationCenterOffset) {
+
+        this.SWERVE_LIB_CONFIG = swerveLibConfig;
 
         FRONT_LEFT_MODULE = frontLeftModule;
         FRONT_RIGHT_MODULE = frontRightModule;

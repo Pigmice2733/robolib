@@ -10,15 +10,16 @@ import com.pigmice.frc.lib.drivetrain.swerve.SwerveDrivetrain;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import swervelib.SwerveDrive;
 
 public class DriveWithJoysticksSwerve extends CommandBase {
-    private final SwerveDrivetrain drivetrain;
+    private final SwerveDrive drivetrain;
     private final DoubleSupplier driveSpeedX, driveSpeedY, turnSpeed;
     private final BooleanSupplier fieldOriented;
 
     /** The default drive command for swerve. Optional field-oriented input. */
     public DriveWithJoysticksSwerve(
-            SwerveDrivetrain drivetrain, DoubleSupplier driveSpeedX, DoubleSupplier driveSpeedY,
+            SwerveDrive drivetrain, DoubleSupplier driveSpeedX, DoubleSupplier driveSpeedY,
             DoubleSupplier turnSpeed, BooleanSupplier fieldOriented) {
         this.drivetrain = drivetrain;
         this.driveSpeedX = driveSpeedX;
@@ -26,11 +27,11 @@ public class DriveWithJoysticksSwerve extends CommandBase {
         this.turnSpeed = turnSpeed;
         this.fieldOriented = fieldOriented;
 
-        addRequirements(drivetrain);
+        // addRequirements(drivetrain);
     }
 
     /** The default drive command for swerve. */
-    public DriveWithJoysticksSwerve(SwerveDrivetrain drivetrain, DoubleSupplier driveSpeedX,
+    public DriveWithJoysticksSwerve(SwerveDrive drivetrain, DoubleSupplier driveSpeedX,
             DoubleSupplier driveSpeedY, DoubleSupplier turnSpeed) {
         this(drivetrain, driveSpeedX, driveSpeedY, turnSpeed, () -> false);
     }
@@ -38,11 +39,12 @@ public class DriveWithJoysticksSwerve extends CommandBase {
     @Override
     public void execute() {
         if (fieldOriented.getAsBoolean())
-            drivetrain.driveChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(
+
+            drivetrain.driveFieldOriented(ChassisSpeeds.fromFieldRelativeSpeeds(
                     driveSpeedY.getAsDouble(), driveSpeedX.getAsDouble(),
-                    -turnSpeed.getAsDouble(), drivetrain.getHeading()));
+                    -turnSpeed.getAsDouble(), drivetrain.getYaw()));
         else
-            drivetrain.driveChassisSpeeds(new ChassisSpeeds(
+            drivetrain.drive(new ChassisSpeeds(
                     driveSpeedY.getAsDouble(), driveSpeedX.getAsDouble(),
                     -turnSpeed.getAsDouble()));
     }
