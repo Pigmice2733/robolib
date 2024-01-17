@@ -43,6 +43,7 @@ public class PIDSubsystemBase extends SubsystemBase {
             ShuffleboardTab shuffleboardTab, boolean controllerTuningMode) {
 
         this.shuffleboardTab = shuffleboardTab;
+        this.constraints = constraints;
 
         motor.restoreFactoryDefaults();
         motor.getEncoder().setPosition(0);
