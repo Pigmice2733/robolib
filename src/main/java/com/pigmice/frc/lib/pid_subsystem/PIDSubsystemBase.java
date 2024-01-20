@@ -4,6 +4,8 @@
 
 package com.pigmice.frc.lib.pid_subsystem;
 
+import java.util.function.Supplier;
+
 import com.pigmice.frc.lib.shuffleboard_helper.ShuffleboardHelper;
 import com.pigmice.frc.lib.utils.Utils;
 import com.revrobotics.CANSparkMax;
@@ -14,7 +16,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PIDSubsystemBase extends SubsystemBase {
@@ -22,6 +23,8 @@ public class PIDSubsystemBase extends SubsystemBase {
 
     private final CANSparkMax motor;
     private final ProfiledPIDController pidController;
+
+    private double encoderRotationConversion;
 
     private boolean useSoftwareStop;
     private double minAllowedPosition;
@@ -33,22 +36,27 @@ public class PIDSubsystemBase extends SubsystemBase {
     private boolean lsInverted;
     private LimitSwitchSide lsSide;
 
+    private boolean useCustomEncoder;
+    private Supplier<Double> getCustomEncoderPosition;
+    private double encoderZeroPosition;
+
     private double targetRotation;
     private Constraints constraints;
 
     private boolean runPID = true;
 
     public PIDSubsystemBase(CANSparkMax motor, double p, double i, double d, Constraints constraints,
-            boolean motorInverted, double motorRotationConversion, int currentLimit,
+            boolean motorInverted, double encoderRotationConversion, int currentLimit,
             ShuffleboardTab shuffleboardTab, boolean controllerTuningMode) {
 
         this.shuffleboardTab = shuffleboardTab;
         this.constraints = constraints;
+        this.encoderRotationConversion = encoderRotationConversion;
 
         motor.restoreFactoryDefaults();
         motor.getEncoder().setPosition(0);
         motor.setInverted(false);
-        motor.getEncoder().setPositionConversionFactor(motorRotationConversion);
+        motor.getEncoder().setPositionConversionFactor(encoderRotationConversion);
         motor.setSmartCurrentLimit(currentLimit);
 
         this.motor = motor;
@@ -72,9 +80,6 @@ public class PIDSubsystemBase extends SubsystemBase {
 
         ShuffleboardHelper.addOutput("Motor Temp", shuffleboardTab,
                 () -> motor.getMotorTemperature());
-
-        shuffleboardTab.add("Reset Encoder",
-                new InstantCommand(() -> motor.getEncoder().setPosition(0)));
 
         if (controllerTuningMode) {
             ShuffleboardHelper.addProfiledController("Rotation Controller", shuffleboardTab, pidController,
@@ -103,16 +108,28 @@ public class PIDSubsystemBase extends SubsystemBase {
      * @param limitSwitch the limit switch
      * @param lsInverted  does the digitalInput return negative when the switch is
      *                    pressed?
-     * @param lsSide
+     * @param lsSide      direction the mechanism is moving when it hits the switch
      */
-    public void addLimitSwitch(double lsPosition, DigitalInput limitSwitch, boolean lsInverted,
+    public void addLimitSwitch(double lsPosition, int limitSwitchPort, boolean lsInverted,
             LimitSwitchSide lsSide) {
         this.lsPosition = lsPosition;
-        this.limitSwitch = limitSwitch;
+        this.limitSwitch = new DigitalInput(limitSwitchPort);
         this.lsInverted = lsInverted;
         this.lsSide = lsSide;
 
         ShuffleboardHelper.addOutput("Limit Switch", shuffleboardTab, () -> limitSwitchPressed());
+    }
+
+    /**
+     * Add an encoder other than the Neo's built in encoder
+     * 
+     * @param getEncoderPosition a supplier of the current encoder position, prior
+     *                           to the conversion factor being applied
+     */
+    public void addCustomEncoder(Supplier<Double> getEncoderPosition) {
+        this.useCustomEncoder = true;
+        this.getCustomEncoderPosition = getEncoderPosition;
+        this.encoderZeroPosition = getEncoderPosition.get();
     }
 
     /** Resets the controller to the turret's current rotation. */
@@ -158,7 +175,10 @@ public class PIDSubsystemBase extends SubsystemBase {
 
     /** Returns the turret's current rotation in degrees. */
     public double getCurrentRotation() {
-        return (motor.getEncoder().getPosition());
+        if (useCustomEncoder)
+            return getCustomEncoderPosition.get() * encoderRotationConversion - encoderZeroPosition;
+        else
+            return (motor.getEncoder().getPosition());
     }
 
     /** Sets the turret's target position. */
@@ -192,7 +212,10 @@ public class PIDSubsystemBase extends SubsystemBase {
     }
 
     public void setEncoderPosition(double position) {
-        motor.getEncoder().setPosition(position);
+        if (useCustomEncoder)
+            encoderZeroPosition = getCustomEncoderPosition.get() - position;
+        else
+            motor.getEncoder().setPosition(position);
     }
 
     public void stopPID() {
