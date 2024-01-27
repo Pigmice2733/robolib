@@ -3,9 +3,6 @@ package com.pigmice.frc.lib.motor_tester;
 import java.util.ArrayList;
 import java.util.Map;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
-
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -18,12 +15,8 @@ public class MotorTester {
     private static GenericEntry motorsEnabled;
     private static final ArrayList<GenericEntry> outputEntries = new ArrayList<GenericEntry>();
 
-    public static void registerCANMotor(String name, MotorController motor) {
-        motors.add(new TestCAN(name, motor));
-    }
-
-    public static void registerTalonMotor(String name, BaseMotorController motor) {
-        motors.add(new TestTalon(name, motor));
+    public static void registerMotor(String name, MotorController motor) {
+        motors.add(new TestMotor(name, motor));
     }
 
     private static boolean createdWidgets = false;
@@ -67,41 +60,17 @@ public class MotorTester {
         motors.forEach(m -> m.set(0));
     }
 
-    public abstract static class TestMotor {
+    public static class TestMotor {
         public String name;
+        public MotorController motor;
 
-        public TestMotor(String name) {
+        public TestMotor(String name, MotorController motor) {
             this.name = name;
-        }
-
-        public abstract void set(double percent);
-    }
-
-    public static class TestCAN extends TestMotor {
-        private final MotorController motor;
-
-        public TestCAN(String name, MotorController motor) {
-            super(name);
             this.motor = motor;
         }
 
-        @Override
         public void set(double percent) {
             motor.set(percent);
-        }
-    }
-
-    public static class TestTalon extends TestMotor {
-        private final BaseMotorController motor;
-
-        public TestTalon(String name, BaseMotorController motor) {
-            super(name);
-            this.motor = motor;
-        }
-
-        @Override
-        public void set(double percent) {
-            motor.set(ControlMode.PercentOutput, percent);
-        }
+        };
     }
 }
