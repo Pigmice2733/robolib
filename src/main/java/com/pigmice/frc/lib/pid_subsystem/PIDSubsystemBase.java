@@ -47,7 +47,7 @@ public class PIDSubsystemBase extends SubsystemBase {
 
     public PIDSubsystemBase(CANSparkMax motor, double p, double i, double d, Constraints constraints,
             boolean motorInverted, double encoderRotationConversion, int currentLimit,
-            ShuffleboardTab shuffleboardTab, boolean controllerTuningMode) {
+            ShuffleboardTab shuffleboardTab, boolean controllerTuningMode, boolean motorTestingMode) {
 
         this.shuffleboardTab = shuffleboardTab;
         this.constraints = constraints;
@@ -81,7 +81,11 @@ public class PIDSubsystemBase extends SubsystemBase {
         ShuffleboardHelper.addOutput("Motor Temp", shuffleboardTab,
                 () -> motor.getMotorTemperature());
 
-        if (controllerTuningMode) {
+        if (motorTestingMode) {
+            ShuffleboardHelper.addInput("Set Motor Output", shuffleboardTab,
+                    (input) -> outputToMotor((double) input), 0);
+            runPID = false;
+        } else if (controllerTuningMode) {
             ShuffleboardHelper.addProfiledController("Rotation Controller", shuffleboardTab, pidController,
                     constraints.maxVelocity, constraints.maxAcceleration);
 
