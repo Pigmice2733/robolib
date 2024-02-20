@@ -46,7 +46,7 @@ public class PIDSubsystemBase extends SubsystemBase {
 
     private boolean runPID = true;
 
-    public double maxAllowedOutput = 1;
+    private double maxAllowedOutput = 1;
 
     public PIDSubsystemBase(CANSparkMax motor, double p, double i, double d, Constraints constraints,
             boolean motorInverted, double encoderRotationConversion, int currentLimit,
@@ -69,33 +69,37 @@ public class PIDSubsystemBase extends SubsystemBase {
 
         ShuffleboardHelper
                 .addOutput("Current Position", shuffleboardTab, () -> getCurrentRotation())
-                .asDial(-180, 180);
-
-        ShuffleboardHelper.addOutput("Target Position", shuffleboardTab, () -> targetRotation)
-                .asDial(-180, 180);
+                .asDial(-180, 180).withPosition(0, 0);
 
         ShuffleboardHelper
                 .addOutput("Setpoint", shuffleboardTab,
                         () -> pidController.getSetpoint().position)
-                .asDial(-180, 180);
+                .asDial(-180, 180).withPosition(1, 0);
+
+        ShuffleboardHelper.addOutput("Target Position", shuffleboardTab, () -> targetRotation)
+                .asDial(-180, 180).withPosition(2, 0);
 
         ShuffleboardHelper.addOutput("Motor Output", shuffleboardTab,
-                () -> motor.get());
+                () -> motor.get()).withPosition(0, 1);
 
         ShuffleboardHelper.addOutput("Motor Temp", shuffleboardTab,
-                () -> motor.getMotorTemperature());
+                () -> motor.getMotorTemperature()).withPosition(1, 1);
+
+        ShuffleboardHelper.addOutput("At Max Output", shuffleboardTab,
+                () -> (Math.abs(motor.get()) >= maxAllowedOutput))
+                .withPosition(3, 0);
 
         if (motorTestingMode) {
             ShuffleboardHelper.addInput("Set Motor Output", shuffleboardTab,
-                    (input) -> outputToMotor((double) input), 0);
+                    (input) -> outputToMotor((double) input), 0).withPosition(0, 1);
 
             runPID = false;
         } else if (controllerTuningMode) {
             ShuffleboardHelper.addProfiledController("Rotation Controller", shuffleboardTab, pidController,
-                    constraints.maxVelocity, constraints.maxAcceleration);
+                    constraints.maxVelocity, constraints.maxAcceleration).withPosition(0, 2);
 
             ShuffleboardHelper.addInput("Target Pos Input", shuffleboardTab,
-                    (input) -> setTargetRotation((double) input), 0);
+                    (input) -> setTargetRotation((double) input), 0).withPosition(1, 2);
         }
     }
 
@@ -109,6 +113,10 @@ public class PIDSubsystemBase extends SubsystemBase {
         this.useSoftwareStop = true;
         this.minAllowedPosition = minAllowedPosition;
         this.maxAllowedPosition = maxAllowedPosition;
+
+        ShuffleboardHelper.addOutput("At Software Stop", shuffleboardTab,
+                () -> (getCurrentRotation() > maxAllowedPosition || getCurrentRotation() < minAllowedPosition))
+                .withPosition(4, 0);
     }
 
     /**
@@ -127,7 +135,7 @@ public class PIDSubsystemBase extends SubsystemBase {
         this.lsInverted = lsInverted;
         this.lsSide = lsSide;
 
-        ShuffleboardHelper.addOutput("Limit Switch", shuffleboardTab, () -> limitSwitchPressed());
+        ShuffleboardHelper.addOutput("Limit Switch", shuffleboardTab, () -> limitSwitchPressed()).withPosition(5, 0);
     }
 
     /**
@@ -140,6 +148,11 @@ public class PIDSubsystemBase extends SubsystemBase {
         this.useCustomEncoder = true;
         this.getCustomEncoderPosition = getEncoderPosition;
         this.encoderZeroPosition = getEncoderPosition.get();
+    }
+
+    /** Sets the max allowed motor output */
+    public void setMaxAllowedOutput(double maxAllowedOutput) {
+        this.maxAllowedOutput = maxAllowedOutput;
     }
 
     /** Resets the controller to the turret's current rotation. */
@@ -160,7 +173,7 @@ public class PIDSubsystemBase extends SubsystemBase {
             return;
 
         double calculatedOutput = pidController.calculate(getCurrentRotation(),
-                targetRotation);
+                new State(targetRotation, 0), constraints);
         outputToMotor(calculatedOutput);
     }
 
@@ -173,13 +186,13 @@ public class PIDSubsystemBase extends SubsystemBase {
                     minAllowedPosition,
                     maxAllowedPosition);
 
-        // if (useLimitSwitch && limitSwitchPressed()) {
-        // setEncoderPosition(lsPosition);
-        // if (lsSide == LimitSwitchSide.POSITIVE)
-        // percentOutput = Math.min(percentOutput, 0);
-        // else
-        // percentOutput = Math.max(percentOutput, 0);
-        // }
+        if (useLimitSwitch && limitSwitchPressed()) {
+            setEncoderPosition(lsPosition);
+            if (lsSide == LimitSwitchSide.POSITIVE)
+                percentOutput = Math.min(percentOutput, 0);
+            else
+                percentOutput = Math.max(percentOutput, 0);
+        }
 
         percentOutput = MathUtil.clamp(percentOutput, -maxAllowedOutput, maxAllowedOutput);
         motor.set(percentOutput);
@@ -223,6 +236,7 @@ public class PIDSubsystemBase extends SubsystemBase {
         this.constraints = constraints;
     }
 
+    /** Setts the current position of the encoder */
     public void setEncoderPosition(double position) {
         if (useCustomEncoder)
             encoderZeroPosition = getCustomEncoderPosition.get() - position;
@@ -230,24 +244,29 @@ public class PIDSubsystemBase extends SubsystemBase {
             motor.getEncoder().setPosition(position);
     }
 
+    /** Pauses the PID loop, preventing it from outputting to the motor */
     public void stopPID() {
         outputToMotor(0);
         runPID = false;
     }
 
+    /** Results the PID loop */
     public void startPID() {
         runPID = true;
     }
 
+    /** Completely resets the PID controller and encoder */
     public void resetPID() {
         pidController.reset(getCurrentRotation());
         setTargetRotation(getCurrentRotation());
     }
 
+    /** @return true if the limit switch is currently pressed */
     public boolean limitSwitchPressed() {
         return lsInverted ? !limitSwitch.get() : limitSwitch.get();
     }
 
+    /** @return the motor instance */
     public CANSparkMax getMotor() {
         return motor;
     }
