@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import com.pigmice.frc.lib.shuffleboard_helper.ShuffleboardHelper;
 import com.pigmice.frc.lib.utils.Utils;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -45,6 +46,8 @@ public class PIDSubsystemBase extends SubsystemBase {
 
     private boolean runPID = true;
 
+    public double maxAllowedOutput = 1;
+
     public PIDSubsystemBase(CANSparkMax motor, double p, double i, double d, Constraints constraints,
             boolean motorInverted, double encoderRotationConversion, int currentLimit,
             ShuffleboardTab shuffleboardTab, boolean controllerTuningMode, boolean motorTestingMode) {
@@ -58,6 +61,7 @@ public class PIDSubsystemBase extends SubsystemBase {
         motor.setInverted(false);
         motor.getEncoder().setPositionConversionFactor(encoderRotationConversion);
         motor.setSmartCurrentLimit(currentLimit);
+        motor.setIdleMode(IdleMode.kBrake);
 
         this.motor = motor;
 
@@ -84,6 +88,7 @@ public class PIDSubsystemBase extends SubsystemBase {
         if (motorTestingMode) {
             ShuffleboardHelper.addInput("Set Motor Output", shuffleboardTab,
                     (input) -> outputToMotor((double) input), 0);
+
             runPID = false;
         } else if (controllerTuningMode) {
             ShuffleboardHelper.addProfiledController("Rotation Controller", shuffleboardTab, pidController,
@@ -101,6 +106,7 @@ public class PIDSubsystemBase extends SubsystemBase {
      * @param maxAllowedPosition the max allowed mechanism position
      */
     public void addSoftwareStop(double minAllowedPosition, double maxAllowedPosition) {
+        this.useSoftwareStop = true;
         this.minAllowedPosition = minAllowedPosition;
         this.maxAllowedPosition = maxAllowedPosition;
     }
@@ -154,7 +160,7 @@ public class PIDSubsystemBase extends SubsystemBase {
             return;
 
         double calculatedOutput = pidController.calculate(getCurrentRotation(),
-                new State(targetRotation, 0.0), constraints);
+                targetRotation);
         outputToMotor(calculatedOutput);
     }
 
@@ -163,17 +169,19 @@ public class PIDSubsystemBase extends SubsystemBase {
         double currentRotation = getCurrentRotation();
 
         if (useSoftwareStop)
-            percentOutput = Utils.applySoftwareStop(currentRotation, percentOutput, minAllowedPosition,
+            percentOutput = Utils.applySoftwareStop(currentRotation, percentOutput,
+                    minAllowedPosition,
                     maxAllowedPosition);
 
-        if (useLimitSwitch && limitSwitchPressed()) {
-            setEncoderPosition(lsPosition);
-            if (lsSide == LimitSwitchSide.POSITIVE)
-                percentOutput = Math.min(percentOutput, 0);
-            else
-                percentOutput = Math.max(percentOutput, 0);
-        }
+        // if (useLimitSwitch && limitSwitchPressed()) {
+        // setEncoderPosition(lsPosition);
+        // if (lsSide == LimitSwitchSide.POSITIVE)
+        // percentOutput = Math.min(percentOutput, 0);
+        // else
+        // percentOutput = Math.max(percentOutput, 0);
+        // }
 
+        percentOutput = MathUtil.clamp(percentOutput, -maxAllowedOutput, maxAllowedOutput);
         motor.set(percentOutput);
     }
 
