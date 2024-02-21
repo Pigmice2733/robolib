@@ -4,12 +4,11 @@
 
 package com.pigmice.frc.lib.pid_subsystem;
 
-import java.util.function.Supplier;
-
 import com.pigmice.frc.lib.shuffleboard_helper.ShuffleboardHelper;
 import com.pigmice.frc.lib.utils.Utils;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -37,9 +36,7 @@ public class PIDSubsystemBase extends SubsystemBase {
     private boolean lsInverted;
     private LimitSwitchSide lsSide;
 
-    private boolean useCustomEncoder;
-    private Supplier<Double> getCustomEncoderPosition;
-    private double encoderZeroPosition;
+    private boolean useThroughBoreEncoder;
 
     private double targetRotation;
     private Constraints constraints;
@@ -58,7 +55,7 @@ public class PIDSubsystemBase extends SubsystemBase {
 
         motor.restoreFactoryDefaults();
         motor.getEncoder().setPosition(0);
-        motor.setInverted(false);
+        motor.setInverted(motorInverted);
         motor.getEncoder().setPositionConversionFactor(encoderRotationConversion);
         motor.setSmartCurrentLimit(currentLimit);
         motor.setIdleMode(IdleMode.kBrake);
@@ -91,7 +88,7 @@ public class PIDSubsystemBase extends SubsystemBase {
 
         if (motorTestingMode) {
             ShuffleboardHelper.addInput("Set Motor Output", shuffleboardTab,
-                    (input) -> outputToMotor((double) input), 0).withPosition(0, 1);
+                    (input) -> outputToMotor((double) input), 0).withPosition(2, 1);
 
             runPID = false;
         } else if (controllerTuningMode) {
@@ -135,6 +132,8 @@ public class PIDSubsystemBase extends SubsystemBase {
         this.lsInverted = lsInverted;
         this.lsSide = lsSide;
 
+        this.useLimitSwitch = true;
+
         ShuffleboardHelper.addOutput("Limit Switch", shuffleboardTab, () -> limitSwitchPressed()).withPosition(5, 0);
     }
 
@@ -144,10 +143,8 @@ public class PIDSubsystemBase extends SubsystemBase {
      * @param getEncoderPosition a supplier of the current encoder position, prior
      *                           to the conversion factor being applied
      */
-    public void addCustomEncoder(Supplier<Double> getEncoderPosition) {
-        this.useCustomEncoder = true;
-        this.getCustomEncoderPosition = getEncoderPosition;
-        this.encoderZeroPosition = getEncoderPosition.get();
+    public void useThroughBoreEncoder() {
+        this.useThroughBoreEncoder = true;
     }
 
     /** Sets the max allowed motor output */
@@ -172,6 +169,10 @@ public class PIDSubsystemBase extends SubsystemBase {
         if (!runPID)
             return;
 
+        if (useLimitSwitch && limitSwitchPressed()) {
+            setEncoderPosition(lsPosition);
+        }
+
         double calculatedOutput = pidController.calculate(getCurrentRotation(),
                 new State(targetRotation, 0), constraints);
         outputToMotor(calculatedOutput);
@@ -187,7 +188,6 @@ public class PIDSubsystemBase extends SubsystemBase {
                     maxAllowedPosition);
 
         if (useLimitSwitch && limitSwitchPressed()) {
-            setEncoderPosition(lsPosition);
             if (lsSide == LimitSwitchSide.POSITIVE)
                 percentOutput = Math.min(percentOutput, 0);
             else
@@ -200,8 +200,8 @@ public class PIDSubsystemBase extends SubsystemBase {
 
     /** Returns the turret's current rotation in degrees. */
     public double getCurrentRotation() {
-        if (useCustomEncoder)
-            return getCustomEncoderPosition.get() * encoderRotationConversion - encoderZeroPosition;
+        if (useThroughBoreEncoder)
+            return motor.getAbsoluteEncoder(Type.kDutyCycle).getPosition();
         else
             return (motor.getEncoder().getPosition());
     }
@@ -238,8 +238,8 @@ public class PIDSubsystemBase extends SubsystemBase {
 
     /** Setts the current position of the encoder */
     public void setEncoderPosition(double position) {
-        if (useCustomEncoder)
-            encoderZeroPosition = getCustomEncoderPosition.get() - position;
+        if (useThroughBoreEncoder)
+            motor.getAbsoluteEncoder(Type.kDutyCycle).setZeroOffset(position - getCurrentRotation());
         else
             motor.getEncoder().setPosition(position);
     }
