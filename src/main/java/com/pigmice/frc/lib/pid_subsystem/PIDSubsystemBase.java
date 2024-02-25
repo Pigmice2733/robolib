@@ -4,6 +4,8 @@
 
 package com.pigmice.frc.lib.pid_subsystem;
 
+import java.util.function.Supplier;
+
 import com.pigmice.frc.lib.shuffleboard_helper.ShuffleboardHelper;
 import com.pigmice.frc.lib.utils.Utils;
 import com.revrobotics.CANSparkMax;
@@ -24,11 +26,9 @@ public class PIDSubsystemBase extends SubsystemBase {
     private final CANSparkMax motor;
     private final ProfiledPIDController pidController;
 
-    private double encoderRotationConversion;
-
     private boolean useSoftwareStop;
-    private double minAllowedPosition;
-    private double maxAllowedPosition;
+    private Supplier<Double> getMinAllowedPosition;
+    private Supplier<Double> getMaxAllowedPosition;
 
     private boolean useLimitSwitch;
     private DigitalInput limitSwitch;
@@ -51,7 +51,6 @@ public class PIDSubsystemBase extends SubsystemBase {
 
         this.shuffleboardTab = shuffleboardTab;
         this.constraints = constraints;
-        this.encoderRotationConversion = encoderRotationConversion;
 
         motor.restoreFactoryDefaults();
         motor.getEncoder().setPosition(0);
@@ -107,12 +106,23 @@ public class PIDSubsystemBase extends SubsystemBase {
      * @param maxAllowedPosition the max allowed mechanism position
      */
     public void addSoftwareStop(double minAllowedPosition, double maxAllowedPosition) {
+        addSoftwareStop(() -> minAllowedPosition, () -> maxAllowedPosition);
+    }
+
+    /**
+     * Adds a software stop to prevent the mechanism from over rotating
+     * 
+     * @param minAllowedPosition the min allowed mechanism position
+     * @param maxAllowedPosition the max allowed mechanism position
+     */
+    public void addSoftwareStop(Supplier<Double> getMinAllowedPosition, Supplier<Double> getMaxAllowedPosition) {
         this.useSoftwareStop = true;
-        this.minAllowedPosition = minAllowedPosition;
-        this.maxAllowedPosition = maxAllowedPosition;
+        this.getMinAllowedPosition = getMinAllowedPosition;
+        this.getMaxAllowedPosition = getMaxAllowedPosition;
 
         ShuffleboardHelper.addOutput("At Software Stop", shuffleboardTab,
-                () -> (getCurrentRotation() > maxAllowedPosition || getCurrentRotation() < minAllowedPosition))
+                () -> (getCurrentRotation() > getMaxAllowedPosition.get()
+                        || getCurrentRotation() < getMinAllowedPosition.get()))
                 .withPosition(4, 0);
     }
 
@@ -184,8 +194,7 @@ public class PIDSubsystemBase extends SubsystemBase {
 
         if (useSoftwareStop)
             percentOutput = Utils.applySoftwareStop(currentRotation, percentOutput,
-                    minAllowedPosition,
-                    maxAllowedPosition);
+                    getMinAllowedPosition.get(), getMaxAllowedPosition.get());
 
         if (useLimitSwitch && limitSwitchPressed()) {
             if (lsSide == LimitSwitchSide.POSITIVE)
@@ -209,7 +218,7 @@ public class PIDSubsystemBase extends SubsystemBase {
     /** Sets the turret's target position. */
     public void setTargetRotation(double targetDegrees) {
         if (useSoftwareStop)
-            targetRotation = MathUtil.clamp(targetRotation, minAllowedPosition, maxAllowedPosition);
+            targetRotation = MathUtil.clamp(targetRotation, getMinAllowedPosition.get(), getMaxAllowedPosition.get());
 
         targetRotation = targetDegrees;
     }
