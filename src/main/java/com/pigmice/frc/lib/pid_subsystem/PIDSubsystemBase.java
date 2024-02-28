@@ -4,13 +4,13 @@
 
 package com.pigmice.frc.lib.pid_subsystem;
 
-import java.util.function.Supplier;
+import java.util.function.DoubleSupplier;
 
 import com.pigmice.frc.lib.shuffleboard_helper.ShuffleboardHelper;
 import com.pigmice.frc.lib.utils.Utils;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -27,8 +27,8 @@ public class PIDSubsystemBase extends SubsystemBase {
     private final ProfiledPIDController pidController;
 
     private boolean useSoftwareStop;
-    private Supplier<Double> getMinAllowedPosition;
-    private Supplier<Double> getMaxAllowedPosition;
+    private DoubleSupplier getMinAllowedPosition;
+    private DoubleSupplier getMaxAllowedPosition;
 
     private boolean useLimitSwitch;
     private DigitalInput limitSwitch;
@@ -41,9 +41,9 @@ public class PIDSubsystemBase extends SubsystemBase {
     private double targetRotation;
     private Constraints constraints;
 
-    private boolean runPID = true;
+    private boolean runPID;
 
-    private double maxAllowedOutput = 1;
+    private double maxAllowedOutput;
 
     public PIDSubsystemBase(CANSparkMax motor, double p, double i, double d, Constraints constraints,
             boolean motorInverted, double encoderRotationConversion, int currentLimit,
@@ -63,8 +63,11 @@ public class PIDSubsystemBase extends SubsystemBase {
 
         pidController = new ProfiledPIDController(p, i, d, constraints);
 
+        runPID = true;
+        maxAllowedOutput = 1;
+
         ShuffleboardHelper
-                .addOutput("Current Position", shuffleboardTab, () -> getCurrentRotation())
+                .addOutput("Current Position", shuffleboardTab, this::getCurrentRotation)
                 .asDial(-180, 180).withPosition(0, 0);
 
         ShuffleboardHelper
@@ -76,10 +79,10 @@ public class PIDSubsystemBase extends SubsystemBase {
                 .asDial(-180, 180).withPosition(2, 0);
 
         ShuffleboardHelper.addOutput("Motor Output", shuffleboardTab,
-                () -> motor.get()).withPosition(0, 1);
+                motor::get).withPosition(0, 1);
 
         ShuffleboardHelper.addOutput("Motor Temp", shuffleboardTab,
-                () -> motor.getMotorTemperature()).withPosition(1, 1);
+                motor::getMotorTemperature).withPosition(1, 1);
 
         ShuffleboardHelper.addOutput("At Max Output", shuffleboardTab,
                 () -> (Math.abs(motor.get()) >= maxAllowedOutput))
@@ -100,47 +103,46 @@ public class PIDSubsystemBase extends SubsystemBase {
     }
 
     /**
-     * Adds a software stop to prevent the mechanism from over rotating
+     * Adds a software stop to prevent the mechanism from over-rotating.
      * 
-     * @param minAllowedPosition the min allowed mechanism position
-     * @param maxAllowedPosition the max allowed mechanism position
+     * @param minAllowedPosition the minimum allowed mechanism position
+     * @param maxAllowedPosition the maximum allowed mechanism position
      */
     public void addSoftwareStop(double minAllowedPosition, double maxAllowedPosition) {
         addSoftwareStop(() -> minAllowedPosition, () -> maxAllowedPosition);
     }
 
     /**
-     * Adds a software stop to prevent the mechanism from over rotating
+     * Adds a software stop to prevent the mechanism from over-rotating.
      * 
-     * @param minAllowedPosition the min allowed mechanism position
-     * @param maxAllowedPosition the max allowed mechanism position
+     * @param minAllowedPosition the minimum allowed mechanism position
+     * @param maxAllowedPosition the maximum allowed mechanism position
      */
-    public void addSoftwareStop(Supplier<Double> getMinAllowedPosition, Supplier<Double> getMaxAllowedPosition) {
+    public void addSoftwareStop(DoubleSupplier getMinAllowedPosition, DoubleSupplier getMaxAllowedPosition) {
         this.useSoftwareStop = true;
         this.getMinAllowedPosition = getMinAllowedPosition;
         this.getMaxAllowedPosition = getMaxAllowedPosition;
 
         ShuffleboardHelper.addOutput("At Software Stop", shuffleboardTab,
-                () -> (getCurrentRotation() > getMaxAllowedPosition.get()
-                        || getCurrentRotation() < getMinAllowedPosition.get()))
+                () -> (getCurrentRotation() > getMaxAllowedPosition.getAsDouble()
+                        || getCurrentRotation() < getMinAllowedPosition.getAsDouble()))
                 .withPosition(4, 0);
     }
 
     /**
-     * Adds a limit switch
+     * Adds a limit switch with the given parameters.
      * 
-     * @param lsPosition  the mechanism position the limit switch is located at
-     * @param limitSwitch the limit switch
-     * @param lsInverted  does the digitalInput return negative when the switch is
-     *                    pressed?
-     * @param lsSide      direction the mechanism is moving when it hits the switch
+     * @param position the mechanism position the limit switch is located at
+     * @param port     the CAN ID of the limit switch
+     * @param inverted does the digitalInput return negative when the switch is
+     *                 pressed?
+     * @param side     direction the mechanism is moving when it hits the switch
      */
-    public void addLimitSwitch(double lsPosition, int limitSwitchPort, boolean lsInverted,
-            LimitSwitchSide lsSide) {
-        this.lsPosition = lsPosition;
-        this.limitSwitch = new DigitalInput(limitSwitchPort);
-        this.lsInverted = lsInverted;
-        this.lsSide = lsSide;
+    public void addLimitSwitch(double position, int port, boolean inverted, LimitSwitchSide side) {
+        this.lsPosition = position;
+        this.limitSwitch = new DigitalInput(port);
+        this.lsInverted = inverted;
+        this.lsSide = side;
 
         this.useLimitSwitch = true;
 
@@ -148,21 +150,18 @@ public class PIDSubsystemBase extends SubsystemBase {
     }
 
     /**
-     * Add an encoder other than the Neo's built in encoder
-     * 
-     * @param getEncoderPosition a supplier of the current encoder position, prior
-     *                           to the conversion factor being applied
+     * Add an encoder other than the Neo's built-in encoder.
      */
     public void useThroughBoreEncoder() {
         this.useThroughBoreEncoder = true;
     }
 
-    /** Sets the max allowed motor output */
+    /** Sets the max allowed motor output. */
     public void setMaxAllowedOutput(double maxAllowedOutput) {
         this.maxAllowedOutput = maxAllowedOutput;
     }
 
-    /** Resets the controller to the turret's current rotation. */
+    /** Resets the controller to the mechanism's current rotation. */
     public void resetRotationController() {
         double currentRotation = getCurrentRotation();
         targetRotation = currentRotation;
@@ -188,13 +187,13 @@ public class PIDSubsystemBase extends SubsystemBase {
         outputToMotor(calculatedOutput);
     }
 
-    /** Sets the percent output of the turret rotation motor. */
+    /** Sets the percent output of the rotation motor. */
     public void outputToMotor(double percentOutput) {
         double currentRotation = getCurrentRotation();
 
         if (useSoftwareStop)
             percentOutput = Utils.applySoftwareStop(currentRotation, percentOutput,
-                    getMinAllowedPosition.get(), getMaxAllowedPosition.get());
+                    getMinAllowedPosition.getAsDouble(), getMaxAllowedPosition.getAsDouble());
 
         if (useLimitSwitch && limitSwitchPressed()) {
             if (lsSide == LimitSwitchSide.POSITIVE)
@@ -207,81 +206,83 @@ public class PIDSubsystemBase extends SubsystemBase {
         motor.set(percentOutput);
     }
 
-    /** Returns the turret's current rotation in degrees. */
+    /** Returns the mechanism's current rotation in degrees. */
     public double getCurrentRotation() {
         if (useThroughBoreEncoder)
-            return motor.getAbsoluteEncoder(Type.kDutyCycle).getPosition();
+            return motor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle).getPosition();
         else
             return (motor.getEncoder().getPosition());
     }
 
-    /** Sets the turret's target position. */
+    /** Sets the mechanism's target position. */
     public void setTargetRotation(double targetDegrees) {
         if (useSoftwareStop)
-            targetRotation = MathUtil.clamp(targetRotation, getMinAllowedPosition.get(), getMaxAllowedPosition.get());
-
+            targetRotation = MathUtil.clamp(targetRotation, getMinAllowedPosition.getAsDouble(),
+                    getMaxAllowedPosition.getAsDouble());
         targetRotation = targetDegrees;
     }
 
-    /** Adjusts the turret's target position by the given amount. */
+    /** Adjusts the mechanism's target position by the given amount. */
     public void changeTargetRotation(double delta) {
         setTargetRotation(targetRotation + delta);
     }
 
-    /** Returns the current velocity of the turret in degrees per second. */
+    /** Returns the current velocity of the mechanism in degrees per second. */
     public double getTurretVelocity() {
         return motor.getEncoder().getVelocity();
     }
 
-    /** Returns the current rotation of the turret in degrees. */
+    /** Returns the current rotation of the mechanism in degrees. */
     public double getTargetRotation() {
         return targetRotation;
     }
 
     /**
-     * Sets the max velocity and acceleration of the turret as a Constraints object.
+     * Sets the max velocity and acceleration of the mechanism as a Constraints
+     * object.
      */
-    public void setPIDConstraints(Constraints constraints) {
-        this.constraints = constraints;
+    public void setPIDConstraints(double velocity, double acceleration) {
+        this.constraints = new Constraints(velocity, acceleration);
     }
 
-    /** Setts the current position of the encoder */
+    /** Sets the position of the encoder. */
     public void setEncoderPosition(double position) {
-        if (useThroughBoreEncoder)
-            motor.getAbsoluteEncoder(Type.kDutyCycle).setZeroOffset(position - getCurrentRotation());
-        else
+        if (useThroughBoreEncoder) {
+            motor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle)
+                    .setZeroOffset(position - getCurrentRotation());
+        } else {
             motor.getEncoder().setPosition(position);
+        }
     }
 
-    /** Pauses the PID loop, preventing it from outputting to the motor */
+    /** Pauses the PID loop, preventing it from outputting to the motor. */
     public void stopPID() {
         outputToMotor(0);
         runPID = false;
     }
 
-    /** Results the PID loop */
+    /** Starts/resumes the PID loop. */
     public void startPID() {
         runPID = true;
     }
 
-    /** Completely resets the PID controller and encoder */
+    /** Completely resets the PID controller and encoder. */
     public void resetPID() {
         pidController.reset(getCurrentRotation());
         setTargetRotation(getCurrentRotation());
     }
 
-    /** @return true if the limit switch is currently pressed */
+    /** Returns true if the limit switch is currently pressed. */
     public boolean limitSwitchPressed() {
-        return lsInverted ? !limitSwitch.get() : limitSwitch.get();
+        return lsInverted ^ limitSwitch.get();
     }
 
-    /** @return the motor instance */
+    /** Returns the motor instance. */
     public CANSparkMax getMotor() {
         return motor;
     }
 
     public enum LimitSwitchSide {
-        POSITIVE,
-        NEGATIVE
+        POSITIVE, NEGATIVE
     }
 }
