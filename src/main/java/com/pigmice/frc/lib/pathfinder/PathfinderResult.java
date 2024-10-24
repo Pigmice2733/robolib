@@ -3,13 +3,16 @@ package com.pigmice.frc.lib.pathfinder;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.path.RotationTarget;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class PathfinderResult {
     private final boolean _pathFound;
@@ -43,23 +46,22 @@ public class PathfinderResult {
                     next.getX() - current.getX());
 
             if (i != 0) {
-                rotation += points.get(i - 1).heading.getRadians();
+                rotation += points.get(i - 1).rotationTarget.getTarget().getRadians();
                 rotation /= 2;
             }
             Rotation2d angleToNext = new Rotation2d(rotation);
 
-            double distance = current.getDistance(next) / 3.0;
-
-            points.add(new PathPoint(current, angleToNext, new Rotation2d())
-                    .withControlLengths(distance / 3,
-                            distance / 5));
+            points.add(new PathPoint(current, new RotationTarget(0.0, angleToNext), pathConstraints));
         }
 
         points.add(new PathPoint(
                 _simplifiedPath.get(_simplifiedPath.size() - 1),
-                points.get(points.size() - 1).heading));
+                points.get(points.size() - 1).rotationTarget));
 
-        return PathPlanner.generatePath(pathConstraints, points);
+        return PathPlannerPath
+                .fromPathPoints(points, pathConstraints,
+                        new GoalEndState(0.0, points.get(points.size() - 1).rotationTarget.getTarget(), false))
+                .getTrajectory(new ChassisSpeeds(), points.get(0).rotationTarget.getTarget());
     }
 
     public List<Translation2d> getPositionList() {

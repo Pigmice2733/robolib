@@ -6,11 +6,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPlannerTrajectory.State;
 import com.pigmice.frc.lib.utils.Utils;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory.State;
 
 public class GridVisualizer {
     private final NodeGrid grid;
@@ -91,7 +91,7 @@ public class GridVisualizer {
      */
     public GridVisualizer addTrajectory(PathPlannerTrajectory trajectory) {
         for (State state : trajectory.getStates()) {
-            Node node = grid.FindCloseNode(state.poseMeters.getTranslation());
+            Node node = grid.FindCloseNode(state.positionMeters);
             image.setRGB(node.gridX, node.gridY, getIntFromColor(1, 0, 0));
         }
         return this;

@@ -156,4 +156,25 @@ public class Utils {
         t = point.subtract(start).dot(direction) / direction.dot(direction);
         return Range.natural().clamp(t);
     }
+
+    /**
+     * Provides a software stop on a mechanism with given bounds by checking that a
+     * given output will not go past the bounds.
+     * 
+     * @param position the current position/rotation of the mechanism
+     * @param speed    the provisional output for the mechanism
+     * @param minLimit the min position that the mechanism should go
+     * @param maxLimit the max position that the mechanism should go
+     * @return an appropriate output for the speed--the given value if possible or 0
+     *         otherwise
+     */
+    public static double applySoftwareStop(double position, double velocity, double minLimit, double maxLimit) {
+        if (position >= maxLimit && velocity > 0) {
+            return 0;
+        } else if (position <= minLimit && velocity < 0) {
+            return 0;
+        } else {
+            return velocity;
+        }
+    }
 }
